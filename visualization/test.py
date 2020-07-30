@@ -9,5 +9,6 @@ j.include("test.jl")
 print("Julia bootstrap complete.")
 
 print("Executing loader... ")
-foo = j.loader()
-print(f"{foo}")
+loader_results = j.loader()
+# print(f"{loader_results}")
+print(f"file variable foo: {j.foo}")

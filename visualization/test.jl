@@ -15,3 +15,5 @@ end
 
 #println("Julia load complete")
 #joe()
+
+foo = 99
