@@ -12,6 +12,15 @@ function joe()
     return 1
 end
 
+function main(age_fracs)
+    for i = 1:4
+        for j = 1:4
+           print("age_fracs[i][j],"   ")
+        end
+        print("\n")
+    end
+end
+
 
 #println("Julia load complete")
 #joe()

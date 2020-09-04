@@ -202,8 +202,12 @@ function main()
     # open output file
     rows = 511
     # Joe: These should be vectors of arrays instead of hardcoded length 2d arrays
-    global io1a = Array{Float64}(undef,rows,81)
-    global io2a = Array{Float64}(undef,77162,4)
+    one_d_array = Array{Float64,1}
+
+    global io1a = Array{one_d_array,1}()
+    global io2a = Array{one_d_array,1}()
+    #global io1a = Array{Float64}(undef,rows,81)
+    #global io2a = Array{Float64}(undef,77162,4)
     io1 = open("LA_CASES6_output_08_25.dat", "w");
     io2 = open("LA_CASES6_surfaces_08_25.dat","w");
     # **********************************************************
@@ -232,14 +236,19 @@ function main()
 
         # summarize SIR and employment and write to output file
         total_E1 = Array(sol1)
+        cur_array_1 = one_d_array()
+        cur_array_2 = one_d_array()
+
         for j = 1:size(total_E1,2)
-            io1a[i,1]=R
-            io1a[i,2]=j
+            push!(cur_array_1,R)
+            push!(cur_array_1,j)
 
             print(io1,R,",",j,",")
             for k = 1:size(total_E1,1)
                 print(io1,total_E1[k,j],",")
-                io1a[i,k+2]=j
+                push!(cur_array_1,j)
+
+                # io1a[i,k+2]=j
             end
             print(io1,"\n")
         end
@@ -252,10 +261,10 @@ function main()
                 total_E = total_E + total_E1[k,j]
             end
             print(io2,R," ",j," ",total_E," ")
-            io2a[j,1]=R
-            io2a[j,2]=j
-            io2a[j,3]=total_E
-
+            #io2a[j,1]=R
+            #io2a[j,2]=j
+            #io2a[j,3]=total_E
+            cur_array_2=[R,j,total_E]
 
             # removed
             age1 = age_sizes[1] - (total_E1[78,j]*age_sizes[1]*(d[1]+n[1]))
@@ -264,8 +273,11 @@ function main()
             age4 = age_sizes[4] - (total_E1[78,j]*age_sizes[4]*(d[4]+n[4]))
             disease_only = age1 + age2 + age3 + age4
             print(io2,disease_only,"\n")
-            io2a[j,4]=disease_only
+            #io2a[j,4]=disease_only
+            push!(cur_array_2,disease_only)
         end
+        push!(io1a,cur_array_1)
+        push!(io2a,cur_array_2)
 
     end
 
@@ -274,3 +286,8 @@ function main()
     close(io2)
     io1a,io2a
 end
+
+#Read CSV #1
+#REad CSV #2
+#main (csv1,csv2)
+main()

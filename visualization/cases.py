@@ -4,6 +4,7 @@ import dash_core_components as dcc
 import dash_html_components as html
 import plotly.express as px
 import pandas as pd
+from numpy import genfromtxt
 
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
@@ -11,8 +12,13 @@ app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 print("Loading julia....")
 from julia import Main as j
 
+age_fracs = genfromtxt('LA_age_fracs.csv', delimiter=' ')
+
+
 print("Starting julia include...")
-j.include("CASES5-01-Basic_model.jl")
+j.include("test.jl")
+
+#j.include("CASES5-06_engine-032.jl")
 print("Julia bootstrap complete.")
 # julia_array_ep = j.ep
 # julia_array_e = j.e
