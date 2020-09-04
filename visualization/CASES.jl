@@ -121,10 +121,10 @@ function cases6_ages!(du,u,p,t)
     du[78] = g*u[77]
 end
 
-function main()
+function main(I,age_fracs)
     # the input-output matrix
     # reading a delimited file
-    I = readdlm("US_exchanges_2018c.csv")
+    #I = readdlm("US_exchanges_2018c.csv")
 
     # **********************************************************
     # HARD CODED UNIQUE FILE
@@ -168,7 +168,7 @@ function main()
     # **********************************************************
     # HARD CODED UNIQUE FILE
     # Arrays for employment and initial levels
-    age_fracs = readdlm("LA_age_fracs.csv")
+    #age_fracs = readdlm("LA_age_fracs.csv")
     # **********************************************************
     # age bracket sizes
     age_sizes = Float64[]
@@ -290,4 +290,4 @@ end
 #Read CSV #1
 #REad CSV #2
 #main (csv1,csv2)
-main()
+#main()
