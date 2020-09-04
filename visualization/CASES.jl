@@ -1,5 +1,5 @@
 # load libraries
-using DifferentialEquations, CSV, DelimitedFiles
+using DifferentialEquations, CSV, DelimitedFiles,DataFrames
 
 
 # ODE function
@@ -129,8 +129,8 @@ function main(I,age_fracs)
     # **********************************************************
     # HARD CODED UNIQUE FILE
     # input employment data
-    #employed = DataFrame!(CSV.File("LA_employment_by_sector_02_2020,csv"))
-    employed = CSV.read("LA_employment_by_sector_02_2020.csv")
+    employed = DataFrame!(CSV.File("LA_employment_by_sector_02_2020.csv"))
+    #employed = CSV.read("LA_employment_by_sector_02_2020.csv")
     N = sum(employed[:,:Feb])
     # **********************************************************
 
