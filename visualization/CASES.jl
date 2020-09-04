@@ -129,6 +129,7 @@ function main(I,age_fracs)
     # **********************************************************
     # HARD CODED UNIQUE FILE
     # input employment data
+    #employed = DataFrame!(CSV.File("LA_employment_by_sector_02_2020,csv"))
     employed = CSV.read("LA_employment_by_sector_02_2020.csv")
     N = sum(employed[:,:Feb])
     # **********************************************************
@@ -226,7 +227,7 @@ function main(I,age_fracs)
         n = [0.00004,0.000047,0.000101,0.000186];
         d = [0.002,0.0027,0.0295,0.088];
 
-        println("R0 = ",R)
+        #println("R0 = ",R)
 
         # solve ODE system
         # we run it here for 150 days
@@ -236,25 +237,29 @@ function main(I,age_fracs)
 
         # summarize SIR and employment and write to output file
         total_E1 = Array(sol1)
-        cur_array_1 = one_d_array()
-        cur_array_2 = one_d_array()
 
         for j = 1:size(total_E1,2)
+            cur_array_1 = one_d_array()
+
             push!(cur_array_1,R)
             push!(cur_array_1,j)
 
             print(io1,R,",",j,",")
             for k = 1:size(total_E1,1)
                 print(io1,total_E1[k,j],",")
-                push!(cur_array_1,j)
+                push!(cur_array_1,total_E1[k,j])
 
                 # io1a[i,k+2]=j
             end
             print(io1,"\n")
+            push!(io1a,cur_array_1)
+
         end
+
 
         # data processing for surfaces
         for j = 1:size(total_E1,2)
+            cur_array_2 = one_d_array()
             total_E = 0.0
             for k = 61:75
                 # employment
@@ -275,9 +280,14 @@ function main(I,age_fracs)
             print(io2,disease_only,"\n")
             #io2a[j,4]=disease_only
             push!(cur_array_2,disease_only)
+            #println("Pushed: ",R," ",j," ",total_E," ",disease_only)
+            #println(cur_array_2)
+            push!(io2a,cur_array_2)
+
         end
-        push!(io1a,cur_array_1)
-        push!(io2a,cur_array_2)
+
+        #println(io2a,"\n")
+        #println("Cur outer loop: ",i)
 
     end
 
