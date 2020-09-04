@@ -13,17 +13,20 @@ if (RUN_JULIA):
     US_EXCHANGES = "US_exchanges_2018c.csv"
     AGE_FRACS = "LA_age_fracs.csv"
     LA_EMPLOYMENT = "LA_employment_by_sector_02_2020.csv"
-    I = np.genfromtxt(US_EXCHANGES,delimiter=" ")
-    age_fracs = np.genfromtxt(AGE_FRACS,delimiter=" ")
-    #employed = np.genfromtxt(AGE_FRACS,delimiter=" ")
-    #employed = map(csv.reader(open(LA_EMPLOYMENT), delimiter=','))
+    I = np.genfromtxt(US_EXCHANGES, delimiter=" ")
+    age_fracs = np.genfromtxt(AGE_FRACS, delimiter=" ")
 
-    #employed=pd.read_csv(LA_EMPLOYMENT)
-    #employed = pd.genfromtxt(AGE_FRACS,delimiter=" ")
-    #employed = np.genfromtxt(LA_EMPLOYMENT,delimiter=",")
+
+    employed = pd.read_csv(LA_EMPLOYMENT,
+                           dtype={"Sector": str, "Feb": np.int64})
+
+    j.eval("using DataFrames")
+    julia_formatted_employed  = j.DataFrame(employed.to_dict(orient='list'))
+
+
     print("Starting Julia run...")
     j.include("CASES.jl")
-    returned_result = j.main(I,age_fracs)
+    returned_result = j.main(I,age_fracs,julia_formatted_employed)
     print("Julia run complete.")
 
     cases_1 = returned_result[0]
