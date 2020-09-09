@@ -9,7 +9,7 @@ from numpy import genfromtxt
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
-print("Loading julia....")
+print("Loading julia.... cases")
 from julia import Main as j
 
 age_fracs = genfromtxt('LA_age_fracs.csv', delimiter=' ')

@@ -1,14 +1,11 @@
 #!/usr/bin/env python3
-import numpy as np
-import csv
-import time
 import pandas as pd
 import numpy as np
 import pickle
 RUN_JULIA=True
-cases_1=cases_2=None
+cases_1 = cases_2 = None
 if (RUN_JULIA):
-    print("Loading Julia....")
+    print("Loading Julia.... dont run me")
     from julia import Main as j
     US_EXCHANGES = "US_exchanges_2018c.csv"
     AGE_FRACS = "LA_age_fracs.csv"
