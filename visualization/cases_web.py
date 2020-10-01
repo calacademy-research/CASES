@@ -13,40 +13,28 @@ import pandas as pd
 #0.9  v  v  v  v
 #0.91 v  v  v  v
 # i.e.: R on the Y axis and day on the x, with one value per cell
-def generate_dataframe_from_julia(surfaces,surface_column):
-    surface_frame = pd.DataFrame(surfaces)
-    surface_frame.columns = ['R', 'day', 'level1', 'level2']
-    grouped = surface_frame.groupby(['R'])
-    surface_one_frame = None
-    for r, r_group in grouped:
-        # print(f"r: {r}")
-        # print(r_group)
-        day_list = {}
-        master_index = 0
-        for index, row in r_group.iterrows():
-            day_list[master_index + 1] = row[ surface_frame.columns[surface_column]]
-            master_index += 1
-        new_df = pd.DataFrame(day_list, index=[r])
 
-        if surface_one_frame is None:
-            surface_one_frame = new_df
-        else:
-            surface_one_frame = surface_one_frame.append(new_df)
 
-    # print(f"final: {surface_one_frame}")
-    return surface_one_frame
+def create_app():
+    external_stylesheets = ['http://codepen.io/chriddyp/pen/bWLwgP.css']
+    app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 
-external_stylesheets = ['http://codepen.io/chriddyp/pen/bWLwgP.css']
+    return app
 
-app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
+app = create_app()
+
+
+@app.callback(
+    dash.dependencies.Output('slider-output-container', 'children'),
+    [dash.dependencies.Input('my-slider', 'value')])
+
+def update_output(value):
+    return 'You have selected "{}"'.format(value)
 
 jl = julia_loader.JuliaLoader(False)
-cases_1 = jl.get_results()[0]
-surfaces = jl.get_results()[1]
 
-surface_one_frame = generate_dataframe_from_julia(surfaces,2)
-surface_two_frame = generate_dataframe_from_julia(surfaces,3)
 
+surface_one_frame,surface_two_frame = jl.get_surfaces()
 
 # https://community.plotly.com/t/two-3d-surface-with-different-color-map/18931/4
 
@@ -82,8 +70,6 @@ fig.update_layout(title='Surfaces',
                   )
 
 
-
-
 app.layout = html.Div(children=[
     html.H1(children='CASES'),
 
@@ -94,7 +80,16 @@ app.layout = html.Div(children=[
     dcc.Graph(
         id='cases-graph',
         figure=fig
-    )
+    ),
+    dcc.Slider(
+        id='my-slider',
+        min=0,
+        max=20,
+        step=0.5,
+        value=10,
+    ),
+    html.Div(id='slider-output-container')
+
 ])
 
 if __name__ == '__main__':
