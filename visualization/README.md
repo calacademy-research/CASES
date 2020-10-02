@@ -22,3 +22,36 @@ gnuplot> set title "Los Angeles-Glendale, 08/25"
 gnuplot> splot "LA_CASES6_surfaces_08_25b.dat" using 2:1:3 with lines lw 2.5 palette,"LA_CASES6_surfaces_08_25b.dat" using 2:1:4 with lines lw .25 lc rgb "grey"
 gnuplot> set title "Stockton-Lodi, 08/26"
 gnuplot> splot "Stockton-Lodi_CASES6_surfaces_08_26b.dat" using 2:1:3 with lines lw 2.5 palette,"Stockton-Lodi_CASES6_surfaces_08_26b.dat" using 2:1:4 with lines lw .25 lc rgb "grey"
+
+----------------
+Pyjulia 
+Getting pyJulia setup requires a bit of work, and it will require upkeep if your
+python3 environment changes signifigantly. 
+
+First, install python and setup your pyenv:
+```
+python3 -m venv env
+activate ./env/bin/activate
+```
+
+Next, install julia from (here)[https://julialang.org/downloads/]
+
+Next, install pyJulia from (here)[https://pyjulia.readthedocs.io/en/latest/installation.html]
+(don't forget to run the "julia.install()" step)
+
+Add julia to your path. On the mac, that's going to look like this:
+```
+handball:~ joe$ grep -i julia ~/.bash_profile
+export PATH="/Applications/Julia-1.5.app/Contents/Resources/julia/bin:$PATH"
+```
+
+Finally, run julia and type:
+
+```
+import Pkg; Pkg.add("DataFrames")
+import Pkg; Pkg.add("DifferentialEquations")
+import Pkg; Pkg.add("CSV")
+```
+control-d to exit.
+
+Run and enjoy!

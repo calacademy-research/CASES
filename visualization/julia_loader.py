@@ -45,6 +45,8 @@ class JuliaLoader:
 
         cases_1 = returned_result[0]
         pickle.dump(cases_1, open("cases_1", "wb"))
+        self.results.append(cases_1)
+        self.results.append(cases_2)
 
     def save_csv(self,filename,results):
         with open(filename, "w") as out:
@@ -90,7 +92,7 @@ class JuliaLoader:
     # Each column is the day. (currently 0.90 -> 6.0 in 0.1 increments for R
     # and 1-151 inclusive for day.
     def get_surfaces(self):
-        # cases_1 = self.get_results()[0]
+        cases_1 = self.get_results()[0]
         surfaces = self.get_results()[1]
         unemployemnt = self.generate_dataframe_from_julia(surfaces, 2)
         incapacitated = self.generate_dataframe_from_julia(surfaces, 3)

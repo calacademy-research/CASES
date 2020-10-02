@@ -16,9 +16,7 @@ def create_app():
 app = create_app()
 
 
-
-
-jl = julia_loader.JuliaLoader(False,False)
+jl = julia_loader.JuliaLoader(True,True)
 unemployed_df,incapacitated_df = jl.get_surfaces()
 
 
