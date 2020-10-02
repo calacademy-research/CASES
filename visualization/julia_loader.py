@@ -4,12 +4,15 @@ import pickle
 
 class JuliaLoader:
 
-    def __init__(self,run_julia=True):
+    def __init__(self,run_julia=True,load_all_data=True):
         self.results = []
         if run_julia:
             self.run_julia()
         else:
-            cases_1 = pickle.load(open("cases_1", "rb"))
+            if load_all_data:
+                cases_1 = pickle.load(open("cases_1", "rb"))
+            else:
+                cases_1 = None
             cases_2 = pickle.load(open("cases_2", "rb"))
             self.results.append(cases_1)
             self.results.append(cases_2)
@@ -37,10 +40,11 @@ class JuliaLoader:
         returned_result = j.main(I, age_fracs, julia_formatted_employed)
         print("Julia run complete.")
 
-        cases_1 = returned_result[0]
         cases_2 = returned_result[1]
-        pickle.dump(cases_1, open("cases_1", "wb"))
         pickle.dump(cases_2, open("cases_2", "wb"))
+
+        cases_1 = returned_result[0]
+        pickle.dump(cases_1, open("cases_1", "wb"))
 
     def save_csv(self,filename,results):
         with open(filename, "w") as out:
@@ -53,33 +57,40 @@ class JuliaLoader:
                         out.write(" ")
 
     def generate_dataframe_from_julia(self, surfaces, surface_column):
+        dict,day_count = self.generate_dict_from_julia(surfaces,surface_column)
+        day_list = list(range(1, day_count + 1))
+        df = pd.DataFrame.from_dict(dict, orient='index', columns=day_list)
+        return df
+
+    def generate_dict_from_julia(self, surfaces, surface_column):
         surface_frame = pd.DataFrame(surfaces)
         surface_frame.columns = ['R', 'day', 'level1', 'level2']
         grouped = surface_frame.groupby(['R'])
-        surface_one_frame = None
+        surface_dict = {}
+        max_day = 0
+        data_column = surface_frame.columns[surface_column]
         for r, r_group in grouped:
             # print(f"r: {r}")
             # print(r_group)
-            day_list = {}
-            master_index = 0
+            day_list = []
+            # Each row is 4 values: "R","day","level1" and "level2".
+            # one level for each surface. This is iterating over days grouped by R.
             for index, row in r_group.iterrows():
-                day_list[master_index + 1] = row[surface_frame.columns[surface_column]]
-                master_index += 1
-            new_df = pd.DataFrame(day_list, index=[r])
+                day_list.append(row[data_column])
+                # Optimizaiton. if covid lasts more than three years, we're in trouble.
+                if (index < 1500):
+                    day = int(row['day'])
+                    if max_day < day:
+                        max_day = day
+            surface_dict.update({r:day_list})
+        return surface_dict,max_day
 
-            if surface_one_frame is None:
-                surface_one_frame = new_df
-            else:
-                surface_one_frame = surface_one_frame.append(new_df)
-
-        # print(f"final: {surface_one_frame}")
-        return surface_one_frame
 
     # Returns a tuple of 2d dataframes. Each row is a distinct R value
     # Each column is the day. (currently 0.90 -> 6.0 in 0.1 increments for R
     # and 1-151 inclusive for day.
     def get_surfaces(self):
-        cases_1 = self.get_results()[0]
+        # cases_1 = self.get_results()[0]
         surfaces = self.get_results()[1]
         unemployemnt = self.generate_dataframe_from_julia(surfaces, 2)
         incapacitated = self.generate_dataframe_from_julia(surfaces, 3)
