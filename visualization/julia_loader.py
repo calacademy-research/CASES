@@ -58,15 +58,19 @@ class JuliaLoader:
                     else:
                         out.write(" ")
 
-    def generate_dataframe_from_julia(self, surfaces, surface_column):
-        dict,day_count = self.generate_dict_from_julia(surfaces,surface_column)
+    def generate_dataframe_from_julia(self, surface_column):
+        dict,day_count = self.generate_dict_from_julia(surface_column)
         day_list = list(range(1, day_count + 1))
         df = pd.DataFrame.from_dict(dict, orient='index', columns=day_list)
         return df
 
-    def generate_dict_from_julia(self, surfaces, surface_column):
+    # Returns a 2d dict of days as columns and r values
+    # per row. Rows are indexed by r value and stored in order
+    # in the dict (python3.6+ - dicts are ordered)
+    def generate_dict_from_julia(self, surface_column):
+        surfaces = self.get_results()[1]
         surface_frame = pd.DataFrame(surfaces)
-        surface_frame.columns = ['R', 'day', 'level1', 'level2']
+        surface_frame.columns = ['R', 'day', 'unemployed', 'incapacitated']
         grouped = surface_frame.groupby(['R'])
         surface_dict = {}
         max_day = 0
@@ -75,7 +79,7 @@ class JuliaLoader:
             # print(f"r: {r}")
             # print(r_group)
             day_list = []
-            # Each row is 4 values: "R","day","level1" and "level2".
+            # Each row is 4 values: "R","day","unemployed" and "incapacitated".
             # one level for each surface. This is iterating over days grouped by R.
             for index, row in r_group.iterrows():
                 day_list.append(row[data_column])
@@ -84,16 +88,20 @@ class JuliaLoader:
                     day = int(row['day'])
                     if max_day < day:
                         max_day = day
-            surface_dict.update({r:day_list})
+            surface_dict.update({round(r, 2):day_list})
         return surface_dict,max_day
 
 
     # Returns a tuple of 2d dataframes. Each row is a distinct R value
     # Each column is the day. (currently 0.90 -> 6.0 in 0.1 increments for R
     # and 1-151 inclusive for day.
+    #            1             2    ...           150           151
+    # 0.90  4636800.0  4.636800e+06  ...  4.636797e+06  4.636797e+06
+    # 0.91  4636800.0  4.636800e+06  ...  4.636796e+06  4.636796e+06
+    # 0.92  4636800.0  4.636800e+06  ...  4.636796e+06  4.636796e+06
     def get_surfaces(self):
         cases_1 = self.get_results()[0]
-        surfaces = self.get_results()[1]
-        unemployemnt = self.generate_dataframe_from_julia(surfaces, 2)
-        incapacitated = self.generate_dataframe_from_julia(surfaces, 3)
-        return unemployemnt, incapacitated
+
+        unemployed = self.generate_dataframe_from_julia(2)
+        incapacitated = self.generate_dataframe_from_julia(3)
+        return unemployed, incapacitated
