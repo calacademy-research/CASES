@@ -27,8 +27,6 @@ for cur_r in r_values:
         if element < min_value:
             min_value = element
 
-
-
 # make figure
 fig_dict = {
     "data": [],
