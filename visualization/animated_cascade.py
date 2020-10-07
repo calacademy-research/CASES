@@ -6,11 +6,10 @@ import pandas as pd
 # url = "http://raw.githubusercontent.com/plotly/datasets/master/gapminderDataFiveYear.csv"
 # dataset = pd.read_csv('gapminderDataFiveYear.csv')
 
-jl = julia_loader.JuliaLoader(False,True)
+jl = julia_loader.JuliaLoader(False, True)
 
 cases_dict, day_count = jl.generate_dict_from_julia(2)
 r_values = list(cases_dict.keys())
-
 
 # Returns a 2d dict of days as columns and r values
 # per row. Rows are indexed by r value and stored in order
@@ -36,7 +35,7 @@ fig_dict = {
 
 # fill in most of layout
 fig_dict["layout"]["xaxis"] = {"range": [day_list[0], day_list[-1]], "title": "Day"}
-fig_dict["layout"]["yaxis"] = {"title": "Employment per R value", "type": "linear","range": [min_value,max_value]}
+fig_dict["layout"]["yaxis"] = {"title": "Employment per R value", "type": "linear", "range": [min_value, max_value]}
 fig_dict["layout"]["hovermode"] = "closest"
 fig_dict["layout"]["updatemenus"] = [
     {
@@ -86,25 +85,42 @@ sliders_dict = {
 }
 
 
+def create_line_at_r(r_val):
+    data = {
+        "x": day_list,
+        "y": list(cases_dict[r_val]),
+        "mode": "lines",
+        "name": cur_r
+    }
+    return data
+
+
+def create_volume_at_r(r_val):
+    z = [r_val] * len(day_list) # constant for this R
+    data = go.Scatter3d(
+        mode='lines',
+        x=day_list,
+        y=z,
+        z=list(cases_dict[r_val]),
+
+        line=dict(
+            color='darkblue',
+            width=2
+        )
+    )
+    return data
+
+
+
 # initial display
 
-data_dict = {
-    "x": day_list,
-    "y": list(cases_dict[r_values[0]]),
-    "mode": "lines",
-    "name": r_values[0]
-}
+data_dict = create_volume_at_r(0.9)
 fig_dict["data"].append(data_dict)
 
 # make frames
 for cur_r in r_values:
     frame = {"data": [], "name": str(cur_r)}
-    data_dict = {
-        "x": day_list,
-        "y": list(cases_dict[cur_r]),
-        "mode": "lines",
-        "name": cur_r
-    }
+    data_dict = create_volume_at_r(cur_r)
     frame["data"].append(data_dict)
 
     fig_dict["frames"].append(frame)
@@ -117,7 +133,6 @@ for cur_r in r_values:
         "label": cur_r,
         "method": "animate"}
     sliders_dict["steps"].append(slider_step)
-
 
 fig_dict["layout"]["sliders"] = [sliders_dict]
 
