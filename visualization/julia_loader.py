@@ -1,6 +1,8 @@
 import pandas as pd
 import numpy as np
 import pickle
+import sys
+from julia import Main as j
 
 class JuliaLoader:
 
@@ -65,43 +67,21 @@ class JuliaLoader:
         print("Derived data complete.")
 
 
-    def generate_derived_data(self):
-        # R, day, level1, level 2
-        # into a dataframe of form:
-        #     1  2  3  4
-        # 0.9  v  v  v  v
-        # 0.91 v  v  v  v
-        # i.e.: R on the Y axis and day on the x, with one value per cell
-        self.cases_removed, self.day_count = self.generate_dict_from_julia(2)
-        self.cases_unemployed, self.day_count = self.generate_dict_from_julia(3)
-        self.day_list = list(range(1, self.day_count + 1))
-        self.surface_one_frame, self.surface_two_frame = self.get_surfaces()
-        self.r_min = list(self.cases_removed.keys())[0]
-        self.r_max = list(self.cases_removed.keys())[-1]
-        self.day_min = self.day_list[0]
-        self.day_max = self.day_list[-1]
-        self.pop_min = min([min(list(self.cases_removed.items())[0][1]),
-                       min(list(self.cases_removed.items())[-1][1]),
-                       min(list(self.cases_unemployed.items())[0][1]),
-                       min(list(self.cases_unemployed.items())[-1][1])
-                       ])
-        self.pop_max = max([max(list(self.cases_removed.items())[0][1]),
-                       max(list(self.cases_removed.items())[-1][1]),
-                       max(list(self.cases_unemployed.items())[0][1]),
-                       max(list(self.cases_unemployed.items())[-1][1])
-                       ])
-
     def get_results(self):
         return self.results
 
     def run_julia(self):
         print("Loading Julia....")
-        from julia import Main as j
+
+
         # US_EXCHANGES = "US_exchanges_2018c.csv"
         # AGE_FRACS = "LA_age_fracs.csv"
         # LA_EMPLOYMENT = "LA_employment_by_sector_02_2020.csv"
         I = np.genfromtxt(self.us_exchanges_filename, delimiter=" ")
-        age_fracs = np.genfromtxt(self.age_fracs_filename, delimiter=" ")
+        age_fracs = np.genfromtxt(self.age_fracs_filename, delimiter=",")
+        print (age_fracs.iloc[0].iloc[0])
+        sys.exit(1)
+        df.drop(df.columns[i], axis=1)
 
         employed = pd.read_csv(self.employment_filename,
                                dtype={"Sector": str, "Feb": np.int64})

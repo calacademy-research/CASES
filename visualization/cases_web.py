@@ -38,8 +38,6 @@ jl = julia_loader.JuliaLoader("US_exchanges_2018c.csv",
                               False)
 
 
-
-
 layout = go.Layout({'title': 'Surfaces',
                     'scene': dict(
                         yaxis_title='R',
