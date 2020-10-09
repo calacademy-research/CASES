@@ -1,17 +1,42 @@
 #!/usr/bin/env python3
 import julia_loader
 import dash
+import csv
 import dash_core_components as dcc
 import dash_html_components as html
 import plotly.graph_objects as go
+import sys
 
 fig = None
 
+tsv_file = open("inputs.tsv")
+read_tsv = csv.reader(tsv_file, delimiter="\t")
 
+data_files={}
+employment_directory = None
+age_fracs_directory = None
+for row in read_tsv:
+    if row[0].startswith("#"):
+        continue
+    if employment_directory is None:
+        employment_directory = row[0]
+        age_fracs_directory = row[1]
+    else:
+        data_files[row[0]]=[row[1],row[2]]
+
+for name in data_files.keys():
+    print("Common name: " + name)
+    jl = julia_loader.JuliaLoader("US_exchanges_2018c.csv",
+                                  age_fracs_directory +"/" + data_files[name][1],
+                                  employment_directory +"/" + data_files[name][0],
+                                  True)
+
+sys.exit(1)
 jl = julia_loader.JuliaLoader("US_exchanges_2018c.csv",
                               "LA_age_fracs.csv",
                               "LA_employment_by_sector_02_2020.csv",
                               False)
+
 
 
 

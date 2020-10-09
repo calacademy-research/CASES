@@ -10,6 +10,7 @@ class JuliaLoader:
                  employment,
                  run_julia=True,
                  load_all_data=True):
+        print(f"Processing {us_exchanges}, employment:{employment}, age_fracs:{age_fracs}")
         self.us_exchanges_filename = us_exchanges
         self.age_fracs_filename = age_fracs
         self.employment_filename = employment
