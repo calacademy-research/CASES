@@ -4,18 +4,65 @@ import pickle
 
 class JuliaLoader:
 
-    def __init__(self,run_julia=True,load_all_data=True):
+    def __init__(self,
+                 us_exchanges=None,
+                 age_fracs=None,
+                 employment=None,
+                 run_julia=True,
+                 load_all_data=True):
+        self.us_exchanges_filename = us_exchanges
+        self.age_fracs_filename = age_fracs
+        self.employment_filename = employment
+        # US_EXCHANGES = US_exchanges_2018c
+        # AGE_FRACS = "LA_age_fracs.csv"
+        # LA_EMPLOYMENT = "LA_employment_by_sector_02_2020.csv"
         self.results = []
         if run_julia:
             self.run_julia()
         else:
             if load_all_data:
-                cases_1 = pickle.load(open("cases_1", "rb"))
+                cases_1 = pickle.load(open(self.employment_filename+"_cases_1.bin", "rb"))
             else:
                 cases_1 = None
-            cases_2 = pickle.load(open("cases_2", "rb"))
+            cases_2 = pickle.load(open(self.employment_filename+"_cases_2.bin", "rb"))
             self.results.append(cases_1)
             self.results.append(cases_2)
+        self.generate_derived_data()
+
+    def generate_derived_data(self):
+        # R, day, level1, level 2
+        # into a dataframe of form:
+        #     1  2  3  4
+        # 0.9  v  v  v  v
+        # 0.91 v  v  v  v
+        # i.e.: R on the Y axis and day on the x, with one value per cell
+        print("Generating derived data...")
+        print("slow 1")
+        self.cases_removed, self.day_count = self.generate_dict_from_julia(2)
+        self.cases_unemployed, self.day_count = self.generate_dict_from_julia(3)
+        self.day_list = list(range(1, self.day_count + 1))
+        print("slow 3")
+        self.surface_one_frame, self.surface_two_frame = self.get_surfaces()
+        print("slow 3.1")
+        self.r_min = list(self.cases_removed.keys())[0]
+        print("slow 3.2")
+        self.r_max = list(self.cases_removed.keys())[-1]
+        print("slow 3.3")
+        self.day_min = self.day_list[0]
+        print("slow 3.4")
+        self.day_max = self.day_list[-1]
+        self.pop_min = min([min(list(self.cases_removed.items())[0][1]),
+                       min(list(self.cases_removed.items())[-1][1]),
+                       min(list(self.cases_unemployed.items())[0][1]),
+                       min(list(self.cases_unemployed.items())[-1][1])
+                       ])
+        self.pop_max = max([max(list(self.cases_removed.items())[0][1]),
+                       max(list(self.cases_removed.items())[-1][1]),
+                       max(list(self.cases_unemployed.items())[0][1]),
+                       max(list(self.cases_unemployed.items())[-1][1])
+                       ])
+        print("Derived data complete.")
+
 
     def get_results(self):
         return self.results
@@ -23,13 +70,13 @@ class JuliaLoader:
     def run_julia(self):
         print("Loading Julia....")
         from julia import Main as j
-        US_EXCHANGES = "US_exchanges_2018c.csv"
-        AGE_FRACS = "LA_age_fracs.csv"
-        LA_EMPLOYMENT = "LA_employment_by_sector_02_2020.csv"
-        I = np.genfromtxt(US_EXCHANGES, delimiter=" ")
-        age_fracs = np.genfromtxt(AGE_FRACS, delimiter=" ")
+        # US_EXCHANGES = "US_exchanges_2018c.csv"
+        # AGE_FRACS = "LA_age_fracs.csv"
+        # LA_EMPLOYMENT = "LA_employment_by_sector_02_2020.csv"
+        I = np.genfromtxt(self.us_exchanges_filename, delimiter=" ")
+        age_fracs = np.genfromtxt(self.age_fracs_filename, delimiter=" ")
 
-        employed = pd.read_csv(LA_EMPLOYMENT,
+        employed = pd.read_csv(self.employment_filename,
                                dtype={"Sector": str, "Feb": np.int64})
 
         j.eval("using DataFrames")
@@ -41,10 +88,10 @@ class JuliaLoader:
         print("Julia run complete.")
 
         cases_2 = returned_result[1]
-        pickle.dump(cases_2, open("cases_2", "wb"))
+        pickle.dump(cases_2, open(self.employment_filename+"_cases_2.bin", "wb"))
 
         cases_1 = returned_result[0]
-        pickle.dump(cases_1, open("cases_1", "wb"))
+        pickle.dump(cases_1, open(self.employment_filename+"_cases_1.bin", "wb"))
         self.results.append(cases_1)
         self.results.append(cases_2)
 
