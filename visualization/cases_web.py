@@ -7,12 +7,7 @@ import plotly.graph_objects as go
 
 fig = None
 
-# R, day, level1, level 2
-# into a dataframe of form:
-#     1  2  3  4
-# 0.9  v  v  v  v
-# 0.91 v  v  v  v
-# i.e.: R on the Y axis and day on the x, with one value per cell
+
 jl = julia_loader.JuliaLoader(False)
 cases_removed, day_count = jl.generate_dict_from_julia(2)
 cases_unemployed, day_count = jl.generate_dict_from_julia(3)
