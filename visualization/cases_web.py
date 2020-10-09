@@ -7,10 +7,12 @@ import plotly.graph_objects as go
 
 fig = None
 
+
 jl = julia_loader.JuliaLoader("US_exchanges_2018c.csv",
                               "LA_age_fracs.csv",
                               "LA_employment_by_sector_02_2020.csv",
-                              True)
+                              False)
+
 
 
 layout = go.Layout({'title': 'Surfaces',
@@ -121,4 +123,4 @@ app.layout = html.Div(children=[
 ])
 
 if __name__ == '__main__':
-    app.run_server(debug=False)
+    app.run_server(debug=True)

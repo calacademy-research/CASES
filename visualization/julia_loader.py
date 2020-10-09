@@ -5,9 +5,9 @@ import pickle
 class JuliaLoader:
 
     def __init__(self,
-                 us_exchanges=None,
-                 age_fracs=None,
-                 employment=None,
+                 us_exchanges,
+                 age_fracs,
+                 employment,
                  run_julia=True,
                  load_all_data=True):
         self.us_exchanges_filename = us_exchanges
@@ -63,6 +63,32 @@ class JuliaLoader:
                        ])
         print("Derived data complete.")
 
+
+    def generate_derived_data(self):
+        # R, day, level1, level 2
+        # into a dataframe of form:
+        #     1  2  3  4
+        # 0.9  v  v  v  v
+        # 0.91 v  v  v  v
+        # i.e.: R on the Y axis and day on the x, with one value per cell
+        self.cases_removed, self.day_count = self.generate_dict_from_julia(2)
+        self.cases_unemployed, self.day_count = self.generate_dict_from_julia(3)
+        self.day_list = list(range(1, self.day_count + 1))
+        self.surface_one_frame, self.surface_two_frame = self.get_surfaces()
+        self.r_min = list(self.cases_removed.keys())[0]
+        self.r_max = list(self.cases_removed.keys())[-1]
+        self.day_min = self.day_list[0]
+        self.day_max = self.day_list[-1]
+        self.pop_min = min([min(list(self.cases_removed.items())[0][1]),
+                       min(list(self.cases_removed.items())[-1][1]),
+                       min(list(self.cases_unemployed.items())[0][1]),
+                       min(list(self.cases_unemployed.items())[-1][1])
+                       ])
+        self.pop_max = max([max(list(self.cases_removed.items())[0][1]),
+                       max(list(self.cases_removed.items())[-1][1]),
+                       max(list(self.cases_unemployed.items())[0][1]),
+                       max(list(self.cases_unemployed.items())[-1][1])
+                       ])
 
     def get_results(self):
         return self.results
