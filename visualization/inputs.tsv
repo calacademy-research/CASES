@@ -1,14 +1,14 @@
 # Employment file path, age_fracs_path
 ../employment_by_sector_Feb2020	../age_fracs
 # SES ID, display name, employment filename, age_fracs filename
-0,Anaheim, SantaAna, Irvine	Anaheim_SantaAna_Irvine_employment_by_sector_Feb2020.csv	AnaheimSantaAnaIrvine_age_fracs.csv
-1,Fresno	Fresno_employment_by_sector_Feb2020.csv	Fresno_age_fracs.csv
-2,LA	LA_employment_by_sector_Feb2020.csv	LA_age_fracs.csv
-3,NYC	NYC_employment_by_sector_Feb2020.csv	NYC_age_fracs.csv
-4,Sf Bay Area	Oak_Hayward_Berk_employment_by_sector_Feb2020.csv	OaklandHaywardBerkeley_age_fracs.csv
-5,Oxnard, ThousandOaks, Ventura	Oxnard_ThousandOaks_Ventura_employment_by_sector_Feb2020.csv	OxnardThousandOaksVentura_age_fracs.csv
-6,Riverside, San Bernardino, Ontario	Riverside_SanBern_Ontario_employment_by_sector_Feb2020.csv	RiversideSanBernardinoOntario_age_fracs.csv
-7,San Diego and Carlsbad	SD_Carlsbad_employment_by_sector_Feb2020.csv	SanDiegoCarlsbad_age_fracs.csv
-8,San Francisco, South SF, Redwood city	SF_RedwoodCity_SSF_employment_by_sector_Feb2020.csv	SanFranciscoRedwoodCitySouthSF_age_fracs.csv
-9,San Jose, Sunnyvale, Santa Clara	SanJose_Sunnyvale_SantaClara_employment_by_sector_Feb2020.csv	SanJoseSunnyvaleSantaClara_age_fracs.csv
-10,Stockton and Lodi	Stockton_Lodi_employment_by_sector_Feb2020.csv	Stockton_age_fracs.csv
+0	Anaheim, SantaAna, Irvine	Anaheim_SantaAna_Irvine_employment_by_sector_Feb2020.csv	AnaheimSantaAnaIrvine_age_fracs.csv
+1	Fresno	Fresno_employment_by_sector_Feb2020.csv	Fresno_age_fracs.csv
+2	LA	LA_employment_by_sector_Feb2020.csv	LA_age_fracs.csv
+3	NYC	NYC_employment_by_sector_Feb2020.csv	NYC_age_fracs.csv
+4	Sf Bay Area	Oak_Hayward_Berk_employment_by_sector_Feb2020.csv	OaklandHaywardBerkeley_age_fracs.csv
+5	Oxnard, ThousandOaks, Ventura	Oxnard_ThousandOaks_Ventura_employment_by_sector_Feb2020.csv	OxnardThousandOaksVentura_age_fracs.csv
+6	Riverside, San Bernardino, Ontario	Riverside_SanBern_Ontario_employment_by_sector_Feb2020.csv	RiversideSanBernardinoOntario_age_fracs.csv
+7	San Diego and Carlsbad	SD_Carlsbad_employment_by_sector_Feb2020.csv	SanDiegoCarlsbad_age_fracs.csv
+8	San Francisco, South SF, Redwood city	SF_RedwoodCity_SSF_employment_by_sector_Feb2020.csv	SanFranciscoRedwoodCitySouthSF_age_fracs.csv
+9	San Jose, Sunnyvale, Santa Clara	SanJose_Sunnyvale_SantaClara_employment_by_sector_Feb2020.csv	SanJoseSunnyvaleSantaClara_age_fracs.csv
+10	Stockton and Lodi	Stockton_Lodi_employment_by_sector_Feb2020.csv	Stockton_age_fracs.csv
