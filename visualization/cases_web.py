@@ -10,25 +10,8 @@ import sys
 from os import path
 import pickle
 
-
-fig = None
-
-tsv_file = open("inputs.tsv")
-read_tsv = csv.reader(tsv_file, delimiter="\t")
-
-data_files={}
-employment_directory = None
-age_fracs_directory = None
-for row in read_tsv:
-    if row[0].startswith("#"):
-        continue
-    if employment_directory is None:
-        employment_directory = row[0]
-        age_fracs_directory = row[1]
-    else:
-        data_files[row[0]]=[row[1],row[2],row[3]]
-
-derived_data_dict = {}
+cur_r = 5.0
+cur_ses_id = 2
 
 def fetch_derived_data(employment_filename):
     binary_dump_filename = JuliaLoader.get_filename_only(employment_filename) + "_derived.bin"
@@ -48,12 +31,49 @@ def generate_derived_data(jl,employment_filename):
     outfile.close()
     return derived_data
 
+# input Format, tsv (represented here with comma)
+# index (int id), human friendly name, employment file path, age_fracs_file_path
+# output: dict by ID=[human friendly name, employment file path, age_fracs_file_path]
+def read_input_metadata(filename):
+    tsv_file = open(filename)
+    read_tsv = csv.reader(tsv_file, delimiter="\t")
 
+    data_files={}
+    employment_directory = None
+    age_fracs_directory = None
+    for row in read_tsv:
+        if row[0].startswith("#"):
+            continue
+        if employment_directory is None:
+            employment_directory = row[0]
+            age_fracs_directory = row[1]
+        else:
+            employment_filename = employment_directory + "/" + row[2]
+            age_fracs_filename = age_fracs_directory + "/" + row[3]
+            data_files[int(row[0])] = [row[1],employment_filename,age_fracs_filename]
+    return data_files
+
+def generate_pulldown_data(metadata_dict):
+    # Format:
+    # [
+    #     {'label': 'New York City', 'value': 'NYC'},
+    #     {'label': 'Montreal', 'value': 'MTL'},
+    #     {'label': 'San Francisco', 'value': 'SF'}
+    # ]
+    retval = []
+    for id,entry in metadata_dict.items():
+        entry_dict = {'label':entry[0],'value':id}
+        retval.append(entry_dict)
+    return retval
+
+data_files = read_input_metadata("inputs.tsv")
+derived_data_dict = {}
+fig = None
 for id in data_files.keys():
-    print("Common name: " +  data_files[id][0] + " ID: " + id)
+    print(f"Common name: { data_files[id][0]} ID: {id}")
     try:
-        age_fracs_filename =  age_fracs_directory +"/" + data_files[id][2]
-        employment_filename = employment_directory +"/" + data_files[id][1]
+        age_fracs_filename = data_files[id][2]
+        employment_filename = data_files[id][1]
 
         derived = fetch_derived_data(employment_filename)
         if derived is not False:
@@ -76,18 +96,19 @@ for id in data_files.keys():
     except ValueError as e:
         print(f"Cannot load SES: {e}")
 
+def gen_layout():
+    title = data_files[cur_ses_id][0]
+    layout = go.Layout({'title': title,
+                        'scene': dict(
+                            yaxis_title='R',
+                            zaxis_title='No. Employed',
+                            xaxis_title='Days'),
 
-layout = go.Layout({'title': 'Surfaces',
-                    'scene': dict(
-                        yaxis_title='R',
-                        zaxis_title='No. Employed',
-                        xaxis_title='Days'),
-
-                    # autosize=True,
-                    'uirevision': 'true',
-                    'legend_title': "Legend Title",
-                    'width': 900,
-                    'height': 900})
+                        # autosize=True,
+                        'uirevision': 'true',
+                        'legend_title': "Legend Title",
+                        'width': 900,
+                        'height': 900})
 
 
 
@@ -100,17 +121,25 @@ def create_app():
 
 app = create_app()
 
+
 @app.callback(
     dash.dependencies.Output("cases-graph", "figure"),
-    # dash.dependencies.Output('slider-output-container', 'children'),
-    [dash.dependencies.Input('my-slider', 'value')])
-def update_output(value):
-    data = gen_fig_data(value)
+    [dash.dependencies.Input('ses-pulldown', 'value'),
+     dash.dependencies.Input('my-slider', 'value')])
+def update_output(new_ses_id,r_value):
+    global cur_ses_id
+    ctx = dash.callback_context
+    if isinstance(new_ses_id, int):
+        cur_ses_id = new_ses_id
+    # for key,value in data_files.items():
+    #     if value[0] == ses_string:
+    #         cur_ses_id = key
+
+    data = gen_fig_data(r_value,derived_data_dict[cur_ses_id])
     fig = go.Figure(data=data,
-                    layout=layout)
+                    layout=gen_layout())
 
     return fig
-
 
 def create_lines_at_r(r_val, cases_dict, color):
     z = [r_val] * len(derived.day_list)  # constant for this R
@@ -128,21 +157,21 @@ def create_lines_at_r(r_val, cases_dict, color):
     return data
 
 
-def gen_fig_data(r_value):
+def gen_fig_data(r_value,ses_dict):
     # x = days
     # y = R
     # z = pop value
     return [
-        go.Surface(z=derived.unemployed_surface_df.values,
-                   y=derived.unemployed_surface_df.index,
-                   x=derived.unemployed_surface_df.columns,
+        go.Surface(z=ses_dict.unemployed_surface_df.values,
+                   y=ses_dict.unemployed_surface_df.index,
+                   x=ses_dict.unemployed_surface_df.columns,
                    hoverinfo='none',
                    opacity=0.6,
                    colorscale='Blues'),
 
-        go.Surface(z=derived.removed_surface_df.values,
-                   y=derived.removed_surface_df.index,
-                   x=derived.removed_surface_df.columns,
+        go.Surface(z=ses_dict.removed_surface_df.values,
+                   y=ses_dict.removed_surface_df.index,
+                   x=ses_dict.removed_surface_df.columns,
                    hoverinfo='none',
                    opacity=0.6,
                    colorscale='Greens'),
@@ -152,22 +181,20 @@ def gen_fig_data(r_value):
         #            opacity=0.5
         #            ),
 
-        create_lines_at_r(r_value, derived.cases_removed, 'black'),
-        create_lines_at_r(r_value, derived.cases_unemployed, 'green')
+        create_lines_at_r(r_value, ses_dict.cases_removed, 'black'),
+        create_lines_at_r(r_value, ses_dict.cases_unemployed, 'green')
     ]
 
 
-data = gen_fig_data(5)
-fig = go.Figure(data=data,layout=layout)
+data = gen_fig_data(cur_r,derived_data_dict[cur_ses_id])
+fig = go.Figure(data=data,layout=gen_layout())
 
 
 
 app.layout = html.Div(children=[
     html.H1(children='CASES'),
 
-    html.Div(children='''
-    CASES
-'''),
+    html.Div(children='CASES'),
 
     dcc.Graph(
         id='cases-graph',
@@ -180,7 +207,13 @@ app.layout = html.Div(children=[
         step=0.01,
         value=derived.r_max
     ),
-    html.Div(id='slider-output-container')
+    html.Div(id='slider-output-container'),
+    dcc.Dropdown(
+        id='ses-pulldown',
+        options=generate_pulldown_data(data_files),
+        value=data_files[cur_ses_id][0]
+    ),
+    html.Div(id='dd-pulldown-container')
 
 ])
 
