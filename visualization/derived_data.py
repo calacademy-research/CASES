@@ -62,17 +62,12 @@ class DerivedData:
         # 0.91 v  v  v  v
         # i.e.: R on the Y axis and day on the x, with one value per cell
         print("Generating derived data...")
-        print("slow 1")
         self.cases_removed, self.day_count = self.generate_dict_from_julia(2)
         self.cases_unemployed, self.day_count = self.generate_dict_from_julia(3)
         self.day_list = list(range(1, self.day_count + 1))
-        print("slow 3")
         self.r_min = list(self.cases_removed.keys())[0]
-        print("slow 3.2")
         self.r_max = list(self.cases_removed.keys())[-1]
-        print("slow 3.3")
         self.day_min = self.day_list[0]
-        print("slow 3.4")
         self.day_max = self.day_list[-1]
         self.pop_min = min([min(list(self.cases_removed.items())[0][1]),
                             min(list(self.cases_removed.items())[-1][1]),
