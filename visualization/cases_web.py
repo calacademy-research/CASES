@@ -1,11 +1,15 @@
 #!/usr/bin/env python3
-import julia_loader
 import dash
 import csv
 import dash_core_components as dcc
 import dash_html_components as html
 import plotly.graph_objects as go
+from julia_loader import JuliaLoader
+from derived_data import DerivedData
 import sys
+from os import path
+import pickle
+
 
 fig = None
 
@@ -22,20 +26,55 @@ for row in read_tsv:
         employment_directory = row[0]
         age_fracs_directory = row[1]
     else:
-        data_files[row[0]]=[row[1],row[2]]
+        data_files[row[0]]=[row[1],row[2],row[3]]
 
-for name in data_files.keys():
-    print("Common name: " + name)
-    jl = julia_loader.JuliaLoader("US_exchanges_2018c.csv",
-                                  age_fracs_directory +"/" + data_files[name][1],
-                                  employment_directory +"/" + data_files[name][0],
-                                  True)
+derived_data_dict = {}
 
-sys.exit(1)
-jl = julia_loader.JuliaLoader("US_exchanges_2018c.csv",
-                              "LA_age_fracs.csv",
-                              "LA_employment_by_sector_02_2020.csv",
-                              False)
+def fetch_derived_data(employment_filename):
+    binary_dump_filename = JuliaLoader.get_filename_only(employment_filename) + "_derived.bin"
+    if not path.exists(binary_dump_filename):
+        return False
+    else:
+        return pickle.load(open(binary_dump_filename, "rb"))
+
+
+def generate_derived_data(jl,employment_filename):
+    binary_dump_filename = JuliaLoader.get_filename_only(employment_filename) + "_derived.bin"
+
+    print("Generating derived data...")
+    derived_data = DerivedData (jl.cases_2,employment_filename)
+    outfile = open(binary_dump_filename,'wb')
+    pickle.dump(derived_data, outfile)
+    outfile.close()
+    return derived_data
+
+
+for id in data_files.keys():
+    print("Common name: " +  data_files[id][0] + " ID: " + id)
+    try:
+        age_fracs_filename =  age_fracs_directory +"/" + data_files[id][2]
+        employment_filename = employment_directory +"/" + data_files[id][1]
+
+        derived = fetch_derived_data(employment_filename)
+        if derived is not False:
+            print(f"Fetched {data_files[id][0] } from disk.")
+            derived_data_dict[id] = derived
+        else:
+            try:
+                print("Attempting binary load for julia calculation...")
+                jl = JuliaLoader("US_exchanges_2018c.csv",
+                                              age_fracs_filename,
+                                              employment_filename,
+                                              False)
+            except FileNotFoundError:
+                jl = JuliaLoader("US_exchanges_2018c.csv",
+                                 age_fracs_filename,
+                                 employment_filename,
+                                 True)
+            derived_data_dict[id] = generate_derived_data(jl,employment_filename)
+            derived = derived_data_dict[id]
+    except ValueError as e:
+        print(f"Cannot load SES: {e}")
 
 
 layout = go.Layout({'title': 'Surfaces',
@@ -74,10 +113,10 @@ def update_output(value):
 
 
 def create_lines_at_r(r_val, cases_dict, color):
-    z = [r_val] * len(jl.day_list)  # constant for this R
+    z = [r_val] * len(derived.day_list)  # constant for this R
     data = go.Scatter3d(
         mode='lines',
-        x=jl.day_list,
+        x=derived.day_list,
         y=z,
         z=list(cases_dict[r_val]),
 
@@ -94,16 +133,16 @@ def gen_fig_data(r_value):
     # y = R
     # z = pop value
     return [
-        go.Surface(z=jl.surface_one_frame.values,
-                   y=jl.surface_one_frame.index,
-                   x=jl.surface_one_frame.columns,
+        go.Surface(z=derived.unemployed_surface_df.values,
+                   y=derived.unemployed_surface_df.index,
+                   x=derived.unemployed_surface_df.columns,
                    hoverinfo='none',
                    opacity=0.6,
                    colorscale='Blues'),
 
-        go.Surface(z=jl.surface_two_frame.values,
-                   y=jl.surface_two_frame.index,
-                   x=jl.surface_two_frame.columns,
+        go.Surface(z=derived.removed_surface_df.values,
+                   y=derived.removed_surface_df.index,
+                   x=derived.removed_surface_df.columns,
                    hoverinfo='none',
                    opacity=0.6,
                    colorscale='Greens'),
@@ -113,8 +152,8 @@ def gen_fig_data(r_value):
         #            opacity=0.5
         #            ),
 
-        create_lines_at_r(r_value, jl.cases_removed, 'black'),
-        create_lines_at_r(r_value, jl.cases_unemployed, 'green')
+        create_lines_at_r(r_value, derived.cases_removed, 'black'),
+        create_lines_at_r(r_value, derived.cases_unemployed, 'green')
     ]
 
 
@@ -136,10 +175,10 @@ app.layout = html.Div(children=[
     ),
     dcc.Slider(
         id='my-slider',
-        min=jl.r_min,
-        max=jl.r_max,
+        min=derived.r_min,
+        max=derived.r_max,
         step=0.01,
-        value=jl.r_max
+        value=derived.r_max
     ),
     html.Div(id='slider-output-container')
 

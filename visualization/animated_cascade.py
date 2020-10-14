@@ -1,12 +1,12 @@
 import plotly.graph_objects as go
-import julia_loader
+import CASES_loader
 import numpy as np
 import pandas as pd
 
 # url = "http://raw.githubusercontent.com/plotly/datasets/master/gapminderDataFiveYear.csv"
 # dataset = pd.read_csv('gapminderDataFiveYear.csv')
 
-jl = julia_loader.JuliaLoader(False, True)
+jl = CASES_loader.JuliaLoader(False, True)
 
 cases_dict, day_count = jl.generate_dict_from_julia(2)
 r_values = list(cases_dict.keys())

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-import julia_loader
+import CASES_loader
 import dash
 import dash_core_components as dcc
 import dash_html_components as html
@@ -18,7 +18,7 @@ def create_app():
 app = create_app()
 
 
-jl = julia_loader.JuliaLoader(False,True)
+jl = CASES_loader.JuliaLoader(False, True)
 
 dict, day_count = jl.generate_dict_from_julia(3)
 day_list = list(range(1, day_count + 1))
