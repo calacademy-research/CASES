@@ -69,6 +69,7 @@ def generate_pulldown_data(metadata_dict):
 data_files = read_input_metadata("inputs.tsv")
 derived_data_dict = {}
 fig = None
+failed_loads=[]
 for id in data_files.keys():
     print(f"Common name: { data_files[id][0]} ID: {id}")
     try:
@@ -95,6 +96,11 @@ for id in data_files.keys():
             derived = derived_data_dict[id]
     except ValueError as e:
         print(f"Cannot load SES: {e}")
+        failed_loads.append(id)
+
+for id in failed_loads:
+    del data_files[id]
+
 
 def gen_layout():
     title = data_files[cur_ses_id][0]
@@ -109,6 +115,7 @@ def gen_layout():
                         'legend_title': "Legend Title",
                         'width': 900,
                         'height': 900})
+    return layout
 
 
 
