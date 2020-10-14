@@ -104,7 +104,9 @@ for id in failed_loads:
 
 def gen_layout():
     title = data_files[cur_ses_id][0]
-    layout = go.Layout({'title': title,
+    # layout = go.Layout({'title': f"{title}: R={cur_r}",
+    layout = go.Layout({'title': f"{title}",
+
                         'scene': dict(
                             yaxis_title='R',
                             zaxis_title='No. Employed',
@@ -138,6 +140,7 @@ def update_output(new_ses_id,r_value):
     ctx = dash.callback_context
     if isinstance(new_ses_id, int):
         cur_ses_id = new_ses_id
+    cur_r=r_value
     # for key,value in data_files.items():
     #     if value[0] == ses_string:
     #         cur_ses_id = key
