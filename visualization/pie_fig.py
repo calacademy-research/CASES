@@ -18,14 +18,14 @@ class PieFig(FigUtilsMixin):
     def generate_initial_figure(self,cur_r,cur_ses_id):
         self.cur_r = cur_r
         self.cur_ses_id = cur_ses_id
-        return go.Figure(data=self.gen_pie_fig_data(self.cur_r, self.derived_data_dict[self.cur_ses_id]),
+        return go.Figure(data=self.gen_pie_fig_data(),
                          layout=self.gen_pie_fig_layout())
 
     # callback
     def update_pie_fig(self, new_ses_id, r_slider, r_input):
         self.update_ses_and_r(new_ses_id, r_slider, r_input)
 
-        pie_fig = go.Figure(data=self.gen_pie_fig_data(self.cur_r, self.derived_data_dict[self.cur_ses_id]))
+        pie_fig = go.Figure(data=self.gen_pie_fig_data())
         pie_fig.update_layout(self.gen_pie_fig_layout())
         return pie_fig
 
@@ -78,10 +78,11 @@ class PieFig(FigUtilsMixin):
 
 
 
-    def gen_pie_fig_data(self,r_value, ses_dict):
+    def gen_pie_fig_data(self):
         # x = days
         # y = R
         # z = pop value
+        ses_dict = self.derived_data_dict[self.cur_ses_id]
         return [
             go.Surface(z=ses_dict.unemployed_surface_df.values,
                        y=ses_dict.unemployed_surface_df.index,
@@ -102,6 +103,6 @@ class PieFig(FigUtilsMixin):
             #            opacity=0.5
             #            ),
 
-            self.create_lines_at_r(r_value, ses_dict.cases_removed, 'black', "Removed from workpool"),
-            self.create_lines_at_r(r_value, ses_dict.cases_unemployed, 'green', "Unemployed")
+            self.create_lines_at_r(self.cur_r, ses_dict.cases_removed, 'black', "Removed from workpool"),
+            self.create_lines_at_r(self.cur_r, ses_dict.cases_unemployed, 'green', "Unemployed")
         ]
