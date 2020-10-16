@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
 import dash
 import data_loader
+from pie_fig import PieFig
 import dash_core_components as dcc
 import dash_html_components as html
 import plotly.graph_objects as go
 import dash_bootstrap_components as dbc
+
 
 pie_fig = None
 cascades_fig = None
@@ -14,6 +16,19 @@ cur_ses_id = 2
 data_files = data_loader.read_input_metadata("inputs.tsv")
 derived_data_dict = data_loader.read_data(data_files)
 
+
+def update_ses_and_r(new_ses_id, r_slider, r_input):
+    global cur_r
+    global cur_ses_id
+    ctx = dash.callback_context
+    triggered_item = ctx.triggered[0]['prop_id']
+    # 'r-slider.value' 'r-input.value'
+    if triggered_item == 'r-input.value':
+        cur_r = float(r_input)
+    if triggered_item == 'r-slider.value':
+        cur_r = float(r_slider)
+    if isinstance(new_ses_id, int):
+        cur_ses_id = new_ses_id
 
 def generate_pulldown_data(metadata_dict):
     # Format:
@@ -28,37 +43,6 @@ def generate_pulldown_data(metadata_dict):
         retval.append(entry_dict)
     return retval
 
-
-def gen_pie_fig_layout_data():
-    global cur_r
-    title = data_files[cur_ses_id][0]
-    # layout = go.Layout({'title': f"{title}: R={cur_r}",
-
-    return (
-        {'title': f"{title}",
-
-         'scene': dict(
-             yaxis_title='R',
-             zaxis_title='No. Employed',
-             xaxis_title='Days'),
-
-         # autosize=True,
-         'uirevision': 'true',
-         # 'legend_title': f"Legend Title{cur_r}",
-         'legend': dict(
-             yanchor="top",
-             y=0.99,
-             xanchor="left",
-             x=0.01
-         ),
-         'width': 900,
-         'height': 900}
-    )
-
-
-def gen_pie_fig_layout():
-    layout = go.Layout(gen_pie_fig_layout_data())
-    return layout
 
 
 def gen_cascades_fig_layout():
@@ -95,19 +79,7 @@ def create_app():
 
 app = create_app()
 
-
-def update_ses_and_r(new_ses_id, r_slider, r_input):
-    global cur_r
-    global cur_ses_id
-    ctx = dash.callback_context
-    triggered_item = ctx.triggered[0]['prop_id']
-    # 'r-slider.value' 'r-input.value'
-    if triggered_item == 'r-input.value':
-        cur_r = float(r_input)
-    if triggered_item == 'r-slider.value':
-        cur_r = float(r_slider)
-    if isinstance(new_ses_id, int):
-        cur_ses_id = new_ses_id
+pie_fig_instance = PieFig(app,derived_data_dict,data_files,cur_r,cur_ses_id)
 
 
 #  Causes a circular dependancy. Works fine. Suppressing errors (turning debug off)
@@ -129,19 +101,7 @@ def update_sider_from_input(new_r):
     return new_r
 
 
-@app.callback(
-    dash.dependencies.Output("pie-graph", "figure"),
-    [dash.dependencies.Input('ses-pulldown', 'value'),
-     dash.dependencies.Input('r-slider', 'value'),
-     dash.dependencies.Input('r-input', 'value')])
-def update_pie_fig(new_ses_id, r_slider, r_input):
-    global cur_ses_id
-    global cur_r
-    update_ses_and_r(new_ses_id, r_slider, r_input)
 
-    pie_fig = go.Figure(data=gen_pie_fig_data(cur_r, derived_data_dict[cur_ses_id]))
-    pie_fig.update_layout(gen_pie_fig_layout())
-    return pie_fig
 
 
 @app.callback(
@@ -160,50 +120,10 @@ def update_cascades_fig(new_ses_id, r_slider, r_input):
     return cascades_fig
 
 
-def create_lines_at_r(r_val, cases_dict, color, name):
-    z = [r_val] * len(derived_data_dict[cur_ses_id].day_list)  # constant for this R
-    data = go.Scatter3d(
-        mode='lines',
-        name=name,
-        x=derived_data_dict[cur_ses_id].day_list,
-        y=z,
-        z=list(cases_dict[r_val]),
-
-        line=dict(
-            color=color,
-            width=7
-        )
-    )
-    return data
 
 
-def gen_pie_fig_data(r_value, ses_dict):
-    # x = days
-    # y = R
-    # z = pop value
-    return [
-        go.Surface(z=ses_dict.unemployed_surface_df.values,
-                   y=ses_dict.unemployed_surface_df.index,
-                   x=ses_dict.unemployed_surface_df.columns,
-                   hoverinfo='none',
-                   opacity=0.6,
-                   colorscale='Reds'),
 
-        go.Surface(z=ses_dict.removed_surface_df.values,
-                   y=ses_dict.removed_surface_df.index,
-                   x=ses_dict.removed_surface_df.columns,
-                   hoverinfo='none',
-                   opacity=0.6,
-                   colorscale='Greens'),
-        # go.Surface(x=[day_min, day_min, day_max, day_max],
-        #            y=[r_value, r_value, r_value, r_value],
-        #            z=[pop_max, pop_max, pop_min, pop_min],
-        #            opacity=0.5
-        #            ),
 
-        create_lines_at_r(r_value, ses_dict.cases_removed, 'black', "Removed from workpool"),
-        create_lines_at_r(r_value, ses_dict.cases_unemployed, 'green', "Unemployed")
-    ]
 
 
 def gen_cascades_fig_data(r_value, ses_dict):
@@ -235,8 +155,8 @@ def gen_cascades_fig_data(r_value, ses_dict):
     return data
 
 
-pie_fig = go.Figure(data=gen_pie_fig_data(cur_r, derived_data_dict[cur_ses_id]),
-                    layout=gen_pie_fig_layout())
+pie_fig = go.Figure(data=pie_fig_instance.gen_pie_fig_data(cur_r, derived_data_dict[cur_ses_id]),
+                    layout=pie_fig_instance.gen_pie_fig_layout())
 cascades_fig = go.Figure(data=gen_cascades_fig_data(cur_r, derived_data_dict[cur_ses_id]),
                          layout=gen_cascades_fig_layout())
 
