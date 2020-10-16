@@ -69,7 +69,11 @@ def create_app():
 
 
 app = create_app()
-
+#  Causes a circular dependancy. Works fine. Suppressing errors (turning debug off)
+# makes this work.
+# solution here: https://community.plotly.com/t/synchronize-components-bidirectionally/14158/11
+# does not work; it sees the deeper cycle and ignores. (note; the code in this example
+# does not run - requires "groups" from dash_extensions using new syntax.
 @app.callback(
     dash.dependencies.Output('r-input', 'value'),
     [dash.dependencies.Input('r-slider', 'value')])
