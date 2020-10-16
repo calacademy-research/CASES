@@ -71,28 +71,36 @@ def create_app():
 app = create_app()
 
 @app.callback(
-    dash.dependencies.Output('r-textarea', "value"),
-    [dash.dependencies.Input('r-textarea', 'value')])
-def update_textarea(r_value_text):
-    if not r_value_text.isnumeric:
-        return 'You have entered: \n{}'.format(r_value_text)
+    dash.dependencies.Output('r-input', 'value'),
+    [dash.dependencies.Input('r-slider', 'value')])
+def update_input_from_slider(new_r):
+    return new_r
 
+@app.callback(
+    dash.dependencies.Output('r-slider', 'value'),
+    [dash.dependencies.Input('r-input', 'value')])
+def update_sider_from_input(new_r):
+    return new_r
 
 @app.callback(
     dash.dependencies.Output("cases-graph", "figure"),
     [dash.dependencies.Input('ses-pulldown', 'value'),
      dash.dependencies.Input('r-slider', 'value'),
-     dash.dependencies.Input('r-textarea', 'value')])
-def update_output(new_ses_id, r_value_slider,r_value_text):
+     dash.dependencies.Input('r-input', 'value')])
+def update_output(new_ses_id, r_slider,r_input):
     global cur_ses_id
     global cur_r
     ctx = dash.callback_context
     # Joe use ctx to figure out what got hit. update r val accordingly.
 
-
+    triggered_item = ctx.triggered[0]['prop_id']
+    # 'r-slider.value' 'r-input.value'
+    if triggered_item == 'r-input.value':
+        cur_r = float(r_input)
+    if triggered_item == 'r-slider.value':
+        cur_r = float(r_slider)
     if isinstance(new_ses_id, int):
         cur_ses_id = new_ses_id
-    cur_r = r_value_slider
     # for key,value in data_files.items():
     #     if value[0] == ses_string:
     #         cur_ses_id = key
@@ -189,7 +197,8 @@ app.layout = html.Div(children=[
                           className="row",
                           style={"padding": "0rem 0rem"},
                           children=[
-                              html.Div(style={'width': "21rem"},children=[
+                              html.Div(style={'width': "20rem",},
+                                       children=[
                               dcc.Slider(
                                   id='r-slider',
                                   min=derived_data_dict[cur_ses_id].r_min,
@@ -197,10 +206,14 @@ app.layout = html.Div(children=[
                                   step=0.01,
                                   value=cur_r
                               )]),
-                              dcc.Textarea(
-                                  id='r-textarea',
-                                  value=str(cur_r),
-                                  style={'width': '3rem', 'height': "2rem","margin-left": "0rem"},
+                              dcc.Input(
+                                  id="r-input",
+                                  type="number",
+                                  min=derived_data_dict[cur_ses_id].r_min,
+                                  max=derived_data_dict[cur_ses_id].r_max,
+                                  step=0.01,
+                                  value=cur_r,
+                                  style={'width': '4rem', 'height': "2rem","margin-left": "0rem"},
                               ),
                           ])
              ],
