@@ -6,13 +6,13 @@ import dash_html_components as html
 import plotly.graph_objects as go
 import dash_bootstrap_components as dbc
 
-fig = None
+pie_fig = None
+cascades_fig = None
 cur_r = 5.0
 cur_ses_id = 2
 
 data_files = data_loader.read_input_metadata("inputs.tsv")
 derived_data_dict = data_loader.read_data(data_files)
-fig = None
 
 
 def generate_pulldown_data(metadata_dict):
@@ -29,7 +29,7 @@ def generate_pulldown_data(metadata_dict):
     return retval
 
 
-def gen_layout_data():
+def gen_pie_fig_layout_data():
     global cur_r
     title = data_files[cur_ses_id][0]
     # layout = go.Layout({'title': f"{title}: R={cur_r}",
@@ -56,9 +56,34 @@ def gen_layout_data():
     )
 
 
-def gen_layout():
-    layout = go.Layout(gen_layout_data())
+def gen_pie_fig_layout():
+    layout = go.Layout(gen_pie_fig_layout_data())
     return layout
+
+
+def gen_cascades_fig_layout():
+    global cur_r
+    title = data_files[cur_ses_id][0]
+
+    return go.Layout(
+        {'title': f"{title}",
+
+         'scene': dict(
+             yaxis_title='No. Employed',
+             xaxis_title='Days'),
+
+         # autosize=True,
+         'uirevision': 'true',
+         # 'legend_title': f"Legend Title{cur_r}",
+         'legend': dict(
+             yanchor="top",
+             y=0.99,
+             xanchor="left",
+             x=0.01
+         ),
+         'width': 900,
+         'height': 900}
+    )
 
 
 def create_app():
@@ -69,6 +94,22 @@ def create_app():
 
 
 app = create_app()
+
+
+def update_ses_and_r(new_ses_id, r_slider, r_input):
+    global cur_r
+    global cur_ses_id
+    ctx = dash.callback_context
+    triggered_item = ctx.triggered[0]['prop_id']
+    # 'r-slider.value' 'r-input.value'
+    if triggered_item == 'r-input.value':
+        cur_r = float(r_input)
+    if triggered_item == 'r-slider.value':
+        cur_r = float(r_slider)
+    if isinstance(new_ses_id, int):
+        cur_ses_id = new_ses_id
+
+
 #  Causes a circular dependancy. Works fine. Suppressing errors (turning debug off)
 # makes this work.
 # solution here: https://community.plotly.com/t/synchronize-components-bidirectionally/14158/11
@@ -80,40 +121,43 @@ app = create_app()
 def update_input_from_slider(new_r):
     return new_r
 
+
 @app.callback(
     dash.dependencies.Output('r-slider', 'value'),
     [dash.dependencies.Input('r-input', 'value')])
 def update_sider_from_input(new_r):
     return new_r
 
+
 @app.callback(
-    dash.dependencies.Output("cases-graph", "figure"),
+    dash.dependencies.Output("pie-graph", "figure"),
     [dash.dependencies.Input('ses-pulldown', 'value'),
      dash.dependencies.Input('r-slider', 'value'),
      dash.dependencies.Input('r-input', 'value')])
-def update_output(new_ses_id, r_slider,r_input):
+def update_pie_fig(new_ses_id, r_slider, r_input):
     global cur_ses_id
     global cur_r
-    ctx = dash.callback_context
-    # Joe use ctx to figure out what got hit. update r val accordingly.
+    update_ses_and_r(new_ses_id, r_slider, r_input)
 
-    triggered_item = ctx.triggered[0]['prop_id']
-    # 'r-slider.value' 'r-input.value'
-    if triggered_item == 'r-input.value':
-        cur_r = float(r_input)
-    if triggered_item == 'r-slider.value':
-        cur_r = float(r_slider)
-    if isinstance(new_ses_id, int):
-        cur_ses_id = new_ses_id
-    # for key,value in data_files.items():
-    #     if value[0] == ses_string:
-    #         cur_ses_id = key
+    pie_fig = go.Figure(data=gen_pie_fig_data(cur_r, derived_data_dict[cur_ses_id]))
+    pie_fig.update_layout(gen_pie_fig_layout())
+    return pie_fig
 
-    data = gen_fig_data(cur_r, derived_data_dict[cur_ses_id])
-    fig = go.Figure(data=data)
-    fig.update_layout(gen_layout_data())
 
-    return fig
+@app.callback(
+    dash.dependencies.Output("r-cascades-graph", "figure"),
+    [dash.dependencies.Input('ses-pulldown', 'value'),
+     dash.dependencies.Input('r-slider', 'value'),
+     dash.dependencies.Input('r-input', 'value')])
+def update_cascades_fig(new_ses_id, r_slider, r_input):
+    global cur_ses_id
+    global cur_r
+    update_ses_and_r(new_ses_id, r_slider, r_input)
+
+    cascades_fig = go.Figure(data=gen_cascades_fig_data(cur_r, derived_data_dict[cur_ses_id]))
+    cascades_fig.update_layout(gen_cascades_fig_layout())
+
+    return cascades_fig
 
 
 def create_lines_at_r(r_val, cases_dict, color, name):
@@ -133,7 +177,7 @@ def create_lines_at_r(r_val, cases_dict, color, name):
     return data
 
 
-def gen_fig_data(r_value, ses_dict):
+def gen_pie_fig_data(r_value, ses_dict):
     # x = days
     # y = R
     # z = pop value
@@ -162,8 +206,39 @@ def gen_fig_data(r_value, ses_dict):
     ]
 
 
-data = gen_fig_data(cur_r, derived_data_dict[cur_ses_id])
-fig = go.Figure(data=data, layout=gen_layout())
+def gen_cascades_fig_data(r_value, ses_dict):
+    global cur_r
+    data = [go.Scatter(
+            mode='lines',
+            name="removed",
+            x=derived_data_dict[cur_ses_id].day_list,
+            y=list(ses_dict.cases_removed[cur_r]),
+
+            line=dict(
+                color='black',
+                width=1
+            )
+        ),
+        go.Scatter(
+            mode='lines',
+            name="Unemployed",
+            x=derived_data_dict[cur_ses_id].day_list,
+            y=list(ses_dict.cases_unemployed[cur_r]),
+
+            line=dict(
+                color='black',
+                width=1
+            )
+        )
+    ]
+
+    return data
+
+
+pie_fig = go.Figure(data=gen_pie_fig_data(cur_r, derived_data_dict[cur_ses_id]),
+                    layout=gen_pie_fig_layout())
+cascades_fig = go.Figure(data=gen_cascades_fig_data(cur_r, derived_data_dict[cur_ses_id]),
+                         layout=gen_cascades_fig_layout())
 
 # the style arguments for the sidebar. We use position:fixed and a fixed width
 SIDEBAR_STYLE = {
@@ -201,15 +276,15 @@ app.layout = html.Div(children=[
                           className="row",
                           style={"padding": "0rem 0rem"},
                           children=[
-                              html.Div(style={'width': "20rem",},
+                              html.Div(style={'width': "20rem", },
                                        children=[
-                              dcc.Slider(
-                                  id='r-slider',
-                                  min=derived_data_dict[cur_ses_id].r_min,
-                                  max=derived_data_dict[cur_ses_id].r_max,
-                                  step=0.01,
-                                  value=cur_r
-                              )]),
+                                           dcc.Slider(
+                                               id='r-slider',
+                                               min=derived_data_dict[cur_ses_id].r_min,
+                                               max=derived_data_dict[cur_ses_id].r_max,
+                                               step=0.01,
+                                               value=cur_r
+                                           )]),
                               dcc.Input(
                                   id="r-input",
                                   type="number",
@@ -217,7 +292,7 @@ app.layout = html.Div(children=[
                                   max=derived_data_dict[cur_ses_id].r_max,
                                   step=0.01,
                                   value=cur_r,
-                                  style={'width': '4rem', 'height': "2rem","margin-left": "0rem"},
+                                  style={'width': '4rem', 'height': "2rem", "margin-left": "0rem"},
                               ),
                           ])
              ],
@@ -228,9 +303,13 @@ app.layout = html.Div(children=[
              style=CONTENT_STYLE,
              children=[
                  dcc.Graph(
-                     id='cases-graph',
-                     figure=fig
+                     id='pie-graph',
+                     figure=pie_fig
                  ),
+                 dcc.Graph(
+                     id='r-cascades-graph',
+                     figure=cascades_fig
+                 )
              ]),
 
 ])
