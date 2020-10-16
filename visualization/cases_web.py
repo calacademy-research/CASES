@@ -4,7 +4,7 @@ import data_loader
 import dash_core_components as dcc
 import dash_html_components as html
 import plotly.graph_objects as go
-
+import dash_bootstrap_components as dbc
 
 fig = None
 cur_r = 5.0
@@ -12,6 +12,8 @@ cur_ses_id = 2
 
 data_files = data_loader.read_input_metadata("inputs.tsv")
 derived_data_dict = data_loader.read_data(data_files)
+fig = None
+
 
 def generate_pulldown_data(metadata_dict):
     # Format:
@@ -21,17 +23,10 @@ def generate_pulldown_data(metadata_dict):
     #     {'label': 'San Francisco', 'value': 'SF'}
     # ]
     retval = []
-    for id,entry in metadata_dict.items():
-        entry_dict = {'label':entry[0],'value':id}
+    for id, entry in metadata_dict.items():
+        entry_dict = {'label': entry[0], 'value': id}
         retval.append(entry_dict)
     return retval
-
-
-
-
-fig = None
-
-
 
 
 def gen_layout_data():
@@ -40,61 +35,80 @@ def gen_layout_data():
     # layout = go.Layout({'title': f"{title}: R={cur_r}",
 
     return (
-    {'title': f"{title}",
+        {'title': f"{title}",
 
-     'scene': dict(
-         yaxis_title='R',
-         zaxis_title='No. Employed',
-         xaxis_title='Days'),
+         'scene': dict(
+             yaxis_title='R',
+             zaxis_title='No. Employed',
+             xaxis_title='Days'),
 
-     # autosize=True,
-     'uirevision': 'true',
-     'legend_title': f"Legend Title{cur_r}",
-     'width': 900,
-     'height': 900}
+         # autosize=True,
+         'uirevision': 'true',
+         # 'legend_title': f"Legend Title{cur_r}",
+         'legend': dict(
+             yanchor="top",
+             y=0.99,
+             xanchor="left",
+             x=0.01
+         ),
+         'width': 900,
+         'height': 900}
     )
 
-def gen_layout():
 
+def gen_layout():
     layout = go.Layout(gen_layout_data())
     return layout
 
 
-
 def create_app():
-    external_stylesheets = ['http://codepen.io/chriddyp/pen/bWLwgP.css']
+    external_stylesheets = [dbc.themes.BOOTSTRAP]
+    # external_stylesheets = ['http://codepen.io/chriddyp/pen/bWLwgP.css']
     app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
-
     return app
 
 
 app = create_app()
 
+@app.callback(
+    dash.dependencies.Output('r-textarea', "value"),
+    [dash.dependencies.Input('r-textarea', 'value')])
+def update_textarea(r_value_text):
+    if not r_value_text.isnumeric:
+        return 'You have entered: \n{}'.format(r_value_text)
+
 
 @app.callback(
     dash.dependencies.Output("cases-graph", "figure"),
     [dash.dependencies.Input('ses-pulldown', 'value'),
-     dash.dependencies.Input('my-slider', 'value')])
-def update_output(new_ses_id,r_value):
+     dash.dependencies.Input('r-slider', 'value'),
+     dash.dependencies.Input('r-textarea', 'value')])
+def update_output(new_ses_id, r_value_slider,r_value_text):
     global cur_ses_id
+    global cur_r
     ctx = dash.callback_context
+    # Joe use ctx to figure out what got hit. update r val accordingly.
+
+
     if isinstance(new_ses_id, int):
         cur_ses_id = new_ses_id
-    cur_r=r_value
+    cur_r = r_value_slider
     # for key,value in data_files.items():
     #     if value[0] == ses_string:
     #         cur_ses_id = key
 
-    data = gen_fig_data(r_value,derived_data_dict[cur_ses_id])
+    data = gen_fig_data(cur_r, derived_data_dict[cur_ses_id])
     fig = go.Figure(data=data)
     fig.update_layout(gen_layout_data())
 
     return fig
 
-def create_lines_at_r(r_val, cases_dict, color):
+
+def create_lines_at_r(r_val, cases_dict, color, name):
     z = [r_val] * len(derived_data_dict[cur_ses_id].day_list)  # constant for this R
     data = go.Scatter3d(
         mode='lines',
+        name=name,
         x=derived_data_dict[cur_ses_id].day_list,
         y=z,
         z=list(cases_dict[r_val]),
@@ -107,7 +121,7 @@ def create_lines_at_r(r_val, cases_dict, color):
     return data
 
 
-def gen_fig_data(r_value,ses_dict):
+def gen_fig_data(r_value, ses_dict):
     # x = days
     # y = R
     # z = pop value
@@ -131,38 +145,76 @@ def gen_fig_data(r_value,ses_dict):
         #            opacity=0.5
         #            ),
 
-        create_lines_at_r(r_value, ses_dict.cases_removed, 'black'),
-        create_lines_at_r(r_value, ses_dict.cases_unemployed, 'green')
+        create_lines_at_r(r_value, ses_dict.cases_removed, 'black', "Removed from workpool"),
+        create_lines_at_r(r_value, ses_dict.cases_unemployed, 'green', "Unemployed")
     ]
 
 
-data = gen_fig_data(cur_r,derived_data_dict[cur_ses_id])
-fig = go.Figure(data=data,layout=gen_layout())
+data = gen_fig_data(cur_r, derived_data_dict[cur_ses_id])
+fig = go.Figure(data=data, layout=gen_layout())
 
+# the style arguments for the sidebar. We use position:fixed and a fixed width
+SIDEBAR_STYLE = {
+    "position": "fixed",
+    "top": 0,
+    "left": 0,
+    "bottom": 0,
+    "width": "25rem",
+    "background-color": "#9c9c9c",
+    "padding": "2rem 1rem"
+}
 
-
+# the styles for the main content position it to the right of the sidebar and
+# add some padding.
+CONTENT_STYLE = {
+    "margin-left": "25rem",
+    "margin-right": "2rem",
+    "padding": "2rem 1rem",
+}
 app.layout = html.Div(children=[
 
     html.Div(children='CASES'),
+    html.Div(id='sidebar',
+             style=SIDEBAR_STYLE,
+             children=[
+                 html.P("Change SES"),
+                 dcc.Dropdown(
+                     id='ses-pulldown',
+                     options=generate_pulldown_data(data_files),
+                     value=data_files[cur_ses_id][0]
+                 ),
+                 html.Div(id='spacer1', style={'height': "3rem"}),
+                 html.P("R value"),
+                 html.Div(id='rpickers',
+                          className="row",
+                          style={"padding": "0rem 0rem"},
+                          children=[
+                              html.Div(style={'width': "21rem"},children=[
+                              dcc.Slider(
+                                  id='r-slider',
+                                  min=derived_data_dict[cur_ses_id].r_min,
+                                  max=derived_data_dict[cur_ses_id].r_max,
+                                  step=0.01,
+                                  value=cur_r
+                              )]),
+                              dcc.Textarea(
+                                  id='r-textarea',
+                                  value=str(cur_r),
+                                  style={'width': '3rem', 'height': "2rem","margin-left": "0rem"},
+                              ),
+                          ])
+             ],
 
-    dcc.Graph(
-        id='cases-graph',
-        figure=fig
-    ),
-    dcc.Slider(
-        id='my-slider',
-        min=derived_data_dict[cur_ses_id].r_min,
-        max=derived_data_dict[cur_ses_id].r_max,
-        step=0.01,
-        value=derived_data_dict[cur_ses_id].r_max
-    ),
-    html.Div(id='slider-output-container'),
-    dcc.Dropdown(
-        id='ses-pulldown',
-        options=generate_pulldown_data(data_files),
-        value=data_files[cur_ses_id][0]
-    ),
-    html.Div(id='dd-pulldown-container')
+             ),
+
+    html.Div(id="page-content",
+             style=CONTENT_STYLE,
+             children=[
+                 dcc.Graph(
+                     id='cases-graph',
+                     figure=fig
+                 ),
+             ]),
 
 ])
 
