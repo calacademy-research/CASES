@@ -15,6 +15,13 @@ class PieFig(FigUtilsMixin):
              dash.dependencies.Input('r-slider', 'value'),
              dash.dependencies.Input('r-input', 'value')])(self.update_pie_fig)
 
+    # callback
+    def update_pie_fig(self, new_ses_id, r_slider, r_input):
+        self.update_ses_and_r(new_ses_id, r_slider, r_input)
+
+        pie_fig = go.Figure(data=self.gen_pie_fig_data(self.cur_r, self.derived_data_dict[self.cur_ses_id]))
+        pie_fig.update_layout(self.gen_pie_fig_layout())
+        return pie_fig
 
     def gen_pie_fig_layout_data(self):
         title = self.data_files[self.cur_ses_id][0]
@@ -62,12 +69,6 @@ class PieFig(FigUtilsMixin):
         return layout
 
 
-    def update_pie_fig(self, new_ses_id, r_slider, r_input):
-        self.update_ses_and_r(new_ses_id, r_slider, r_input)
-
-        pie_fig = go.Figure(data=self.gen_pie_fig_data(self.cur_r, self.derived_data_dict[self.cur_ses_id]))
-        pie_fig.update_layout(self.gen_pie_fig_layout())
-        return pie_fig
 
     def gen_pie_fig_data(self,r_value, ses_dict):
         # x = days
