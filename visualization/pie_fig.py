@@ -1,19 +1,25 @@
 import dash
 import plotly.graph_objects as go
 from fig_utils import FigUtilsMixin
-
+# cur_r and cur_ses_id are set when we call an generate_initial_figure
+# and updated by callbacks.
 class PieFig(FigUtilsMixin):
-    def __init__(self,app,derived_data_dict,data_files,cur_r,cur_ses_id):
+    def __init__(self,app,id,derived_data_dict,data_files):
         self.derived_data_dict = derived_data_dict
         self.app = app
-        self.cur_r = cur_r
-        self.cur_ses_id = cur_ses_id
         self.data_files = data_files
         app.callback(
-            dash.dependencies.Output("pie-graph", "figure"),
+            dash.dependencies.Output(id, "figure"),
             [dash.dependencies.Input('ses-pulldown', 'value'),
              dash.dependencies.Input('r-slider', 'value'),
              dash.dependencies.Input('r-input', 'value')])(self.update_pie_fig)
+
+    # Initial call
+    def generate_initial_figure(self,cur_r,cur_ses_id):
+        self.cur_r = cur_r
+        self.cur_ses_id = cur_ses_id
+        return go.Figure(data=self.gen_pie_fig_data(self.cur_r, self.derived_data_dict[self.cur_ses_id]),
+                         layout=self.gen_pie_fig_layout())
 
     # callback
     def update_pie_fig(self, new_ses_id, r_slider, r_input):
@@ -22,6 +28,8 @@ class PieFig(FigUtilsMixin):
         pie_fig = go.Figure(data=self.gen_pie_fig_data(self.cur_r, self.derived_data_dict[self.cur_ses_id]))
         pie_fig.update_layout(self.gen_pie_fig_layout())
         return pie_fig
+
+
 
     def gen_pie_fig_layout_data(self):
         title = self.data_files[self.cur_ses_id][0]

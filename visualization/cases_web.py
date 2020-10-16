@@ -41,9 +41,16 @@ def create_app():
 
 app = create_app()
 
-pie_fig_instance = PieFig(app,derived_data_dict,data_files,cur_r,cur_ses_id)
-cascades_fig_instance = CascadesFig(app,derived_data_dict,data_files,cur_r,cur_ses_id)
-
+pie_fig_instance = PieFig(app,
+                          "pie-graph",
+                          derived_data_dict,
+                          data_files)
+cascades_fig_instance = CascadesFig(app,
+                                    "r-cascades-graph",
+                                    derived_data_dict,
+                                    data_files)
+pie_fig = pie_fig_instance.generate_initial_figure(cur_r,cur_ses_id)
+cascades_fig = cascades_fig_instance.generate_initial_figure(cur_r,cur_ses_id)
 
 #  Causes a circular dependancy. Works fine. Suppressing errors (turning debug off)
 # makes this work.
@@ -63,10 +70,7 @@ def update_input_from_slider(new_r):
 def update_sider_from_input(new_r):
     return new_r
 
-pie_fig = go.Figure(data=pie_fig_instance.gen_pie_fig_data(cur_r, derived_data_dict[cur_ses_id]),
-                    layout=pie_fig_instance.gen_pie_fig_layout())
-cascades_fig = go.Figure(data=cascades_fig_instance.gen_cascades_fig_data(cur_r, derived_data_dict[cur_ses_id]),
-                         layout=cascades_fig_instance.gen_cascades_fig_layout())
+
 
 # the style arguments for the sidebar. We use position:fixed and a fixed width
 SIDEBAR_STYLE = {

@@ -3,17 +3,22 @@ import plotly.graph_objects as go
 from fig_utils import FigUtilsMixin
 
 class CascadesFig(FigUtilsMixin):
-    def __init__(self,app,derived_data_dict,data_files,cur_r,cur_ses_id):
+    def __init__(self,app,id,derived_data_dict,data_files):
         self.derived_data_dict = derived_data_dict
         self.app = app
-        self.cur_r = cur_r
-        self.cur_ses_id = cur_ses_id
         self.data_files = data_files
         app.callback(
-            dash.dependencies.Output("r-cascades-graph", "figure"),
+            dash.dependencies.Output(id, "figure"),
             [dash.dependencies.Input('ses-pulldown', 'value'),
              dash.dependencies.Input('r-slider', 'value'),
              dash.dependencies.Input('r-input', 'value')])(self.update_cascades_fig)
+
+    #initial call
+    def generate_initial_figure(self,cur_r,cur_ses_id):
+        self.cur_r = cur_r
+        self.cur_ses_id = cur_ses_id
+        return go.Figure(data=self.gen_cascades_fig_data(self.cur_r, self.derived_data_dict[self.cur_ses_id]),
+                         layout=self.gen_cascades_fig_layout())
 
     # callback
     def update_cascades_fig(self,new_ses_id, r_slider, r_input):
