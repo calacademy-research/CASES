@@ -51,8 +51,9 @@ class CascadesFig(FigUtilsMixin):
                  xanchor="left",
                  x=0.01
              ),
-             'width': 900,
-             'height': 900}
+             'width': 400,
+             'height': 400
+             }
         )
 
     def gen_cascades_fig_data(self):

@@ -52,8 +52,9 @@ class PieFig(FigUtilsMixin):
                  xanchor="left",
                  x=0.01
              ),
-             'width': 900,
-             'height': 900}
+             'width': 800,
+             'height': 800
+             }
         )
 
     def create_lines_at_r(self,r_val,cases_dict,color, name):

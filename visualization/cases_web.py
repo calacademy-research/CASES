@@ -9,11 +9,13 @@ import dash_bootstrap_components as dbc
 from flask import make_response
 import csv
 import io
+
 cur_r = 5.0
 cur_ses_id = 2
 
 data_files = data_loader.read_input_metadata("inputs.tsv")
 derived_data_dict = data_loader.read_data(data_files)
+
 
 def generate_pulldown_data(metadata_dict):
     # Format:
@@ -27,6 +29,7 @@ def generate_pulldown_data(metadata_dict):
         entry_dict = {'label': entry[0], 'value': id}
         retval.append(entry_dict)
     return retval
+
 
 def create_app():
     external_stylesheets = [dbc.themes.BOOTSTRAP]
@@ -47,8 +50,9 @@ cascades_fig_instance = CascadesFig(app,
                                     "r-cascades-graph",
                                     derived_data_dict,
                                     data_files)
-pie_fig = pie_fig_instance.generate_initial_figure(cur_r,cur_ses_id)
-cascades_fig = cascades_fig_instance.generate_initial_figure(cur_r,cur_ses_id)
+pie_fig = pie_fig_instance.generate_initial_figure(cur_r, cur_ses_id)
+cascades_fig = cascades_fig_instance.generate_initial_figure(cur_r, cur_ses_id)
+
 
 #  Causes a circular dependancy. Works fine. Suppressing errors (turning debug off)
 # makes this work.
@@ -61,11 +65,13 @@ cascades_fig = cascades_fig_instance.generate_initial_figure(cur_r,cur_ses_id)
 def update_input_from_slider(new_r):
     return new_r
 
+
 @app.callback(
     dash.dependencies.Output('r-slider', 'value'),
     [dash.dependencies.Input('r-input', 'value')])
 def update_sider_from_input(new_r):
     return new_r
+
 
 @app.server.route('/download_csv')
 def download_csv():
@@ -73,13 +79,12 @@ def download_csv():
     cur_r = pie_fig_instance.cur_r
     cur_data_dict = derived_data_dict[pie_fig_instance.cur_ses_id]
     filename = f"{cur_ses_name}_{cur_r}.csv"
-    data=[["day","removed","unemployed"]]
-    for cur_day in range(0,cur_data_dict.day_count):
+    data = [["day", "removed", "unemployed"]]
+    for cur_day in range(0, cur_data_dict.day_count):
         removed = cur_data_dict.cases_removed[cur_r][cur_day]
         unemployed = cur_data_dict.cases_unemployed[cur_r][cur_day]
 
-        data.append( [cur_day+1,removed,unemployed])
-
+        data.append([cur_day + 1, removed, unemployed])
 
     si = io.StringIO()
     cw = csv.writer(si)
@@ -88,6 +93,7 @@ def download_csv():
     output.headers["Content-Disposition"] = f"attachment; filename={filename}"
     output.headers["Content-type"] = "text/csv"
     return output
+
 
 # the style arguments for the sidebar. We use position:fixed and a fixed width
 SIDEBAR_STYLE = {
@@ -146,7 +152,7 @@ app.layout = html.Div(children=[
                           ]),
                  html.Div([
                      # dcc.Link(html.Button('back'), href="/testurl")
-                     html.A(html.Button('Download csv at current R'),href='download_csv')
+                     html.A(html.Button('Download csv at current R'), href='download_csv')
 
                  ])
              ],
@@ -154,16 +160,33 @@ app.layout = html.Div(children=[
              ),
 
     html.Div(id="page-content",
+             className="row",
              style=CONTENT_STYLE,
              children=[
-                 dcc.Graph(
-                     id='pie-graph',
-                     figure=pie_fig
-                 ),
-                 dcc.Graph(
-                     id='r-cascades-graph',
-                     figure=cascades_fig
-                 )
+                 html.Div(style={},
+                          children=[
+                              dcc.Graph(
+                                  id='pie-graph',
+                                  figure=pie_fig,
+                              )]),
+                 html.Div(id="second-col",
+
+                          children=[
+                              html.Div(id="top_in_col",
+                                       style={},
+                                       children=[
+                                           dcc.Graph(
+                                               id='r-cascades-graph',
+                                               figure=cascades_fig,
+                                           )
+                                       ]),
+                              html.Div(id="bottom_in_col",
+                                       style={
+                                              },
+
+                                       )
+
+                          ])
              ]),
 
 ])
