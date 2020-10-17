@@ -6,7 +6,9 @@ from cascades_fig import CascadesFig
 import dash_core_components as dcc
 import dash_html_components as html
 import dash_bootstrap_components as dbc
-
+from flask import make_response
+import csv
+import io
 cur_r = 5.0
 cur_ses_id = 2
 
@@ -29,7 +31,9 @@ def generate_pulldown_data(metadata_dict):
 def create_app():
     external_stylesheets = [dbc.themes.BOOTSTRAP]
     # external_stylesheets = ['http://codepen.io/chriddyp/pen/bWLwgP.css']
-    app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
+    app = dash.Dash(__name__,
+                    prevent_initial_callbacks=True,
+                    external_stylesheets=external_stylesheets)
     return app
 
 
@@ -62,6 +66,28 @@ def update_input_from_slider(new_r):
     [dash.dependencies.Input('r-input', 'value')])
 def update_sider_from_input(new_r):
     return new_r
+
+@app.server.route('/download_csv')
+def download_csv():
+    cur_ses_name = data_files[pie_fig_instance.cur_ses_id][0]
+    cur_r = pie_fig_instance.cur_r
+    cur_data_dict = derived_data_dict[pie_fig_instance.cur_ses_id]
+    filename = f"{cur_ses_name}_{cur_r}.csv"
+    data=[["day","removed","unemployed"]]
+    for cur_day in range(0,cur_data_dict.day_count):
+        removed = cur_data_dict.cases_removed[cur_r][cur_day]
+        unemployed = cur_data_dict.cases_unemployed[cur_r][cur_day]
+
+        data.append( [cur_day+1,removed,unemployed])
+
+
+    si = io.StringIO()
+    cw = csv.writer(si)
+    cw.writerows(data)
+    output = make_response(si.getvalue())
+    output.headers["Content-Disposition"] = f"attachment; filename={filename}"
+    output.headers["Content-type"] = "text/csv"
+    return output
 
 # the style arguments for the sidebar. We use position:fixed and a fixed width
 SIDEBAR_STYLE = {
@@ -117,7 +143,12 @@ app.layout = html.Div(children=[
                                   value=cur_r,
                                   style={'width': '4rem', 'height': "2rem", "margin-left": "0rem"},
                               ),
-                          ])
+                          ]),
+                 html.Div([
+                     # dcc.Link(html.Button('back'), href="/testurl")
+                     html.A(html.Button('Download csv'),href='download_csv')
+
+                 ])
              ],
 
              ),
