@@ -2,8 +2,9 @@ import dash
 import plotly.graph_objects as go
 from fig_utils import FigUtilsMixin
 
+
 class CascadesFig(FigUtilsMixin):
-    def __init__(self,app,id,derived_data_dict,data_files):
+    def __init__(self, app, id, derived_data_dict, data_files):
         self.derived_data_dict = derived_data_dict
         self.app = app
         self.data_files = data_files
@@ -13,16 +14,15 @@ class CascadesFig(FigUtilsMixin):
              dash.dependencies.Input('r-slider', 'value'),
              dash.dependencies.Input('r-input', 'value')])(self.update_cascades_fig)
 
-    #initial call
-    def generate_initial_figure(self,cur_r,cur_ses_id):
+    # initial call
+    def generate_initial_figure(self, cur_r, cur_ses_id):
         self.cur_r = cur_r
         self.cur_ses_id = cur_ses_id
         return go.Figure(data=self.gen_cascades_fig_data(),
                          layout=self.gen_cascades_fig_layout())
 
     # callback
-    def update_cascades_fig(self,new_ses_id, r_slider, r_input):
-
+    def update_cascades_fig(self, new_ses_id, r_slider, r_input):
         self.update_ses_and_r(new_ses_id, r_slider, r_input)
 
         cascades_fig = go.Figure(data=self.gen_cascades_fig_data())
@@ -32,9 +32,11 @@ class CascadesFig(FigUtilsMixin):
 
     def gen_cascades_fig_layout(self):
         title = self.data_files[self.cur_ses_id][0]
-
+        cur_ses_dict = self.derived_data_dict[self.cur_ses_id]
         return go.Layout(
             {'title': f"{title}",
+
+             'yaxis':dict(range=[cur_ses_dict.pop_min, cur_ses_dict.pop_max]),
 
              'scene': dict(
                  yaxis_title='No. Employed',
@@ -60,7 +62,6 @@ class CascadesFig(FigUtilsMixin):
             name="removed",
             x=self.derived_data_dict[self.cur_ses_id].day_list,
             y=list(ses_dict.cases_removed[self.cur_r]),
-
             line=dict(
                 color='black',
                 width=1

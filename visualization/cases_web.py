@@ -5,19 +5,13 @@ from pie_fig import PieFig
 from cascades_fig import CascadesFig
 import dash_core_components as dcc
 import dash_html_components as html
-import plotly.graph_objects as go
 import dash_bootstrap_components as dbc
 
-
-pie_fig = None
-cascades_fig = None
 cur_r = 5.0
 cur_ses_id = 2
 
 data_files = data_loader.read_input_metadata("inputs.tsv")
 derived_data_dict = data_loader.read_data(data_files)
-
-
 
 def generate_pulldown_data(metadata_dict):
     # Format:
@@ -63,14 +57,11 @@ cascades_fig = cascades_fig_instance.generate_initial_figure(cur_r,cur_ses_id)
 def update_input_from_slider(new_r):
     return new_r
 
-
 @app.callback(
     dash.dependencies.Output('r-slider', 'value'),
     [dash.dependencies.Input('r-input', 'value')])
 def update_sider_from_input(new_r):
     return new_r
-
-
 
 # the style arguments for the sidebar. We use position:fixed and a fixed width
 SIDEBAR_STYLE = {
