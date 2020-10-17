@@ -90,7 +90,7 @@ class PieFig(FigUtilsMixin):
                        x=ses_dict.unemployed_surface_df.columns,
                        hoverinfo='none',
                        opacity=0.6,
-                       colorscale='Reds'),
+                       colorscale='Greys'),
 
             go.Surface(z=ses_dict.removed_surface_df.values,
                        y=ses_dict.removed_surface_df.index,
