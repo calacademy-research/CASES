@@ -146,7 +146,7 @@ app.layout = html.Div(children=[
                           ]),
                  html.Div([
                      # dcc.Link(html.Button('back'), href="/testurl")
-                     html.A(html.Button('Download csv'),href='download_csv')
+                     html.A(html.Button('Download csv at current R'),href='download_csv')
 
                  ])
              ],
