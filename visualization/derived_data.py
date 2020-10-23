@@ -5,8 +5,8 @@ class DerivedData:
     def __init__(self,cases,employment_filename):
         self.cases = cases
         self.employment_filename = employment_filename
-        self.unemployed_surface_df = self.generate_dataframe_from_julia(2)
-        self.removed_surface_df = self.generate_dataframe_from_julia(3)
+        self.unemployed_surface_df = self.generate_dataframe_from_julia(3)
+        self.removed_surface_df = self.generate_dataframe_from_julia(2)
         self.generate_derived_data()
 
     def generate_dataframe_from_julia(self, surface_column):

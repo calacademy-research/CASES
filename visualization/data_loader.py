@@ -7,6 +7,7 @@ import csv
 
 def read_data(data_files):
     derived_data_dict = {}
+    derived_data_dict = {}
     failed_loads = []
 
     for id in data_files.keys():
@@ -53,7 +54,7 @@ def generate_derived_data(jl,employment_filename):
     binary_dump_filename = JuliaLoader.get_filename_only(employment_filename) + "_derived.bin"
 
     print("Generating derived data...")
-    derived_data = DerivedData (jl.cases_2,employment_filename)
+    derived_data = DerivedData(jl.cases_2,employment_filename)
     outfile = open(binary_dump_filename,'wb')
     pickle.dump(derived_data, outfile)
     outfile.close()

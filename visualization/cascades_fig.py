@@ -18,8 +18,14 @@ class CascadesFig(FigUtilsMixin):
     def generate_initial_figure(self, cur_r, cur_ses_id):
         self.cur_r = cur_r
         self.cur_ses_id = cur_ses_id
-        return go.Figure(data=self.gen_cascades_fig_data(),
+        fig = go.Figure(data=self.gen_cascades_fig_data(),
                          layout=self.gen_cascades_fig_layout())
+
+        # fig.update_yaxes(
+        #     scaleanchor="y",
+        #     scaleratio=1
+        # )
+        return fig
 
     # callback
     def update_cascades_fig(self, new_ses_id, r_slider, r_input):
@@ -33,28 +39,30 @@ class CascadesFig(FigUtilsMixin):
     def gen_cascades_fig_layout(self):
         title = self.data_files[self.cur_ses_id][0]
         cur_ses_dict = self.derived_data_dict[self.cur_ses_id]
-        return go.Layout(
-            {'title': f"{title}",
+        layout = go.Layout(
+            {
+             'yaxis':dict(
+                 range=[cur_ses_dict.pop_min, cur_ses_dict.pop_max]
 
-             'yaxis':dict(range=[cur_ses_dict.pop_min, cur_ses_dict.pop_max]),
-
+             ),
              'scene': dict(
                  yaxis_title='No. Employed',
                  xaxis_title='Days'),
-
              # autosize=True,
              'uirevision': 'true',
              # 'legend_title': f"Legend Title{cur_r}",
              'legend': dict(
-                 yanchor="top",
-                 y=0.99,
+                 yanchor="bottom",
+                 y=1.02,
                  xanchor="left",
-                 x=0.01
+                 x=0
              ),
              'width': 400,
              'height': 400
              }
         )
+
+        return layout
 
     def gen_cascades_fig_data(self):
         ses_dict = self.derived_data_dict[self.cur_ses_id]
@@ -64,7 +72,7 @@ class CascadesFig(FigUtilsMixin):
             x=self.derived_data_dict[self.cur_ses_id].day_list,
             y=list(ses_dict.cases_removed[self.cur_r]),
             line=dict(
-                color='black',
+                color='green',
                 width=1
             )
         ),
