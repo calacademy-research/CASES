@@ -207,12 +207,12 @@ function main(I,age_fracs,employed)
     global io2a = Array{one_d_array,1}()
     #global io1a = Array{Float64}(undef,rows,81)
     #global io2a = Array{Float64}(undef,77162,4)
-    io1 = open("LA_CASES6_output_08_25.dat", "w");
-    io2 = open("LA_CASES6_surfaces_08_25.dat","w");
+    #io1 = open("LA_CASES6_output_08_25.dat", "w");
+    #io2 = open("LA_CASES6_surfaces_08_25.dat","w");
     # **********************************************************
 
     # write column headers
-    print(io1,"R,Day Farm_1,Farm_2,Farm_3,Farm_4,Mining_1,Mining_2,Mining_3,Mining_4,Utilities_1,Utilities_2,Utilities_3,Utilities_4,Construction_1,Construction_2,Construction_3,Construction_4,Manf_1,Manf_2,Manf_3,Manf_4,Wholesale_1,Wholesale_2,Wholesale_3,Wholesale_4,Retail_1,Retail_2,Retail_3,Retail_4,Transp_1,Transp_2,Transp_3,Transp_4,Information_1,Information_2,Information_3,Information_4,Financial_1,Financial_2,Financial_3,Financial_4,Prof_1,Prof_2,Prof_3,Prof_4,Ed_Hlth_1,Ed_Hlth_2,Ed_Hlth_3,Ed_Hlth_4,Leisure_1,Leisure_2,Leisure_3,Leisure_4,Other_1,Other_2,Other_3,Other_4,Gov_1,Gov_2,Gov_3,Gov_4,Farm,Mining,Utilities,Construction,Manf,Wholesale,Retail,Transp,Information,Financial,Prof,Ed_Hlth,Leisure,Other,Gov,Susceptible,Infected,Removed,total_E,Disease_only\n")
+    #print(io1,"R,Day Farm_1,Farm_2,Farm_3,Farm_4,Mining_1,Mining_2,Mining_3,Mining_4,Utilities_1,Utilities_2,Utilities_3,Utilities_4,Construction_1,Construction_2,Construction_3,Construction_4,Manf_1,Manf_2,Manf_3,Manf_4,Wholesale_1,Wholesale_2,Wholesale_3,Wholesale_4,Retail_1,Retail_2,Retail_3,Retail_4,Transp_1,Transp_2,Transp_3,Transp_4,Information_1,Information_2,Information_3,Information_4,Financial_1,Financial_2,Financial_3,Financial_4,Prof_1,Prof_2,Prof_3,Prof_4,Ed_Hlth_1,Ed_Hlth_2,Ed_Hlth_3,Ed_Hlth_4,Leisure_1,Leisure_2,Leisure_3,Leisure_4,Other_1,Other_2,Other_3,Other_4,Gov_1,Gov_2,Gov_3,Gov_4,Farm,Mining,Utilities,Construction,Manf,Wholesale,Retail,Transp,Information,Financial,Prof,Ed_Hlth,Leisure,Other,Gov,Susceptible,Infected,Removed,total_E,Disease_only\n")
 
     # begin simulation set
     for i = 1:rows
@@ -242,14 +242,14 @@ function main(I,age_fracs,employed)
             push!(cur_array_1,R)
             push!(cur_array_1,j)
 
-            print(io1,R,",",j,",")
+            #print(io1,R,",",j,",")
             for k = 1:size(total_E1,1)
-                print(io1,total_E1[k,j],",")
+                #print(io1,total_E1[k,j],",")
                 push!(cur_array_1,total_E1[k,j])
 
                 # io1a[i,k+2]=j
             end
-            print(io1,"\n")
+            #print(io1,"\n")
             push!(io1a,cur_array_1)
 
         end
@@ -263,7 +263,7 @@ function main(I,age_fracs,employed)
                 # employment
                 total_E = total_E + total_E1[k,j]
             end
-            print(io2,R," ",j," ",total_E," ")
+            #print(io2,R," ",j," ",total_E," ")
             #io2a[j,1]=R
             #io2a[j,2]=j
             #io2a[j,3]=total_E
@@ -275,7 +275,7 @@ function main(I,age_fracs,employed)
             age3 = age_sizes[3] - (total_E1[78,j]*age_sizes[3]*(d[3]+n[3]))
             age4 = age_sizes[4] - (total_E1[78,j]*age_sizes[4]*(d[4]+n[4]))
             disease_only = age1 + age2 + age3 + age4
-            print(io2,disease_only,"\n")
+            #print(io2,disease_only,"\n")
             #io2a[j,4]=disease_only
             push!(cur_array_2,disease_only)
             #println("Pushed: ",R," ",j," ",total_E," ",disease_only)
@@ -290,8 +290,8 @@ function main(I,age_fracs,employed)
     end
 
     # close output file
-    close(io1)
-    close(io2)
+    #close(io1)
+    #close(io2)
     io1a,io2a
 end
 

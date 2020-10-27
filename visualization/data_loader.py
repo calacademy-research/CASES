@@ -7,7 +7,6 @@ import csv
 
 def read_data(data_files):
     derived_data_dict = {}
-    derived_data_dict = {}
     failed_loads = []
 
     for id in data_files.keys():
@@ -26,14 +25,14 @@ def read_data(data_files):
                     jl = JuliaLoader("US_exchanges_2018c.csv",
                                                  age_fracs_filename,
                                                  employment_filename,
-                                                 False)
+                                                 False,True)
                 except FileNotFoundError:
                     jl = JuliaLoader("US_exchanges_2018c.csv",
                                                  age_fracs_filename,
                                                  employment_filename,
-                                                 True)
+                                                 True,
+                                                True)
                 derived_data_dict[id] = generate_derived_data(jl, employment_filename)
-                derived = derived_data_dict[id]
         except ValueError as e:
             print(f"Cannot load SES: {e}")
             failed_loads.append(id)
@@ -53,11 +52,12 @@ def fetch_derived_data(employment_filename):
 def generate_derived_data(jl,employment_filename):
     binary_dump_filename = JuliaLoader.get_filename_only(employment_filename) + "_derived.bin"
 
-    print("Generating derived data...")
+    print(f"Generating derived data for {employment_filename}",end=None,flush=True)
     derived_data = DerivedData(jl.cases_2,employment_filename)
     outfile = open(binary_dump_filename,'wb')
     pickle.dump(derived_data, outfile)
     outfile.close()
+    print("... done.")
     return derived_data
 
 # input Format, tsv (represented here with comma)

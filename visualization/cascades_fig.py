@@ -72,7 +72,7 @@ class CascadesFig(FigUtilsMixin):
             x=self.derived_data_dict[self.cur_ses_id].day_list,
             y=list(ses_dict.cases_removed[self.cur_r]),
             line=dict(
-                color='green',
+                color='black',
                 width=1
             )
         ),
@@ -83,7 +83,7 @@ class CascadesFig(FigUtilsMixin):
                 y=list(ses_dict.cases_unemployed[self.cur_r]),
 
                 line=dict(
-                    color='black',
+                    color='green',
                     width=1
                 )
             )

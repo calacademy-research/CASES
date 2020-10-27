@@ -25,10 +25,27 @@ class JuliaLoader:
         if run_julia:
             self.run_julia()
         else:
+            # R, Day  ( [R x Day] matrix. )
+            # Farm_1, Farm_2, Farm_3, Farm_4,
+            # Mining_1, Mining_2, Mining_3, Mining_4,
+            # Utilities_1, Utilities_2, Utilities_3, Utilities_4,
+            # Construction_1, Construction_2, Construction_3, Construction_4,
+            # Manf_1, Manf_2, Manf_3, Manf_4, Wholesale_1,
+            # Wholesale_2, Wholesale_3, Wholesale_4,
+            # Retail_1, Retail_2, Retail_3, Retail_4,
+            # Transp_1, Transp_2, Transp_3, Transp_4,
+            # Information_1, Information_2, Information_3, Information_4,
+            # Financial_1, Financial_2, Financial_3, Financial_4,
+            # Prof_1, Prof_2, Prof_3, Prof_4,
+            # d_Hlth_1, Ed_Hlth_2, Ed_Hlth_3, Ed_Hlth_4,
+            # Leisure_1, Leisure_2, Leisure_3, Leisure_4,
+            # Other_1, Other_2, Other_3, Other_4,
+            # Gov_1, Gov_2, Gov_3, Gov_4,
+            # Farm, Mining, Utilities, Construction, Manf, Wholesale, Retail, Transp, Information, Financial, Prof, Ed_Hlth, Leisure, Other, Gov,
+            # Susceptible, Infected, Removed, total_E, Disease_only
+
             if load_all_data:
-                pass
-                # not currently used
-                # self.cases_1 = pickle.load(open(self.employment_filename+"_cases_1.bin", "rb"))
+                self.cases_1 = pickle.load(open(self.employment_filename+"_cases_1.bin", "rb"))
             else:
                 self.cases_1 = None
             binary_dump_filename = self.get_filename_only(self.employment_filename) + "_cases_2.bin"

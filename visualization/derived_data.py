@@ -1,12 +1,13 @@
 import pandas as pd
 
-
+REMOVED_INDEX=3
+UNEMPLOYED_INDEX=2
 class DerivedData:
     def __init__(self,cases,employment_filename):
         self.cases = cases
         self.employment_filename = employment_filename
-        self.unemployed_surface_df = self.generate_dataframe_from_julia(3)
-        self.removed_surface_df = self.generate_dataframe_from_julia(2)
+        self.unemployed_surface_df = self.generate_dataframe_from_julia(UNEMPLOYED_INDEX)
+        self.removed_surface_df = self.generate_dataframe_from_julia(REMOVED_INDEX)
         self.generate_derived_data()
 
     def generate_dataframe_from_julia(self, surface_column):
@@ -61,9 +62,8 @@ class DerivedData:
         # 0.9  v  v  v  v
         # 0.91 v  v  v  v
         # i.e.: R on the Y axis and day on the x, with one value per cell
-        print("Generating derived data...")
-        self.cases_removed, self.day_count = self.generate_dict_from_julia(2)
-        self.cases_unemployed, self.day_count = self.generate_dict_from_julia(3)
+        self.cases_removed, self.day_count = self.generate_dict_from_julia(REMOVED_INDEX)
+        self.cases_unemployed, self.day_count = self.generate_dict_from_julia(UNEMPLOYED_INDEX)
         self.day_list = list(range(1, self.day_count + 1))
         self.r_min = list(self.cases_removed.keys())[0]
         self.r_max = list(self.cases_removed.keys())[-1]
