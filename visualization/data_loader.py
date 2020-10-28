@@ -52,7 +52,7 @@ class DataLoader:
         binary_dump_filename = JuliaLoader.get_filename_only(employment_filename) + "_derived.bin"
 
         print(f"Generating derived data for {employment_filename}",end=None,flush=True)
-        derived_data = DerivedData(self.jl.cases_surfaces,employment_filename)
+        derived_data = DerivedData(self.jl,employment_filename)
         outfile = open(binary_dump_filename,'wb')
         pickle.dump(derived_data, outfile)
         outfile.close()
