@@ -34,6 +34,7 @@ class PieFig(FigUtilsMixin):
     def gen_pie_fig_layout_data(self):
         title = self.data_files[self.cur_ses_id][0]
         # layout = go.Layout({'title': f"{title}: R={cur_r}",
+        cur_ses_dict = self.derived_data_dict[self.cur_ses_id]
 
         return (
             {'title': f"{title}",
@@ -41,7 +42,12 @@ class PieFig(FigUtilsMixin):
              'scene': dict(
                  yaxis_title='R',
                  zaxis_title='No. Employed',
-                 xaxis_title='Days'),
+                 xaxis_title='Days',
+                 zaxis=dict(
+                     autorange=False,
+                     range=[cur_ses_dict.pop_min, cur_ses_dict.pop_max],
+                 )
+               ),
 
              # autosize=True,
              'uirevision': 'true',

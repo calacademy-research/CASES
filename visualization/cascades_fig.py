@@ -19,7 +19,7 @@ class CascadesFig(FigUtilsMixin):
         self.cur_r = cur_r
         self.cur_ses_id = cur_ses_id
         fig = go.Figure(data=self.gen_cascades_fig_data(),
-                         layout=self.gen_cascades_fig_layout())
+                        layout=self.gen_cascades_fig_layout())
 
         # fig.update_yaxes(
         #     scaleanchor="y",
@@ -37,29 +37,39 @@ class CascadesFig(FigUtilsMixin):
         return cascades_fig
 
     def gen_cascades_fig_layout(self):
-        title = self.data_files[self.cur_ses_id][0]
+        # title = self.data_files[self.cur_ses_id][0]
         cur_ses_dict = self.derived_data_dict[self.cur_ses_id]
+
         layout = go.Layout(
             {
-             'yaxis':dict(
-                 range=[cur_ses_dict.pop_min, cur_ses_dict.pop_max]
+                'yaxis': dict(
+                    range=[cur_ses_dict.pop_min, cur_ses_dict.pop_max],
 
-             ),
-             'scene': dict(
-                 yaxis_title='No. Employed',
-                 xaxis_title='Days'),
-             # autosize=True,
-             'uirevision': 'true',
-             # 'legend_title': f"Legend Title{cur_r}",
-             'legend': dict(
-                 yanchor="bottom",
-                 y=1.02,
-                 xanchor="left",
-                 x=0
-             ),
-             'width': 400,
-             'height': 400
-             }
+                ),
+                'scene': dict(
+                    yaxis_title='No. Employed',
+                    xaxis_title='Days',
+                    aspectmode='manual',
+                    xaxis=dict(
+                        autorange=False,
+
+                    ),
+                    yaxis=dict(
+                        autorange=False,
+                        range=[cur_ses_dict.pop_min, cur_ses_dict.pop_max],
+                    )),
+
+                'uirevision': 'true',
+                # 'legend_title': f"Legend Title{cur_r}",
+                'legend': dict(
+                    yanchor="bottom",
+                    y=1.02,
+                    xanchor="left",
+                    x=0
+                ),
+                'width': 400,
+                'height': 400
+            }
         )
 
         return layout

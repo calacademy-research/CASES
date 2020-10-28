@@ -147,14 +147,16 @@ class DerivedData:
         self.r_max = list(self.cases_removed.keys())[-1]
         self.day_min = self.day_list[0]
         self.day_max = self.day_list[-1]
-        self.pop_min = min([min(list(self.cases_removed.items())[0][1]),
-                            min(list(self.cases_removed.items())[-1][1]),
-                            min(list(self.cases_unemployed.items())[0][1]),
-                            min(list(self.cases_unemployed.items())[-1][1])
-                            ])
+        # self.pop_min = min([min(list(self.cases_removed.items())[0][1]),
+        #                     min(list(self.cases_removed.items())[-1][1]),
+        #                     min(list(self.cases_unemployed.items())[0][1]),
+        #                     min(list(self.cases_unemployed.items())[-1][1])
+        #                     ])
         self.pop_max = max([max(list(self.cases_removed.items())[0][1]),
                             max(list(self.cases_removed.items())[-1][1]),
                             max(list(self.cases_unemployed.items())[0][1]),
                             max(list(self.cases_unemployed.items())[-1][1])
                             ])
+        self.pop_min = self.pop_max * 0.8
+
         print("Derived data complete.")
