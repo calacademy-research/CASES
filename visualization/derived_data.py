@@ -1,13 +1,15 @@
 import pandas as pd
 
-REMOVED_INDEX=3
-UNEMPLOYED_INDEX=2
+
 class DerivedData:
-    def __init__(self,cases,employment_filename):
+
+    def __init__(self,cases,employment_filename, col_unemployed=2,col_removed=3):
+        self.removed_index = col_unemployed
+        self.unemployed_index = col_removed
         self.cases = cases
         self.employment_filename = employment_filename
-        self.unemployed_surface_df = self.generate_dataframe_from_julia(UNEMPLOYED_INDEX)
-        self.removed_surface_df = self.generate_dataframe_from_julia(REMOVED_INDEX)
+        self.unemployed_surface_df = self.generate_dataframe_from_julia(self.unemployed_index)
+        self.removed_surface_df = self.generate_dataframe_from_julia(self.removed_index)
         self.generate_derived_data()
 
     def generate_dataframe_from_julia(self, surface_column):
@@ -62,8 +64,8 @@ class DerivedData:
         # 0.9  v  v  v  v
         # 0.91 v  v  v  v
         # i.e.: R on the Y axis and day on the x, with one value per cell
-        self.cases_removed, self.day_count = self.generate_dict_from_julia(REMOVED_INDEX)
-        self.cases_unemployed, self.day_count = self.generate_dict_from_julia(UNEMPLOYED_INDEX)
+        self.cases_removed, self.day_count = self.generate_dict_from_julia(self.removed_index)
+        self.cases_unemployed, self.day_count = self.generate_dict_from_julia(self.unemployed_index)
         self.day_list = list(range(1, self.day_count + 1))
         self.r_min = list(self.cases_removed.keys())[0]
         self.r_max = list(self.cases_removed.keys())[-1]

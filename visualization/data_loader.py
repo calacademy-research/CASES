@@ -31,7 +31,7 @@ def read_data(data_files):
                                                  age_fracs_filename,
                                                  employment_filename,
                                                  True,
-                                                True)
+                                                 True)
                 derived_data_dict[id] = generate_derived_data(jl, employment_filename)
         except ValueError as e:
             print(f"Cannot load SES: {e}")
@@ -53,7 +53,7 @@ def generate_derived_data(jl,employment_filename):
     binary_dump_filename = JuliaLoader.get_filename_only(employment_filename) + "_derived.bin"
 
     print(f"Generating derived data for {employment_filename}",end=None,flush=True)
-    derived_data = DerivedData(jl.cases_2,employment_filename)
+    derived_data = DerivedData(jl.cases_surfaces,employment_filename)
     outfile = open(binary_dump_filename,'wb')
     pickle.dump(derived_data, outfile)
     outfile.close()

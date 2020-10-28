@@ -3,7 +3,6 @@ import numpy as np
 import pickle
 import ntpath
 import os
-import sys
 from julia import Main as j
 
 class JuliaLoader:
@@ -20,8 +19,13 @@ class JuliaLoader:
         self.us_exchanges_filename = us_exchanges
         self.age_fracs_filename = age_fracs
         self.employment_filename = employment
-
+        self.cases_complete = None
         self.results = []
+
+        self.binary_dump_filename_surfaces = \
+            self.get_filename_only(self.employment_filename) + "_cases_surfaces.bin"
+        self.binary_dump_filename_complete = \
+            self.get_filename_only(self.employment_filename) + "_cases_complete.bin"
         if run_julia:
             self.run_julia()
         else:
@@ -44,20 +48,20 @@ class JuliaLoader:
             # Farm, Mining, Utilities, Construction, Manf, Wholesale, Retail, Transp, Information, Financial, Prof, Ed_Hlth, Leisure, Other, Gov,
             # Susceptible, Infected, Removed, total_E, Disease_only
 
+            # These will throw a file not found error, which is handled
+            # upstream. Typically it will then invoke a run.
+            # if not path.exists(self.binary_dump_filename_surfaces):
+            #     raise FileNotFoundError()
+            self.cases_surfaces = pickle.load(open(self.binary_dump_filename_surfaces, "rb"))
             if load_all_data:
-                self.cases_1 = pickle.load(open(self.employment_filename+"_cases_1.bin", "rb"))
-            else:
-                self.cases_1 = None
-            binary_dump_filename = self.get_filename_only(self.employment_filename) + "_cases_2.bin"
-            self.cases_2 = pickle.load(open(binary_dump_filename, "rb"))
+                # if not path.exists(self.binary_dump_filename_complete):
+                #     raise FileNotFoundError()
+                self.cases_complete = pickle.load(open(self.binary_dump_filename_complete, "rb"))
+
 
     def run_julia(self):
         print("Loading Julia....")
 
-
-        # US_EXCHANGES = "US_exchanges_2018c.csv"
-        # AGE_FRACS = "LA_age_fracs.csv"
-        # LA_EMPLOYMENT = "LA_employment_by_sector_02_2020.csv"
         I = np.genfromtxt(self.us_exchanges_filename, delimiter=" ")
         age_fracs_orig = np.genfromtxt(self.age_fracs_filename, delimiter=",")
         # first column is
@@ -80,24 +84,27 @@ class JuliaLoader:
         if employed.isnull().values.any():
             raise ValueError(f"NAN found in employment data {self.employment_filename}; skipping")
 
-
         print("Starting Julia run...")
         j.include("CASES.jl")
         returned_result = j.main(I, age_fracs, julia_formatted_employed)
         print("Julia run complete.")
 
-        self.cases_2 = returned_result[1]
+        self.cases_surfaces = returned_result[1]
+        self.cases_complete = returned_result[0]
 
-        binary_dump_filename = self.get_filename_only(self.employment_filename)+"_cases_2.bin"
-        print("Writing binary dump: " + binary_dump_filename)
-        outfile = open(binary_dump_filename,'wb')
-        pickle.dump(self.cases_2, outfile)
+        self.write_binary_dump(self.binary_dump_filename_surfaces,self.cases_surfaces)
+        self.write_binary_dump(self.binary_dump_filename_complete,self.cases_complete)
+
+
+    def write_binary_dump(self,filename,array):
+        print("Writing  binary dump: " + filename)
+        outfile = open(filename,'wb')
+        pickle.dump(array, outfile)
         outfile.close()
 
-        self.cases_1 = returned_result[0]
-        # Not currently using this metadata
-        # pickle.dump(self.cases_1, open(self.employment_filename+"_cases_1.bin", "wb"))
-
+    # Strip leading path info from the filename.
+    # typically used to determine the target (local) .bin
+    # for various pickles.
     @staticmethod
     def get_filename_only(full_filename):
         no_path_filename = ntpath.basename(full_filename)
