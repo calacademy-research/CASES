@@ -41,7 +41,7 @@ class JuliaLoader:
             # Information_1, Information_2, Information_3, Information_4,
             # Financial_1, Financial_2, Financial_3, Financial_4,
             # Prof_1, Prof_2, Prof_3, Prof_4,
-            # d_Hlth_1, Ed_Hlth_2, Ed_Hlth_3, Ed_Hlth_4,
+            # Ed_Hlth_1, Ed_Hlth_2, Ed_Hlth_3, Ed_Hlth_4,
             # Leisure_1, Leisure_2, Leisure_3, Leisure_4,
             # Other_1, Other_2, Other_3, Other_4,
             # Gov_1, Gov_2, Gov_3, Gov_4,
