@@ -31,7 +31,7 @@ class DerivedData:
                       "Information",
                       "Financial",
                       "Professional",
-                      "Ed_Hlth",
+                      "Education and Health",
                       "Leisure",
                       "Other",
                       "Government",
@@ -56,7 +56,7 @@ class DerivedData:
                         'Information': None,
                         'Financial': None,
                         'Professional': None,
-                        'Ed_Hlth': None,
+                        'Education and Health': None,
                         'Leisure': None,
                         'Other': None,
                         'Government': None}
