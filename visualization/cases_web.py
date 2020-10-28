@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 import dash
-import data_loader
+from data_loader import DataLoader
 from pie_fig import PieFig
 from cascades_fig import CascadesFig
 import dash_core_components as dcc
@@ -13,9 +13,8 @@ import io
 cur_r = 5.0
 cur_ses_id = 2
 
-data_files = data_loader.read_input_metadata("inputs.tsv")
-derived_data_dict = data_loader.read_data(data_files)
-
+loader = DataLoader()
+derived_data_dict = loader.derived_data_dict
 
 def generate_pulldown_data(metadata_dict):
     # Format:
@@ -45,11 +44,11 @@ app = create_app()
 pie_fig_instance = PieFig(app,
                           "pie-graph",
                           derived_data_dict,
-                          data_files)
+                          loader.data_files)
 cascades_fig_instance = CascadesFig(app,
                                     "r-cascades-graph",
                                     derived_data_dict,
-                                    data_files)
+                                    loader.data_files)
 pie_fig = pie_fig_instance.generate_initial_figure(cur_r, cur_ses_id)
 cascades_fig = cascades_fig_instance.generate_initial_figure(cur_r, cur_ses_id)
 
@@ -75,7 +74,7 @@ def update_sider_from_input(new_r):
 
 @app.server.route('/download_csv')
 def download_csv():
-    cur_ses_name = data_files[pie_fig_instance.cur_ses_id][0]
+    cur_ses_name = loader.data_files[pie_fig_instance.cur_ses_id][0]
     cur_r = pie_fig_instance.cur_r
     cur_data_dict = derived_data_dict[pie_fig_instance.cur_ses_id]
     filename = f"{cur_ses_name}_{cur_r}.csv"
@@ -122,8 +121,8 @@ app.layout = html.Div(children=[
                  html.P("Change SES"),
                  dcc.Dropdown(
                      id='ses-pulldown',
-                     options=generate_pulldown_data(data_files),
-                     value=data_files[cur_ses_id][0]
+                     options=generate_pulldown_data(loader.data_files),
+                     value=loader.data_files[cur_ses_id][0]
                  ),
                  html.Div(id='spacer1', style={'height': "3rem"}),
                  html.P("R value"),
