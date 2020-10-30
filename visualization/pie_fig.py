@@ -98,20 +98,36 @@ class PieFig(FigUtilsMixin):
         layout = go.Layout(self.gen_pie_fig_layout_data())
         return layout
 
-    def gen_surfaces(self,unemployed_z,ses_dict):
+    def gen_sector_surfaces(self, ses_dict):
+        unemployed_z = self.derived_data_dict[self.cur_ses_id].sectors_df[self.cur_sector_id]
+
+        return [go.Surface(z=unemployed_z,
+                           y=ses_dict.unemployed_surface_df.index,
+                           x=ses_dict.unemployed_surface_df.columns,
+                           hoverinfo='none',
+                           opacity=0.6,
+                           colorscale='Greens')]
+
+
+    def gen_surfaces(self,ses_dict):
         retval = []
-        retval.append(go.Surface(z=unemployed_z,
-                       y=ses_dict.unemployed_surface_df.index,
-                       x=ses_dict.unemployed_surface_df.columns,
-                       hoverinfo='none',
-                       opacity=0.6,
-                       colorscale='Greens'))
-        retval.append(go.Surface(z=ses_dict.removed_surface_df.values,
-                       y=ses_dict.removed_surface_df.index,
-                       x=ses_dict.removed_surface_df.columns,
-                       hoverinfo='none',
-                       opacity=0.6,
-                       colorscale='Greys'))
+        if self.cur_sector_id=="All":
+            unemployed_z = ses_dict.unemployed_surface_df.values
+
+            retval.append(go.Surface(z=unemployed_z,
+                           y=ses_dict.unemployed_surface_df.index,
+                           x=ses_dict.unemployed_surface_df.columns,
+                           hoverinfo='none',
+                           opacity=0.6,
+                           colorscale='Greens'))
+            retval.append(go.Surface(z=ses_dict.removed_surface_df.values,
+                           y=ses_dict.removed_surface_df.index,
+                           x=ses_dict.removed_surface_df.columns,
+                           hoverinfo='none',
+                           opacity=0.6,
+                           colorscale='Greys'))
+        else:
+            retval.extend(self.gen_sector_surfaces(ses_dict))
         retval.append(self.create_lines_at_r(self.cur_r, ses_dict.cases_removed, 'black', "Removed from workpool"))
         retval.append(self.create_lines_at_r(self.cur_r, ses_dict.cases_unemployed, 'green', "Unemployed"))
         return retval
@@ -123,9 +139,5 @@ class PieFig(FigUtilsMixin):
         # y = R
         # z = pop value
         ses_dict = self.derived_data_dict[self.cur_ses_id]
+        return self.gen_surfaces(ses_dict)
 
-        if self.cur_sector_id=="All":
-            unemployed_z = ses_dict.unemployed_surface_df.values
-        else:
-            unemployed_z = self.derived_data_dict[self.cur_ses_id].sectors_df[self.cur_sector_id]
-        return self.gen_surfaces(unemployed_z,ses_dict)
