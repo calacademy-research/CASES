@@ -132,7 +132,7 @@ app.layout = html.Div(children=[
                  dcc.Dropdown(
                      id='ses-pulldown',
                      options=generate_ses_pulldown_data(loader.data_files),
-                     value=loader.data_files[cur_ses_id][0]
+                     value=2
                  ),
                  html.P("Change sector"),
                  dcc.Dropdown(
