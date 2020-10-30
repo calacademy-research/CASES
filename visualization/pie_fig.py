@@ -98,28 +98,26 @@ class PieFig(FigUtilsMixin):
         layout = go.Layout(self.gen_pie_fig_layout_data())
         return layout
 
-
-
     def gen_surfaces(self,unemployed_z,ses_dict):
-        return [
-            go.Surface(z=unemployed_z,
+        retval = []
+        retval.append(go.Surface(z=unemployed_z,
                        y=ses_dict.unemployed_surface_df.index,
                        x=ses_dict.unemployed_surface_df.columns,
                        hoverinfo='none',
                        opacity=0.6,
-                       colorscale='Greens'),
-
-            go.Surface(z=ses_dict.removed_surface_df.values,
+                       colorscale='Greens'))
+        retval.append(go.Surface(z=ses_dict.removed_surface_df.values,
                        y=ses_dict.removed_surface_df.index,
                        x=ses_dict.removed_surface_df.columns,
                        hoverinfo='none',
                        opacity=0.6,
-                       colorscale='Greys'),
+                       colorscale='Greys'))
+        retval.append(self.create_lines_at_r(self.cur_r, ses_dict.cases_removed, 'black', "Removed from workpool"))
+        retval.append(self.create_lines_at_r(self.cur_r, ses_dict.cases_unemployed, 'green', "Unemployed"))
+        return retval
 
 
-            self.create_lines_at_r(self.cur_r, ses_dict.cases_removed, 'black', "Removed from workpool"),
-            self.create_lines_at_r(self.cur_r, ses_dict.cases_unemployed, 'green', "Unemployed")
-        ]
+
     def gen_pie_fig_data(self):
         # x = days
         # y = R
