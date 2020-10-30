@@ -144,6 +144,7 @@ class PieFig(FigUtilsMixin):
                                      opacity=0.6,
                                      colorscale='Greens',
                                      colorbar=dict(
+                                         title="Total<br>employed",
                                          x=1.20,)
                                      ))
             retval.append(go.Surface(z=ses_dict.removed_surface_df.values,
