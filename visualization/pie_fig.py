@@ -40,20 +40,12 @@ class PieFig(FigUtilsMixin):
         title = self.data_files[self.cur_ses_id][0]
         # layout = go.Layout({'title': f"{title}: R={cur_r}",
         cur_ses_dict = self.derived_data_dict[self.cur_ses_id]
-        if 'All' in self.cur_sector_ids:
+
+        scene={}
+        if len(self.cur_sector_ids)==1 and "All" in self.cur_sector_ids:
             pop_min = cur_ses_dict.pop_min
             pop_max = cur_ses_dict.pop_max
-        else:
-            pop_min = 0
-            pop_max = 100000
-            # TBD dynamic here
-            # pop_min = cur_ses_dict.pop_min
-            # pop_max = cur_ses_dict.pop_max
-
-        return (
-            {'title': f"{title}",
-
-             'scene': dict(
+            scene = dict(
                  yaxis_title='R',
                  zaxis_title='No. Employed',
                  xaxis_title='Days',
@@ -61,7 +53,21 @@ class PieFig(FigUtilsMixin):
                      autorange=False,
                      range=[pop_min, pop_max],
                  )
-             ),
+             )
+        else:
+            scene = dict(
+                 yaxis_title='R',
+                 zaxis_title='No. Employed',
+                 xaxis_title='Days',
+                 zaxis=dict(
+                     autorange=True
+                 )
+             )
+
+        return (
+            {'title': f"{title}",
+
+             'scene': scene,
 
              # autosize=True,
              'uirevision': 'true',
