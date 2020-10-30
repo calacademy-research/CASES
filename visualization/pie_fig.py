@@ -100,16 +100,7 @@ class PieFig(FigUtilsMixin):
 
 
 
-    def gen_pie_fig_data(self):
-        # x = days
-        # y = R
-        # z = pop value
-        ses_dict = self.derived_data_dict[self.cur_ses_id]
-
-        if self.cur_sector_id=="All":
-            unemployed_z = ses_dict.unemployed_surface_df.values
-        else:
-            unemployed_z = self.derived_data_dict[self.cur_ses_id].sectors_df[self.cur_sector_id]
+    def gen_surfaces(self,unemployed_z,ses_dict):
         return [
             go.Surface(z=unemployed_z,
                        y=ses_dict.unemployed_surface_df.index,
@@ -124,12 +115,19 @@ class PieFig(FigUtilsMixin):
                        hoverinfo='none',
                        opacity=0.6,
                        colorscale='Greys'),
-            # go.Surface(x=[day_min, day_min, day_max, day_max],
-            #            y=[r_value, r_value, r_value, r_value],
-            #            z=[pop_max, pop_max, pop_min, pop_min],
-            #            opacity=0.5
-            #            ),
+
 
             self.create_lines_at_r(self.cur_r, ses_dict.cases_removed, 'black', "Removed from workpool"),
             self.create_lines_at_r(self.cur_r, ses_dict.cases_unemployed, 'green', "Unemployed")
         ]
+    def gen_pie_fig_data(self):
+        # x = days
+        # y = R
+        # z = pop value
+        ses_dict = self.derived_data_dict[self.cur_ses_id]
+
+        if self.cur_sector_id=="All":
+            unemployed_z = ses_dict.unemployed_surface_df.values
+        else:
+            unemployed_z = self.derived_data_dict[self.cur_ses_id].sectors_df[self.cur_sector_id]
+        return self.gen_surfaces(unemployed_z,ses_dict)
