@@ -10,9 +10,10 @@ from flask import make_response
 import csv
 import io
 
+# Initial values
 cur_r = 5.0
 cur_ses_id = 2
-cur_sector_id = "All"
+cur_sector_ids = ["All"]
 
 loader = DataLoader()
 derived_data_dict = loader.derived_data_dict
@@ -59,8 +60,8 @@ cascades_fig_instance = CascadesFig(app,
                                     "r-cascades-graph",
                                     derived_data_dict,
                                     loader.data_files)
-pie_fig = pie_fig_instance.generate_initial_figure(cur_r, cur_ses_id,cur_sector_id)
-cascades_fig = cascades_fig_instance.generate_initial_figure(cur_r, cur_ses_id,cur_sector_id)
+pie_fig = pie_fig_instance.generate_initial_figure(cur_r, cur_ses_id,cur_sector_ids)
+cascades_fig = cascades_fig_instance.generate_initial_figure(cur_r, cur_ses_id,cur_sector_ids)
 
 
 #  Causes a circular dependancy. Works fine. Suppressing errors (turning debug off)
@@ -132,13 +133,14 @@ app.layout = html.Div(children=[
                  dcc.Dropdown(
                      id='ses-pulldown',
                      options=generate_ses_pulldown_data(loader.data_files),
-                     value=2
+                     value=cur_ses_id
                  ),
                  html.P("Change sector"),
                  dcc.Dropdown(
                      id='sector-pulldown',
                      options=generate_sector_pulldown_data(derived_data_dict[cur_ses_id]),
-                     value='All'
+                     value='All',
+                     multi=True
                      # options=derived_data_dict[cur_ses_id].sectors.keys(),
                      # value=cur_sector_id
                  ),

@@ -8,7 +8,7 @@ class CascadesFig(FigUtilsMixin):
         self.derived_data_dict = derived_data_dict
         self.app = app
         self.data_files = data_files
-        self.cur_sector_id = None
+        self.cur_sector_ids = None
         self.cur_r = None
         self.cur_ses_id = None
         app.callback(
@@ -19,8 +19,8 @@ class CascadesFig(FigUtilsMixin):
              dash.dependencies.Input('r-input', 'value')])(self.update_cascades_fig)
 
     # initial call
-    def generate_initial_figure(self, cur_r, cur_ses_id, cur_sector_id):
-        self.cur_sector_id = cur_sector_id
+    def generate_initial_figure(self, cur_r, cur_ses_id, cur_sector_ids):
+        self.cur_sector_ids = cur_sector_ids
         self.cur_r = cur_r
         self.cur_ses_id = cur_ses_id
         fig = go.Figure(data=self.gen_cascades_fig_data(),

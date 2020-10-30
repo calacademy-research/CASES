@@ -1,7 +1,8 @@
 import dash
+from array import array
 class FigUtilsMixin:
 
-    def update_ses_and_r(self,new_ses_id, new_sector_id,r_slider, r_input):
+    def update_ses_and_r(self,new_ses_id, new_sector_ids,r_slider, r_input):
         self.cur_r
         self.cur_ses_id
         ctx = dash.callback_context
@@ -13,5 +14,5 @@ class FigUtilsMixin:
             self.cur_r = float(r_slider)
         if isinstance(new_ses_id, int):
             self.cur_ses_id = new_ses_id
-        if isinstance(new_sector_id, str):
-            self.cur_sector_id = new_sector_id
+        if isinstance(new_sector_ids, list):
+            self.cur_sector_ids = new_sector_ids
