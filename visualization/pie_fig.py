@@ -8,22 +8,27 @@ class PieFig(FigUtilsMixin):
         self.derived_data_dict = derived_data_dict
         self.app = app
         self.data_files = data_files
+        self.cur_sector_id = None
+        self.cur_r = None
+        self.cur_ses_id = None
         app.callback(
             dash.dependencies.Output(id, "figure"),
             [dash.dependencies.Input('ses-pulldown', 'value'),
+             dash.dependencies.Input('sector-pulldown', 'value'),
              dash.dependencies.Input('r-slider', 'value'),
              dash.dependencies.Input('r-input', 'value')])(self.update_pie_fig)
 
     # Initial call
-    def generate_initial_figure(self,cur_r,cur_ses_id):
+    def generate_initial_figure(self,cur_r,cur_ses_id,cur_sector_id):
         self.cur_r = cur_r
         self.cur_ses_id = cur_ses_id
+        self.cur_sector_id = cur_sector_id
         return go.Figure(data=self.gen_pie_fig_data(),
                          layout=self.gen_pie_fig_layout())
 
     # callback
-    def update_pie_fig(self, new_ses_id, r_slider, r_input):
-        self.update_ses_and_r(new_ses_id, r_slider, r_input)
+    def update_pie_fig(self, new_ses_id, cur_sector_id,r_slider, r_input):
+        self.update_ses_and_r(new_ses_id,cur_sector_id, r_slider, r_input)
 
         pie_fig = go.Figure(data=self.gen_pie_fig_data())
         pie_fig.update_layout(self.gen_pie_fig_layout())
@@ -35,6 +40,12 @@ class PieFig(FigUtilsMixin):
         title = self.data_files[self.cur_ses_id][0]
         # layout = go.Layout({'title': f"{title}: R={cur_r}",
         cur_ses_dict = self.derived_data_dict[self.cur_ses_id]
+        if self.cur_sector_id == 'All':
+            pop_min = cur_ses_dict.pop_min
+            pop_max = cur_ses_dict.pop_max
+        else:
+            pop_min = cur_ses_dict.sector_min[self.cur_sector_id]
+            pop_max = cur_ses_dict.sector_max[self.cur_sector_id]
 
         return (
             {'title': f"{title}",
@@ -45,7 +56,7 @@ class PieFig(FigUtilsMixin):
                  xaxis_title='Days',
                  zaxis=dict(
                      autorange=False,
-                     range=[cur_ses_dict.pop_min, cur_ses_dict.pop_max],
+                     range=[pop_min, pop_max],
                  )
                ),
 
@@ -65,12 +76,16 @@ class PieFig(FigUtilsMixin):
 
     def create_lines_at_r(self,r_val,cases_dict,color, name):
         z = [r_val] * len(self.derived_data_dict[self.cur_ses_id].day_list)  # constant for this R
+        if self.cur_sector_id == "All":
+            z_val = list(cases_dict[r_val])
+        else:
+            z_val = self.derived_data_dict[self.cur_ses_id].sectors_dict[self.cur_sector_id][r_val]
         data = go.Scatter3d(
             mode='lines',
             name=name,
             x=self.derived_data_dict[self.cur_ses_id].day_list,
             y=z,
-            z=list(cases_dict[r_val]),
+            z=z_val,
 
             line=dict(
                 color=color,
@@ -90,8 +105,13 @@ class PieFig(FigUtilsMixin):
         # y = R
         # z = pop value
         ses_dict = self.derived_data_dict[self.cur_ses_id]
+
+        if self.cur_sector_id=="All":
+            unemployed_z = ses_dict.unemployed_surface_df.values
+        else:
+            unemployed_z = self.derived_data_dict[self.cur_ses_id].sectors_df[self.cur_sector_id]
         return [
-            go.Surface(z=ses_dict.unemployed_surface_df.values,
+            go.Surface(z=unemployed_z,
                        y=ses_dict.unemployed_surface_df.index,
                        x=ses_dict.unemployed_surface_df.columns,
                        hoverinfo='none',

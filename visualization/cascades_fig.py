@@ -8,28 +8,29 @@ class CascadesFig(FigUtilsMixin):
         self.derived_data_dict = derived_data_dict
         self.app = app
         self.data_files = data_files
+        self.cur_sector_id = None
+        self.cur_r = None
+        self.cur_ses_id = None
         app.callback(
             dash.dependencies.Output(id, "figure"),
             [dash.dependencies.Input('ses-pulldown', 'value'),
+             dash.dependencies.Input('sector-pulldown', 'value'),
              dash.dependencies.Input('r-slider', 'value'),
              dash.dependencies.Input('r-input', 'value')])(self.update_cascades_fig)
 
     # initial call
-    def generate_initial_figure(self, cur_r, cur_ses_id):
+    def generate_initial_figure(self, cur_r, cur_ses_id, cur_sector_id):
+        self.cur_sector_id = cur_sector_id
         self.cur_r = cur_r
         self.cur_ses_id = cur_ses_id
         fig = go.Figure(data=self.gen_cascades_fig_data(),
                         layout=self.gen_cascades_fig_layout())
 
-        # fig.update_yaxes(
-        #     scaleanchor="y",
-        #     scaleratio=1
-        # )
         return fig
 
     # callback
-    def update_cascades_fig(self, new_ses_id, r_slider, r_input):
-        self.update_ses_and_r(new_ses_id, r_slider, r_input)
+    def update_cascades_fig(self, new_ses_id, new_sector_id,r_slider, r_input):
+        self.update_ses_and_r(new_ses_id,new_sector_id, r_slider, r_input)
 
         cascades_fig = go.Figure(data=self.gen_cascades_fig_data())
         cascades_fig.update_layout(self.gen_cascades_fig_layout())

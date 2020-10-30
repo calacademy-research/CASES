@@ -1,9 +1,9 @@
 import pandas as pd
 
+
 # TODO: Double check that the LA_CASES6_output sector columns match up
 # with self.sectors; ensure there's no off-by-one error
 class DerivedData:
-
     complete_array = ['R', 'day',
                       "Farm_1", "Farm_2", "Farm_3", "Farm_4",
                       "Mining_1", "Mining_2", "Mining_3", "Mining_4",
@@ -39,44 +39,51 @@ class DerivedData:
 
     #  "total_E", "Disease_only"
 
-    def __init__(self, jl, employment_filename, col_unemployed=2, col_removed=3):
+    def __init__(self, jl, employment_filename, col_unemployed=3, col_removed=2):
         self.jl = jl
         self.removed_index = col_unemployed
         self.unemployed_index = col_removed
         self.employment_filename = employment_filename
 
-        self.sectors = {'Farm': None,
-                        'Mining': None,
-                        'Utilities': None,
-                        'Construction': None,
-                        'Manufacturing': None,
-                        'Wholesale': None,
-                        'Retail': None,
-                        'Transportation': None,
-                        'Information': None,
-                        'Financial': None,
-                        'Professional': None,
-                        'Education and Health': None,
-                        'Leisure': None,
-                        'Other': None,
-                        'Government': None}
+        self.sectors_dict = {
+            'Farm': None,
+            'Mining': None,
+            'Utilities': None,
+            'Construction': None,
+            'Manufacturing': None,
+            'Wholesale': None,
+            'Retail': None,
+            'Transportation': None,
+            'Information': None,
+            'Financial': None,
+            'Professional': None,
+            'Education and Health': None,
+            'Leisure': None,
+            'Other': None,
+            'Government': None}
+        self.sectors_df = {}
+
+        self.sector_max = {}
+        self.sector_min = {}
         self.generate_all_dataframes_from_julia()
         self.generate_derived_data()
 
     def generate_all_dataframes_from_julia(self):
-        self.unemployed_surface_df = self.generate_dataframe_from_julia(self.jl.cases_surfaces, self.unemployed_index)
-        self.removed_surface_df = self.generate_dataframe_from_julia(self.jl.cases_surfaces, self.removed_index)
-        for cur_sector in self.sectors.keys():
+        self.unemployed_surface_df,day_count = self.generate_dataframe_from_julia(self.jl.cases_surfaces, self.unemployed_index)
+        self.removed_surface_df,day_count = self.generate_dataframe_from_julia(self.jl.cases_surfaces, self.removed_index)
+        for cur_sector in self.sectors_dict.keys():
             print(f"  Generating derived surface for sector {cur_sector}")
-            df = self.generate_dict_from_julia_complete(self.complete_array.index(cur_sector))
-            self.sectors[cur_sector] = df
+            dict = self.generate_dict_from_julia_complete(self.complete_array.index(cur_sector))
+            self.sectors_dict[cur_sector] = dict
+            day_list = list(range(1, day_count + 1))
+            df = pd.DataFrame.from_dict(dict, orient='index', columns=day_list)
+            self.sectors_df[cur_sector] = df
 
     def generate_dataframe_from_julia(self, cases_frame, surface_column):
         dict, day_count = self.generate_dict_from_julia_surfaces(cases_frame, surface_column)
         day_list = list(range(1, day_count + 1))
         df = pd.DataFrame.from_dict(dict, orient='index', columns=day_list)
-        return df
-
+        return df,day_count
 
     # Returns a tuple of 2d dataframes. Each row is a distinct R value
     # Each column is the day. (currently 0.90 -> 6.0 in 0.1 increments for R
@@ -139,9 +146,10 @@ class DerivedData:
         # 0.9  v  v  v  v
         # 0.91 v  v  v  v
         # i.e.: R on the Y axis and day on the x, with one value per cell
-        self.cases_removed, self.day_count = self.generate_dict_from_julia_surfaces(self.jl.cases_surfaces, self.removed_index)
+        self.cases_removed, self.day_count = self.generate_dict_from_julia_surfaces(self.jl.cases_surfaces,
+                                                                                    self.removed_index)
         self.cases_unemployed, self.day_count = self.generate_dict_from_julia_surfaces(self.jl.cases_surfaces,
-                                                                              self.unemployed_index)
+                                                                                       self.unemployed_index)
         self.day_list = list(range(1, self.day_count + 1))
         self.r_min = list(self.cases_removed.keys())[0]
         self.r_max = list(self.cases_removed.keys())[-1]
@@ -158,5 +166,10 @@ class DerivedData:
                             max(list(self.cases_unemployed.items())[-1][1])
                             ])
         self.pop_min = self.pop_max * 0.8
+
+        for sector_key in self.sectors_dict.keys():
+            self.sector_max[sector_key] = self.sectors_dict[sector_key][self.r_min][0]
+            self.sector_min[sector_key] = self.sectors_dict[sector_key][self.r_max][-1]
+
 
         print("Derived data complete.")

@@ -12,11 +12,12 @@ import io
 
 cur_r = 5.0
 cur_ses_id = 2
+cur_sector_id = "All"
 
 loader = DataLoader()
 derived_data_dict = loader.derived_data_dict
 
-def generate_pulldown_data(metadata_dict):
+def generate_ses_pulldown_data(metadata_dict):
     # Format:
     # [
     #     {'label': 'New York City', 'value': 'NYC'},
@@ -26,6 +27,15 @@ def generate_pulldown_data(metadata_dict):
     retval = []
     for id, entry in metadata_dict.items():
         entry_dict = {'label': entry[0], 'value': id}
+        retval.append(entry_dict)
+    return retval
+
+def generate_sector_pulldown_data(derived_data_for_ses):
+    retval = []
+    entry_dict = {'label': 'All', 'value': 'All'}
+    retval.append(entry_dict)
+    for id in derived_data_for_ses.sectors_dict.keys():
+        entry_dict = {'label': id, 'value': id}
         retval.append(entry_dict)
     return retval
 
@@ -49,8 +59,8 @@ cascades_fig_instance = CascadesFig(app,
                                     "r-cascades-graph",
                                     derived_data_dict,
                                     loader.data_files)
-pie_fig = pie_fig_instance.generate_initial_figure(cur_r, cur_ses_id)
-cascades_fig = cascades_fig_instance.generate_initial_figure(cur_r, cur_ses_id)
+pie_fig = pie_fig_instance.generate_initial_figure(cur_r, cur_ses_id,cur_sector_id)
+cascades_fig = cascades_fig_instance.generate_initial_figure(cur_r, cur_ses_id,cur_sector_id)
 
 
 #  Causes a circular dependancy. Works fine. Suppressing errors (turning debug off)
@@ -101,15 +111,15 @@ SIDEBAR_STYLE = {
     "left": 0,
     "bottom": 0,
     "width": "25rem",
-    "background-color": "#9c9c9c",
+    "backgroundColor": "#9c9c9c",
     "padding": "2rem 1rem"
 }
 
 # the styles for the main content position it to the right of the sidebar and
 # add some padding.
 CONTENT_STYLE = {
-    "margin-left": "25rem",
-    "margin-right": "2rem",
+    "marginLeft": "25rem",
+    "marginRight": "2rem",
     "padding": "2rem 1rem",
 }
 app.layout = html.Div(children=[
@@ -121,8 +131,16 @@ app.layout = html.Div(children=[
                  html.P("Change SES"),
                  dcc.Dropdown(
                      id='ses-pulldown',
-                     options=generate_pulldown_data(loader.data_files),
+                     options=generate_ses_pulldown_data(loader.data_files),
                      value=loader.data_files[cur_ses_id][0]
+                 ),
+                 html.P("Change sector"),
+                 dcc.Dropdown(
+                     id='sector-pulldown',
+                     options=generate_sector_pulldown_data(derived_data_dict[cur_ses_id]),
+                     value='All'
+                     # options=derived_data_dict[cur_ses_id].sectors.keys(),
+                     # value=cur_sector_id
                  ),
                  html.Div(id='spacer1', style={'height': "3rem"}),
                  html.P("R value"),
@@ -146,7 +164,7 @@ app.layout = html.Div(children=[
                                   max=derived_data_dict[cur_ses_id].r_max,
                                   step=0.01,
                                   value=cur_r,
-                                  style={'width': '4rem', 'height': "2rem", "margin-left": "0rem"},
+                                  style={'width': '4rem', 'height': "2rem", "marginLeft": "0rem"},
                               ),
                           ]),
                  html.Div([
