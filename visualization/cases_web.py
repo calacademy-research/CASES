@@ -128,31 +128,19 @@ CONTENT_STYLE = {
     "padding": "2rem 1rem",
 }
 
-# @app.callback(
-#     dash.dependencies.Output("pie-graph", "figure"),
-#     [dash.dependencies.Input('my-toggle-switch', 'value')])
-# def update_output(value):
-#     sector_mode = value
-#     pie_fig_instance.sector_mode = value
-#     cascades_fig_instance.sector_mode = value
-#     retval = value
-#     pie_fig = pie_fig_instance.refresh_pie_fig()
-#     return pie_fig
-
-
 white_button_style = {'background-color': 'white',
-                  }
+                      }
 
 green_button_style = {'background-color': 'green',
-                   }
+                      }
 
 
 @app.callback(
     dash.dependencies.Output('enable-summary', 'style'),
     [dash.dependencies.Input('enable-sectors', 'n_clicks'),
-    dash.dependencies.Input('enable-summary', 'n_clicks')])
-def update_output(n_clicks,n_clicks_2):
-    retval=None
+     dash.dependencies.Input('enable-summary', 'n_clicks')])
+def update_output(n_clicks, n_clicks_2):
+    retval = None
     changed_id = [p['prop_id'] for p in dash.callback_context.triggered][0]
     if 'enable-summary' in changed_id:
         retval = False
@@ -163,12 +151,13 @@ def update_output(n_clicks,n_clicks_2):
     else:
         return white_button_style
 
+
 @app.callback(
     dash.dependencies.Output('enable-sectors', 'style'),
     [dash.dependencies.Input('enable-sectors', 'n_clicks'),
-    dash.dependencies.Input('enable-summary', 'n_clicks')])
-def update_output(n_clicks,n_clicks_2):
-    retval=None
+     dash.dependencies.Input('enable-summary', 'n_clicks')])
+def update_output(n_clicks, n_clicks_2):
+    retval = None
     changed_id = [p['prop_id'] for p in dash.callback_context.triggered][0]
     if 'enable-summary' in changed_id:
         retval = False
@@ -183,9 +172,9 @@ def update_output(n_clicks,n_clicks_2):
 @app.callback(
     dash.dependencies.Output('sector-pulldown', 'disabled'),
     [dash.dependencies.Input('enable-sectors', 'n_clicks'),
-    dash.dependencies.Input('enable-summary', 'n_clicks')])
-def update_output(n_clicks,n_clicks_2):
-    retval=None
+     dash.dependencies.Input('enable-summary', 'n_clicks')])
+def update_output(n_clicks, n_clicks_2):
+    retval = None
     changed_id = [p['prop_id'] for p in dash.callback_context.triggered][0]
     if 'enable-summary' in changed_id:
         retval = False
@@ -198,9 +187,7 @@ def update_output(n_clicks,n_clicks_2):
     return not retval
 
 
-
 app.layout = html.Div(children=[
-
     html.Div(children='CASES'),
     html.Div(id='sidebar',
              style=SIDEBAR_STYLE,
@@ -240,11 +227,10 @@ app.layout = html.Div(children=[
                  html.Div([
                      html.Label("Enable sector display"),
 
+                     html.Button("Summary", id="enable-summary", n_clicks=0, style=green_button_style),
+                     html.Button("Sectors", id="enable-sectors", n_clicks=0),
 
-                     html.Button("Summary",id="enable-summary",n_clicks=0,style=green_button_style),
-                     html.Button("Sectors",id="enable-sectors",n_clicks=0),
-
-                ]),
+                 ]),
 
                  html.P("Change sector"),
                  dcc.Dropdown(

@@ -130,6 +130,12 @@ class PieFig(FigUtilsMixin):
                            opacity=0.6,
                            colorscale='Greens'))
 
+            retval.append(
+                self.create_lines_at_r(self.cur_r,
+                                       self.derived_data_dict[self.cur_ses_id].sectors_dict[cur_sector_id],
+                                       'black',
+                                       cur_sector_id))
+
         return retval
 
     def gen_surfaces(self, ses_dict):
