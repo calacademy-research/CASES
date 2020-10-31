@@ -94,7 +94,7 @@ class PieFig(FigUtilsMixin):
 
     def create_lines_at_r(self, r_val, cases_dict, color, name):
         z = [r_val] * len(self.derived_data_dict[self.cur_ses_id].day_list)  # constant for this R
-        if "All" in self.cur_sector_ids:
+        if self.sector_mode:
             z_val = list(cases_dict[r_val])
         else:
             # Fix this, needs multiplexing. Joe.
@@ -123,8 +123,6 @@ class PieFig(FigUtilsMixin):
         retval = []
 
         for cur_sector_id in self.cur_sector_ids:
-            if cur_sector_id == "All":
-                continue
             unemployed_z = self.derived_data_dict[self.cur_ses_id].sectors_df[cur_sector_id]
 
             retval.append(
