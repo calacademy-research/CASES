@@ -144,9 +144,41 @@ CONTENT_STYLE = {
 white_button_style = {'background-color': 'white',
                   }
 
-red_button_style = {'background-color': 'red',
+green_button_style = {'background-color': 'green',
                    }
 
+
+@app.callback(
+    dash.dependencies.Output('enable-summary', 'style'),
+    [dash.dependencies.Input('enable-sectors', 'n_clicks'),
+    dash.dependencies.Input('enable-summary', 'n_clicks')])
+def update_output(n_clicks,n_clicks_2):
+    retval=None
+    changed_id = [p['prop_id'] for p in dash.callback_context.triggered][0]
+    if 'enable-summary' in changed_id:
+        retval = False
+    if 'enable-sectors' in changed_id:
+        retval = True
+    if retval is False:
+        return green_button_style
+    else:
+        return white_button_style
+
+@app.callback(
+    dash.dependencies.Output('enable-sectors', 'style'),
+    [dash.dependencies.Input('enable-sectors', 'n_clicks'),
+    dash.dependencies.Input('enable-summary', 'n_clicks')])
+def update_output(n_clicks,n_clicks_2):
+    retval=None
+    changed_id = [p['prop_id'] for p in dash.callback_context.triggered][0]
+    if 'enable-summary' in changed_id:
+        retval = False
+    if 'enable-sectors' in changed_id:
+        retval = True
+    if retval is True:
+        return green_button_style
+    else:
+        return white_button_style
 
 
 @app.callback(
@@ -211,7 +243,7 @@ app.layout = html.Div(children=[
                      html.Label("Enable sector display"),
 
 
-                     html.Button("Summary",id="enable-summary",n_clicks=0),
+                     html.Button("Summary",id="enable-summary",n_clicks=0,style=green_button_style),
                      html.Button("Sectors",id="enable-sectors",n_clicks=0),
 
                 ]),
