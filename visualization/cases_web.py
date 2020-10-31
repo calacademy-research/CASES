@@ -39,8 +39,6 @@ def generate_ses_pulldown_data(metadata_dict):
 
 def generate_sector_pulldown_data(derived_data_for_ses):
     retval = []
-    entry_dict = {'label': 'All', 'value': 'All'}
-    retval.append(entry_dict)
     for id in derived_data_for_ses.sectors_dict.keys():
         entry_dict = {'label': id, 'value': id}
         retval.append(entry_dict)

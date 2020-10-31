@@ -51,7 +51,7 @@ class PieFig(FigUtilsMixin):
         cur_ses_dict = self.derived_data_dict[self.cur_ses_id]
 
         scene={}
-        if len(self.cur_sector_ids)==1 and "All" in self.cur_sector_ids:
+        if not self.sector_mode:
             pop_min = cur_ses_dict.pop_min
             pop_max = cur_ses_dict.pop_max
             scene = dict(
