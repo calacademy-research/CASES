@@ -150,25 +150,22 @@ red_button_style = {'background-color': 'red',
 
 
 @app.callback(
-    dash.dependencies.Output('enable-summary', 'style'),
-    [dash.dependencies.Input('enable-sectors', 'n_clicks')])
-def update_summary(n_clicks):
-    sector_mode = True
-    pie_fig_instance.sector_mode = True
-    cascades_fig_instance.sector_mode = True
-    print("enable sectors clicked")
+    dash.dependencies.Output('sector-pulldown', 'disabled'),
+    [dash.dependencies.Input('enable-sectors', 'n_clicks'),
+    dash.dependencies.Input('enable-summary', 'n_clicks')])
+def update_output(n_clicks,n_clicks_2):
+    retval=None
+    changed_id = [p['prop_id'] for p in dash.callback_context.triggered][0]
+    if 'enable-summary' in changed_id:
+        retval = False
+    if 'enable-sectors' in changed_id:
+        retval = True
 
-    return white_button_style
-
-@app.callback(
-    dash.dependencies.Output('enable-sectors', 'style'),
-    [dash.dependencies.Input('enable-summary', 'n_clicks')])
-def update_output(n_clicks):
-    sector_mode = False
-    pie_fig_instance.sector_mode = False
-    cascades_fig_instance.sector_mode = False
+    sector_mode = retval
+    pie_fig_instance.sector_mode = retval
+    cascades_fig_instance.sector_mode = retval
     print("enable summary clicked")
-    return red_button_style
+    return not retval
 
 
 
@@ -225,7 +222,7 @@ app.layout = html.Div(children=[
                      options=generate_sector_pulldown_data(derived_data_dict[cur_ses_id]),
                      value='All',
                      multi=True,
-                     disabled=False
+                     disabled=True
                      # options=derived_data_dict[cur_ses_id].sectors.keys(),
                      # value=cur_sector_id
                  ),
