@@ -32,16 +32,13 @@ class PieFig(FigUtilsMixin):
         return go.Figure(data=self.gen_pie_fig_data(),
                          layout=self.gen_pie_fig_layout())
 
-
     def refresh_pie_fig(self):
         pie_fig = go.Figure(data=self.gen_pie_fig_data())
         pie_fig.update_layout(self.gen_pie_fig_layout())
         return pie_fig
 
     # callback
-    def update_pie_fig(self, new_ses_id, cur_sector_ids, r_slider, r_input,n_clicks_sectors,n_clicks_summary):
-        print("pie fig callback hit")
-
+    def update_pie_fig(self, new_ses_id, cur_sector_ids, r_slider, r_input, n_clicks_sectors, n_clicks_summary):
         self.update_ses_and_r(new_ses_id, cur_sector_ids, r_slider, r_input)
         return self.refresh_pie_fig()
 
@@ -50,28 +47,28 @@ class PieFig(FigUtilsMixin):
         # layout = go.Layout({'title': f"{title}: R={cur_r}",
         cur_ses_dict = self.derived_data_dict[self.cur_ses_id]
 
-        scene={}
+        scene = {}
         if not self.sector_mode:
             pop_min = cur_ses_dict.pop_min
             pop_max = cur_ses_dict.pop_max
             scene = dict(
-                 yaxis_title='R',
-                 zaxis_title='No. Employed',
-                 xaxis_title='Days',
-                 zaxis=dict(
-                     autorange=False,
-                     range=[pop_min, pop_max],
-                 )
-             )
+                yaxis_title='R',
+                zaxis_title='No. Employed',
+                xaxis_title='Days',
+                zaxis=dict(
+                    autorange=False,
+                    range=[pop_min, pop_max],
+                )
+            )
         else:
             scene = dict(
-                 yaxis_title='R',
-                 zaxis_title='No. Employed',
-                 xaxis_title='Days',
-                 zaxis=dict(
-                     autorange=True
-                 )
-             )
+                yaxis_title='R',
+                zaxis_title='No. Employed',
+                xaxis_title='Days',
+                zaxis=dict(
+                    autorange=True
+                )
+            )
 
         return (
             {'title': f"{title}",
@@ -132,12 +129,7 @@ class PieFig(FigUtilsMixin):
                            hoverinfo='none',
                            opacity=0.6,
                            colorscale='Greens'))
-            # retval.append(
-            #     self.create_lines_at_r(self.cur_r,
-            #                            ses_dict.cases_unemployed,
-            #                            'green',
-            #                            "Unemployed",
-            #                            cur_sector_id))
+
         return retval
 
     def gen_surfaces(self, ses_dict):
@@ -153,14 +145,24 @@ class PieFig(FigUtilsMixin):
                                      colorscale='Greens',
                                      colorbar=dict(
                                          title="Total<br>employed",
-                                         x=1.20,)
+                                         thickness=10,
+                                         tickmode="auto",
+                                         # nticks=5,
+                                         x=1.20, )
                                      ))
             retval.append(go.Surface(z=ses_dict.removed_surface_df.values,
                                      y=ses_dict.removed_surface_df.index,
                                      x=ses_dict.removed_surface_df.columns,
                                      hoverinfo='none',
                                      opacity=0.6,
-                                     colorscale='Greys'))
+                                     colorscale='Greys',
+                                     colorbar=dict(
+                                         title="Total<br>removed",
+                                         x=1.02,
+                                         tickmode="auto",
+                                         # nticks=5,
+                                         thickness=10, )
+                                     ))
 
             retval.append(
                 self.create_lines_at_r(self.cur_r, ses_dict.cases_removed, 'black', "Removed from workpool"))

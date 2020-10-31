@@ -195,7 +195,6 @@ def update_output(n_clicks,n_clicks_2):
     sector_mode = retval
     pie_fig_instance.sector_mode = retval
     cascades_fig_instance.sector_mode = retval
-    print("enable summary clicked")
     return not retval
 
 
