@@ -15,11 +15,12 @@ import io
 # Initial values
 cur_r = 5.0
 cur_ses_id = 2
-cur_sector_ids = ["All"]
+
 sector_mode = False  # summary or sector
 
 loader = DataLoader()
 derived_data_dict = loader.derived_data_dict
+cur_sector_ids = list(derived_data_dict[cur_ses_id].sectors_dict.keys())
 
 
 def generate_ses_pulldown_data(metadata_dict):
@@ -252,7 +253,7 @@ app.layout = html.Div(children=[
                  dcc.Dropdown(
                      id='sector-pulldown',
                      options=generate_sector_pulldown_data(derived_data_dict[cur_ses_id]),
-                     value='All',
+                     value=cur_sector_ids,
                      multi=True,
                      disabled=True
                      # options=derived_data_dict[cur_ses_id].sectors.keys(),
