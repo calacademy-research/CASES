@@ -13,12 +13,16 @@ class PieFig(FigUtilsMixin):
         self.cur_sector_ids = None
         self.cur_r = None
         self.cur_ses_id = None
+        self.sector_mode = False
         app.callback(
             dash.dependencies.Output(id, "figure"),
             [dash.dependencies.Input('ses-pulldown', 'value'),
              dash.dependencies.Input('sector-pulldown', 'value'),
              dash.dependencies.Input('r-slider', 'value'),
-             dash.dependencies.Input('r-input', 'value')])(self.update_pie_fig)
+             dash.dependencies.Input('r-input', 'value'),
+             dash.dependencies.Input('enable-sectors', 'n_clicks'),
+             dash.dependencies.Input('enable-summary', 'n_clicks')
+             ])(self.update_pie_fig)
 
     # Initial call
     def generate_initial_figure(self, cur_r, cur_ses_id, cur_sector_ids):
@@ -28,13 +32,18 @@ class PieFig(FigUtilsMixin):
         return go.Figure(data=self.gen_pie_fig_data(),
                          layout=self.gen_pie_fig_layout())
 
-    # callback
-    def update_pie_fig(self, new_ses_id, cur_sector_ids, r_slider, r_input):
-        self.update_ses_and_r(new_ses_id, cur_sector_ids, r_slider, r_input)
 
+    def refresh_pie_fig(self):
         pie_fig = go.Figure(data=self.gen_pie_fig_data())
         pie_fig.update_layout(self.gen_pie_fig_layout())
         return pie_fig
+
+    # callback
+    def update_pie_fig(self, new_ses_id, cur_sector_ids, r_slider, r_input,n_clicks_sectors,n_clicks_summary):
+        print("pie fig callback hit")
+
+        self.update_ses_and_r(new_ses_id, cur_sector_ids, r_slider, r_input)
+        return self.refresh_pie_fig()
 
     def gen_pie_fig_layout_data(self):
         title = self.data_files[self.cur_ses_id][0]
@@ -110,8 +119,9 @@ class PieFig(FigUtilsMixin):
         layout = go.Layout(self.gen_pie_fig_layout_data())
         return layout
 
-    def gen_sector_surfaces(self, ses_dict):
+    def gen_sector_display(self, ses_dict):
         retval = []
+
         for cur_sector_id in self.cur_sector_ids:
             if cur_sector_id == "All":
                 continue
@@ -134,7 +144,7 @@ class PieFig(FigUtilsMixin):
 
     def gen_surfaces(self, ses_dict):
         retval = []
-        if "All" in self.cur_sector_ids:
+        if not self.sector_mode:
             unemployed_z = ses_dict.unemployed_surface_df.values
 
             retval.append(go.Surface(z=unemployed_z,
@@ -157,9 +167,10 @@ class PieFig(FigUtilsMixin):
             retval.append(
                 self.create_lines_at_r(self.cur_r, ses_dict.cases_removed, 'black', "Removed from workpool", "All"))
             retval.append(self.create_lines_at_r(self.cur_r, ses_dict.cases_unemployed, 'green', "Unemployed", "All"))
-        surfaces = self.gen_sector_surfaces(ses_dict)
-        if surfaces is not None:
-            retval.extend(surfaces)
+        else:
+            surfaces = self.gen_sector_display(ses_dict)
+            if surfaces is not None:
+                retval.extend(surfaces)
 
         return retval
 

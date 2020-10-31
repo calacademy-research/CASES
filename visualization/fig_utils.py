@@ -16,3 +16,10 @@ class FigUtilsMixin:
             self.cur_ses_id = new_ses_id
         if isinstance(new_sector_ids, list):
             self.cur_sector_ids = new_sector_ids
+        changed_id = [p['prop_id'] for p in dash.callback_context.triggered][0]
+        if 'enable-summary' in changed_id:
+            self.sector_mode = False
+        if 'enable-sectors' in changed_id:
+            self.sector_mode = True
+
+

@@ -11,6 +11,8 @@ class CascadesFig(FigUtilsMixin):
         self.cur_sector_ids = None
         self.cur_r = None
         self.cur_ses_id = None
+        self.sector_mode = False
+
         app.callback(
             dash.dependencies.Output(id, "figure"),
             [dash.dependencies.Input('ses-pulldown', 'value'),
@@ -29,8 +31,8 @@ class CascadesFig(FigUtilsMixin):
         return fig
 
     # callback
-    def update_cascades_fig(self, new_ses_id, new_sector_id,r_slider, r_input):
-        self.update_ses_and_r(new_ses_id,new_sector_id, r_slider, r_input)
+    def update_cascades_fig(self, new_ses_id, new_sector_ids,r_slider, r_input):
+        self.update_ses_and_r(new_ses_id, new_sector_ids, r_slider, r_input)
 
         cascades_fig = go.Figure(data=self.gen_cascades_fig_data())
         cascades_fig.update_layout(self.gen_cascades_fig_layout())
