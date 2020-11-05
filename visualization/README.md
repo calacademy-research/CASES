@@ -16,7 +16,9 @@ trajectory of the pandemic.
 Format:
 <ses ID>    <relative path to csv file>
 
-Input file format example below. We pull data from the "Ensenble" column.
+Input file format example below. We pull data from the column marked "Ensenble".
+The index of this column may vary.
+
 R-Effective County Model Time Series for San Francisco,,,,,,,
 COVID Assessment Tool - Downloaded on 2020-08-27,,,,,,,
 Date,CovidActNow,LEMMA,JHU,Stanford,UCSF,Harvard,Ensemble

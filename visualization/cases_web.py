@@ -2,6 +2,7 @@
 import dash
 from derived_data_loader import DerivedDataLoader
 from employment_input import EmploymentInput
+from r_input import RInput
 from pie_fig import PieFig
 from cascades_fig import CascadesFig
 import dash_core_components as dcc
@@ -19,6 +20,7 @@ cur_ses_id = 2
 
 sector_mode = False  # summary or sector
 employment_data = EmploymentInput()
+r_date_dict = RInput().r_input_data_dict
 
 derived_data_loader = DerivedDataLoader(employment_data.sector_names)
 derived_data_dict = derived_data_loader.derived_data_dict
