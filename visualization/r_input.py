@@ -4,9 +4,9 @@ import csv
 
 class EmploymentInput:
 
-    def __init__(self):
-        self.employment_data_files = self.read_input_data("employment_input_data.tsv")
-        self.sector_names = self.read_input_mappings("sector_names.tsv")
+    def __init__(self, sector_names):
+        self.sector_names = sector_names
+        self.employment_data_files = self.read_input_data("r_input_data.tsv")
         self.employment_input_data_dict = {}
         self.read_data()
 

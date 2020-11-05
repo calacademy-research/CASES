@@ -20,7 +20,7 @@ cur_ses_id = 2
 sector_mode = False  # summary or sector
 employment_data = EmploymentInput()
 
-derived_data_loader = DerivedDataLoader()
+derived_data_loader = DerivedDataLoader(employment_data.sector_names)
 derived_data_dict = derived_data_loader.derived_data_dict
 # cur_sector_ids = list(derived_data_dict[cur_ses_id].sectors_dict.keys())
 cur_sector_ids = ["Farm","Professional"]

@@ -7,7 +7,8 @@ import csv
 # Something of a misnomer, as we read the julia model
 # data inputs here.
 class DerivedDataLoader:
-    def __init__(self):
+    def __init__(self,sector_names):
+        self.sector_names = sector_names
         self.data_files = self.read_input_metadata("derived_data_inputs.tsv")
         self.derived_data_dict = self.read_data()
 
@@ -53,7 +54,7 @@ class DerivedDataLoader:
         binary_dump_filename = JuliaLoader.get_filename_only(employment_filename) + "_derived.bin"
 
         print(f"Generating derived data for {employment_filename}",end=None,flush=True)
-        derived_data = DerivedData(self.jl,employment_filename)
+        derived_data = DerivedData(self.jl,employment_filename,self.sector_names)
         outfile = open(binary_dump_filename,'wb')
         pickle.dump(derived_data, outfile)
         outfile.close()

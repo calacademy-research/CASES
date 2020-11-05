@@ -4,65 +4,41 @@ import pandas as pd
 # TODO: Double check that the LA_CASES6_output sector columns match up
 # with self.sectors; ensure there's no off-by-one error
 class DerivedData:
-    complete_array = ['R', 'day',
-                      "Farm_1", "Farm_2", "Farm_3", "Farm_4",
-                      "Mining_1", "Mining_2", "Mining_3", "Mining_4",
-                      "Utilities_1", "Utilities_2", "Utilities_3", "Utilities_4",
-                      "Construction_1", "Construction_2", "Construction_3", "Construction_4",
-                      "Manf_1", "Manf_2", "Manf_3", "Manf_4",
-                      "Wholesale_1", "Wholesale_2", "Wholesale_3",
-                      "Wholesale_4", "Retail_1", "Retail_2",
-                      "Retail_3", "Retail_4", "Transp_1", "Transp_2", "Transp_3", "Transp_4",
-                      "Information_1", "Information_2", "Information_3", "Information_4",
-                      "Financial_1", "Financial_2", "Financial_3", "Financial_4",
-                      "Prof_1", "Prof_2", "Prof_3", "Prof_4",
-                      "Ed_Hlth_1", "Ed_Hlth_2", "Ed_Hlth_3", "Ed_Hlth_4",
-                      "Leisure_1", "Leisure_2", "Leisure_3", "Leisure_4",
-                      "Other_1", "Other_2", "Other_3", "Other_4",
-                      "Gov_1", "Gov_2", "Gov_3", "Gov_4",
-                      "Farm",
-                      "Mining",
-                      "Utilities",
-                      "Construction",
-                      "Manufacturing",
-                      "Wholesale",
-                      "Retail",
-                      "Transportation",
-                      "Information",
-                      "Financial",
-                      "Professional",
-                      "Education and Health",
-                      "Leisure",
-                      "Other",
-                      "Government",
-                      "Susceptible", "Infected", "Removed"]
+
 
     #  "total_E", "Disease_only"
 
-    def __init__(self, jl, employment_filename, col_unemployed=3, col_removed=2):
+    def __init__(self, jl, employment_filename, sector_names,col_unemployed=3, col_removed=2):
         self.jl = jl
+        self.sector_names = sector_names
         self.removed_index = col_unemployed
         self.unemployed_index = col_removed
         self.employment_filename = employment_filename
+        self.sectors_dict = {}
 
-        self.sectors_dict = {
-            'Farm': None,
-            'Mining': None,
-            'Utilities': None,
-            'Construction': None,
-            'Manufacturing': None,
-            'Wholesale': None,
-            'Retail': None,
-            'Transportation': None,
-            'Information': None,
-            'Financial': None,
-            'Professional': None,
-            'Education and Health': None,
-            'Leisure': None,
-            'Other': None,
-            'Government': None}
+        for value in sector_names.values():
+            self.sectors_dict[value] = None
+        self.complete_array = ['R', 'day',
+                          "Farm_1", "Farm_2", "Farm_3", "Farm_4",
+                          "Mining_1", "Mining_2", "Mining_3", "Mining_4",
+                          "Utilities_1", "Utilities_2", "Utilities_3", "Utilities_4",
+                          "Construction_1", "Construction_2", "Construction_3", "Construction_4",
+                          "Manf_1", "Manf_2", "Manf_3", "Manf_4",
+                          "Wholesale_1", "Wholesale_2", "Wholesale_3",
+                          "Wholesale_4", "Retail_1", "Retail_2",
+                          "Retail_3", "Retail_4", "Transp_1", "Transp_2", "Transp_3", "Transp_4",
+                          "Information_1", "Information_2", "Information_3", "Information_4",
+                          "Financial_1", "Financial_2", "Financial_3", "Financial_4",
+                          "Prof_1", "Prof_2", "Prof_3", "Prof_4",
+                          "Ed_Hlth_1", "Ed_Hlth_2", "Ed_Hlth_3", "Ed_Hlth_4",
+                          "Leisure_1", "Leisure_2", "Leisure_3", "Leisure_4",
+                          "Other_1", "Other_2", "Other_3", "Other_4",
+                          "Gov_1", "Gov_2", "Gov_3", "Gov_4"]
+        for value in sector_names.values():
+            self.complete_array.append(value)
+
+        self.complete_array.extend(["Susceptible", "Infected", "Removed"])
         self.sectors_df = {}
-
         self.sector_max = {}
         self.sector_min = {}
         self.generate_all_dataframes_from_julia()
@@ -155,6 +131,8 @@ class DerivedData:
         self.r_max = list(self.cases_removed.keys())[-1]
         self.day_min = self.day_list[0]
         self.day_max = self.day_list[-1]
+        # this is the absolute minimum; replacing this with a relative to pop_max minimum.
+
         # self.pop_min = min([min(list(self.cases_removed.items())[0][1]),
         #                     min(list(self.cases_removed.items())[-1][1]),
         #                     min(list(self.cases_unemployed.items())[0][1]),

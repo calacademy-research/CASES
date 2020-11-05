@@ -1,3 +1,31 @@
+TODO:
+Make it so this outputs .csv or .tsv for the model(s).
+  Verify against roopnarine raw model runs
+Test on windows
+we're using '/' in paths in r_input_data.tsv. Check this works on windows.
+We've got spaces in paths for r_input_data.tsv; test & verify.
+
+
+
+Document input files.
+
+r_input_data.tsv:
+Contains per-day R values for each SES. Used for graphing the true 
+trajectory of the pandemic.
+
+Format:
+<ses ID>    <relative path to csv file>
+
+Input file format example below. We pull data from the "Ensenble" column.
+R-Effective County Model Time Series for San Francisco,,,,,,,
+COVID Assessment Tool - Downloaded on 2020-08-27,,,,,,,
+Date,CovidActNow,LEMMA,JHU,Stanford,UCSF,Harvard,Ensemble
+2020-01-31,0,0,2.35,0,0,0,0
+
+
+
+
+
 To convert notebook code to a script:
 
 
