@@ -1,13 +1,14 @@
 from derived_data import DerivedData
-import sys
 from os import path
 import pickle
 from julia_loader import JuliaLoader
 import csv
 
-class DataLoader:
+# Something of a misnomer, as we read the julia model
+# data inputs here.
+class DerivedDataLoader:
     def __init__(self):
-        self.data_files = self.read_input_metadata("inputs.tsv")
+        self.data_files = self.read_input_metadata("derived_data_inputs.tsv")
         self.derived_data_dict = self.read_data()
 
     # entry point

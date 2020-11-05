@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import dash
-from data_loader import DataLoader
+from derived_data_loader import DerivedDataLoader
+from employment_input import EmploymentInput
 from pie_fig import PieFig
 from cascades_fig import CascadesFig
 import dash_core_components as dcc
@@ -17,11 +18,12 @@ cur_r = 5.0
 cur_ses_id = 2
 
 sector_mode = False  # summary or sector
+employment_data = EmploymentInput()
 
-loader = DataLoader()
-derived_data_dict = loader.derived_data_dict
-cur_sector_ids = list(derived_data_dict[cur_ses_id].sectors_dict.keys())
-
+derived_data_loader = DerivedDataLoader()
+derived_data_dict = derived_data_loader.derived_data_dict
+# cur_sector_ids = list(derived_data_dict[cur_ses_id].sectors_dict.keys())
+cur_sector_ids = ["Farm","Professional"]
 
 def generate_ses_pulldown_data(metadata_dict):
     # Format:
@@ -59,11 +61,11 @@ app = create_app()
 pie_fig_instance = PieFig(app,
                           "pie-graph",
                           derived_data_dict,
-                          loader.data_files)
+                          derived_data_loader.data_files)
 cascades_fig_instance = CascadesFig(app,
                                     "r-cascades-graph",
                                     derived_data_dict,
-                                    loader.data_files)
+                                    derived_data_loader.data_files)
 pie_fig = pie_fig_instance.generate_initial_figure(cur_r, cur_ses_id, cur_sector_ids)
 cascades_fig = cascades_fig_instance.generate_initial_figure(cur_r, cur_ses_id, cur_sector_ids)
 
@@ -89,7 +91,7 @@ def update_sider_from_input(new_r):
 
 @app.server.route('/download_csv')
 def download_csv():
-    cur_ses_name = loader.data_files[pie_fig_instance.cur_ses_id][0]
+    cur_ses_name = derived_data_loader.data_files[pie_fig_instance.cur_ses_id][0]
     cur_r = pie_fig_instance.cur_r
     cur_data_dict = derived_data_dict[pie_fig_instance.cur_ses_id]
     filename = f"{cur_ses_name}_{cur_r}.csv"
@@ -195,7 +197,7 @@ app.layout = html.Div(children=[
                  html.P("Change SES"),
                  dcc.Dropdown(
                      id='ses-pulldown',
-                     options=generate_ses_pulldown_data(loader.data_files),
+                     options=generate_ses_pulldown_data(derived_data_loader.data_files),
                      value=cur_ses_id
                  ),
 

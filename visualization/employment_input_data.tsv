@@ -1,0 +1,13 @@
+# Employment file path
+../employment_by_sector_by_month
+# SES ID, employment filename
+0	Anaheim_0.tsv
+1	Fresno_1.tsv
+2	LA_2.tsv
+4	Oakland_4.tsv
+5	Oxnard_5.tsv
+6	Riverside_6.tsv
+7	SD_7.tsv
+8	SF_8.tsv
+9	SJ_9.tsv
+10	Stockton_10.tsv
