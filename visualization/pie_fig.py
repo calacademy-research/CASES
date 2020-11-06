@@ -6,7 +6,7 @@ from fig_utils import FigUtilsMixin
 # cur_r and cur_ses_id are set when we call an generate_initial_figure
 # and updated by callbacks.
 class PieFig(FigUtilsMixin):
-    def __init__(self, app, id, derived_data_dict, data_files):
+    def __init__(self, app, id, derived_data_dict, data_files,employment_data,r_date_dict):
         self.derived_data_dict = derived_data_dict
         self.app = app
         self.data_files = data_files
@@ -14,6 +14,8 @@ class PieFig(FigUtilsMixin):
         self.cur_r = None
         self.cur_ses_id = None
         self.sector_mode = False
+        self.employemnt_data = employment_data
+        self.r_date_dict = r_date_dict
         app.callback(
             dash.dependencies.Output(id, "figure"),
             [dash.dependencies.Input('ses-pulldown', 'value'),
@@ -89,6 +91,43 @@ class PieFig(FigUtilsMixin):
              }
         )
 
+
+    def create_r_trace_sector(self,sector_id):
+
+        employment = self.employemnt_data.employment_by_ses_by_sector_by_day[self.cur_ses_id][sector_id]
+        r_values = list(self.r_date_dict[self.cur_ses_id].values())
+        data = go.Scatter3d(
+            mode='lines',
+            name='r trace',
+            x=self.derived_data_dict[self.cur_ses_id].day_list,
+            y=r_values,
+            z=employment,
+
+            line=dict(
+                color="red",
+                width=7
+            )
+        )
+        return data
+
+    def create_r_trace_summary(self):
+
+        employment = self.employemnt_data.employment_by_ses_by_day[self.cur_ses_id]
+        r_values = list(self.r_date_dict[self.cur_ses_id].values())
+        data = go.Scatter3d(
+            mode='lines',
+            name='r trace',
+            x=self.derived_data_dict[self.cur_ses_id].day_list,
+            y=r_values,
+            z=employment,
+
+            line=dict(
+                color="red",
+                width=7
+            )
+        )
+        return data
+
     def create_lines_at_r(self, r_val, cases_dict, color, name):
         z = [r_val] * len(self.derived_data_dict[self.cur_ses_id].day_list)  # constant for this R
         if self.sector_mode:
@@ -135,6 +174,9 @@ class PieFig(FigUtilsMixin):
                                        self.derived_data_dict[self.cur_ses_id].sectors_dict[cur_sector_id],
                                        'black',
                                        cur_sector_id))
+            retval.append(self.create_r_trace_sector(cur_sector_id))
+
+
 
         return retval
 
@@ -173,6 +215,7 @@ class PieFig(FigUtilsMixin):
             retval.append(
                 self.create_lines_at_r(self.cur_r, ses_dict.cases_removed, 'black', "Removed from workpool"))
             retval.append(self.create_lines_at_r(self.cur_r, ses_dict.cases_unemployed, 'green', "Unemployed"))
+            retval.append(self.create_r_trace_summary())
         else:
             surfaces = self.gen_sector_display(ses_dict)
             if surfaces is not None:

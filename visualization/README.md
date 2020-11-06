@@ -10,8 +10,7 @@ We've got spaces in paths for r_input_data.tsv; test & verify.
 Document input files.
 
 r_input_data.tsv:
-Contains per-day R values for each SES. Used for graphing the true 
-trajectory of the pandemic.
+Contains per-day R values for each SES. 
 
 Format:
 <ses ID>    <relative path to csv file>

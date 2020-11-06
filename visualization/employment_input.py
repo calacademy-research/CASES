@@ -7,8 +7,14 @@ class EmploymentInput:
     def __init__(self):
         self.employment_data_files = self.read_input_data("employment_input_data.tsv")
         self.sector_names = self.read_input_mappings("sector_names.tsv")
+        self.months = {"Feb":29,"Mar":31,"Apr":30,"May":31,"Jun":30,"Jul":30,"Aug":31,"Sep":30,"Oct":31,"Nov":30,"Dec":31}
         self.employment_input_data_dict = {}
+        self.employment_by_ses_by_day = {}
+        self.employment_by_ses_by_sector_by_day = {}
+
         self.read_data()
+        self.create_daily_sector_data()
+        self.create_daily_total_data()
 
 
  # entry point
@@ -26,6 +32,42 @@ class EmploymentInput:
         for id in failed_loads:
             if id in self.sector_names.keys():
                 del self.employment_input_data_dict[id]
+
+    def create_daily_total_data(self):
+        self.employment_by_ses_by_day={}
+        for id in self.employment_data_files.keys():
+            self.employment_by_ses_by_day[id] = []
+            for day in range(0,self.day_count):
+                total = 0
+
+                for cur_sector in self.sector_names.values():
+                    total += self.employment_by_ses_by_sector_by_day[id][cur_sector][day]
+                self.employment_by_ses_by_day[id].append(total)
+
+    def create_daily_sector_data(self):
+        """
+        This ugly thing creates self.day_count entries in
+        self.employment_by_day_by_ses_by_sector[id][cur_sector] - since the
+        employment data is by month and the R data is by day, we're stretching
+        out the values. There's a better way to do this. Probably numpy.
+        :return:
+        """
+        for id in self.employment_data_files.keys():
+            if id not in self.employment_by_ses_by_sector_by_day.keys():
+                self.employment_by_ses_by_sector_by_day[id] = {}
+            cur_data_dict = self.employment_input_data_dict[id]
+            for cur_sector in self.sector_names.values():
+                if cur_sector not in self.employment_by_ses_by_sector_by_day[id]:
+                    self.employment_by_ses_by_sector_by_day[id][cur_sector] = []
+                for cur_month in self.months.keys():
+                    if cur_month in cur_data_dict[cur_sector]:
+
+                        employment = cur_data_dict[cur_sector][cur_month]
+                        # print(f"in SES {self.employment_data_files[id]}, sector employment in {cur_sector} in {cur_month}: {employment}")
+                        for i in range (0,self.months[cur_month]):
+                            if len(self.employment_by_ses_by_sector_by_day[id][cur_sector]) < self.day_count:
+                                self.employment_by_ses_by_sector_by_day[id][cur_sector].append(employment)
+
 
 
 
@@ -78,6 +120,8 @@ class EmploymentInput:
                 continue
             if employment_directory is None:
                 employment_directory = row[0]
+                self.day_count = int(row[1])
+
             else:
                 employment_filename = employment_directory + "/" + row[1]
                 data_files[int(row[0])] = employment_filename

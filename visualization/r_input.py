@@ -1,21 +1,14 @@
-from derived_data import DerivedData
-from os import path
 import csv
-import sys
-from dateutil.parser import parse
+from dateutil.parser import parse as date_parser
 
-
-
-# might not need sector names
 class RInput:
-
-    def __init__(self):
+    def __init__(self,day_count):
         self.r_data_files = self.read_input_data("r_input_data.tsv")
         self.r_input_data_dict = {}
+        self.day_count = day_count
         self.read_data()
 
 
- # entry point
     def read_data(self):
         failed_loads = []
 
@@ -39,14 +32,14 @@ class RInput:
         :param fuzzy: bool, ignore unknown tokens in string if True
         """
         try:
-            parse(date_string, fuzzy=fuzzy)
+            date_parser(date_string, fuzzy=fuzzy)
             return True
 
         except ValueError:
             return False
 
-    def load_r_data(self,r_filename):
-        results = []
+    def load_r_data(self, r_filename):
+        results = {}
         csv_file = open(r_filename)
         read_csv = csv.reader(csv_file, delimiter=",")
 
@@ -57,7 +50,6 @@ class RInput:
         r_col = None
 
         for row in read_csv:
-
             date_string = row[0]
             if not self.is_date(date_string):
                 if 'Ensemble' in row:
@@ -68,12 +60,16 @@ class RInput:
 
             r = float(row[r_col])
             # print(f" {r_filename} Got {date_string}:{r}")
-            results.append((parse(date_string),r))
+            day_val = (date_parser(date_string) - self.day_zero).days
+
+            if day_val >= 0 and day_val < self.day_count:
+                results[day_val] = r
 
         return results
 
 
-    def read_input_data(self,filename):
+
+    def read_input_data(self, filename):
         tsv_file = open(filename)
         read_tsv = csv.reader(tsv_file, delimiter="\t")
 
@@ -84,6 +80,7 @@ class RInput:
                 continue
             if r_directory is None:
                 r_directory = row[0]
+                self.day_zero = date_parser(row[1])
             else:
                 r_filename = r_directory + "/" + row[1]
                 data_files[int(row[0])] = r_filename

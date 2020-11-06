@@ -6,8 +6,6 @@ from r_input import RInput
 from pie_fig import PieFig
 from cascades_fig import CascadesFig
 import dash_core_components as dcc
-import dash_daq as daq
-
 import dash_html_components as html
 import dash_bootstrap_components as dbc
 from flask import make_response
@@ -20,7 +18,7 @@ cur_ses_id = 2
 
 sector_mode = False  # summary or sector
 employment_data = EmploymentInput()
-r_date_dict = RInput().r_input_data_dict
+r_date_dict = RInput(employment_data.day_count).r_input_data_dict
 
 derived_data_loader = DerivedDataLoader(employment_data.sector_names)
 derived_data_dict = derived_data_loader.derived_data_dict
@@ -63,7 +61,9 @@ app = create_app()
 pie_fig_instance = PieFig(app,
                           "pie-graph",
                           derived_data_dict,
-                          derived_data_loader.data_files)
+                          derived_data_loader.data_files,
+                          employment_data,
+                          r_date_dict)
 cascades_fig_instance = CascadesFig(app,
                                     "r-cascades-graph",
                                     derived_data_dict,

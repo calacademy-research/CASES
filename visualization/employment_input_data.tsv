@@ -1,5 +1,5 @@
-# Employment file path
-../employment_by_sector_by_month
+# Employment file path, number_of_days
+../employment_by_sector_by_month	151
 # SES ID, employment filename
 0	Anaheim_0.tsv
 1	Fresno_1.tsv
