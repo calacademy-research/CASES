@@ -68,7 +68,8 @@ class PieFig(FigUtilsMixin):
                 zaxis_title='No. Employed',
                 xaxis_title='Days',
                 zaxis=dict(
-                    autorange=True
+                    autorange=True,
+                    # range=[750,1000],
                 )
             )
 
@@ -96,12 +97,15 @@ class PieFig(FigUtilsMixin):
 
         employment = self.employemnt_data.employment_by_ses_by_sector_by_day[self.cur_ses_id][sector_id]
         r_values = list(self.r_date_dict[self.cur_ses_id].values())
+        maxval = max(employment)
+        normalized_employment= [(x / maxval)*1000 for x in employment]
+
         data = go.Scatter3d(
             mode='lines',
             name='r trace',
             x=self.derived_data_dict[self.cur_ses_id].day_list,
             y=r_values,
-            z=employment,
+            z=normalized_employment,
 
             line=dict(
                 color="red",

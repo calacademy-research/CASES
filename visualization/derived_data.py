@@ -44,15 +44,28 @@ class DerivedData:
         self.generate_all_dataframes_from_julia()
         self.generate_derived_data()
 
+    # Normalize to 1000
+    def normalize_dict(self,dict):
+        val1 = dict[next(iter(dict))][0]
+        val2 = dict[next(reversed(dict))][-1]
+        maxval = float(max(val1,val2))
+        retval = {}
+        for key in dict.keys():
+            source_array = dict[key]
+            target = [(x / maxval) * 1000 for x in source_array]
+            retval[key] = target
+        return retval
+
     def generate_all_dataframes_from_julia(self):
         self.unemployed_surface_df,day_count = self.generate_dataframe_from_julia(self.jl.cases_surfaces, self.unemployed_index)
         self.removed_surface_df,day_count = self.generate_dataframe_from_julia(self.jl.cases_surfaces, self.removed_index)
         for cur_sector in self.sectors_dict.keys():
             print(f"  Generating derived surface for sector {cur_sector}")
             dict = self.generate_dict_from_julia_complete(self.complete_array.index(cur_sector))
-            self.sectors_dict[cur_sector] = dict
+            n_dict = self.normalize_dict(dict)
+            self.sectors_dict[cur_sector] = n_dict
             day_list = list(range(1, day_count + 1))
-            df = pd.DataFrame.from_dict(dict, orient='index', columns=day_list)
+            df = pd.DataFrame.from_dict(n_dict, orient='index', columns=day_list)
             self.sectors_df[cur_sector] = df
 
     def generate_dataframe_from_julia(self, cases_frame, surface_column):
