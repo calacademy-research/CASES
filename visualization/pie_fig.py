@@ -66,10 +66,11 @@ class PieFig(FigUtilsMixin):
         else:
             scene = dict(
                 yaxis_title='R',
-                zaxis_title='No. Employed',
+                zaxis_title='No. Employed, normalized',
                 xaxis_title='Days',
                 zaxis=dict(
                     autorange=True,
+                    showticklabels= False,
                     # range=[750,1000],
                 )
             )
@@ -167,7 +168,6 @@ class PieFig(FigUtilsMixin):
             unemployed_z = self.derived_data_dict[self.cur_ses_id].sectors_df[cur_sector_id]
             r_cs = self.sector_colors.surface_color_mappings[cur_sector_id]
 
-            print(f"Colorscale for {cur_sector_id}: {r_cs}")
             retval.append(
                 go.Surface(z=unemployed_z,
                            y=ses_dict.unemployed_surface_df.index,
