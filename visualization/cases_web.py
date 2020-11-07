@@ -11,11 +11,13 @@ import dash_bootstrap_components as dbc
 from flask import make_response
 import csv
 import io
+from sector_colors import SectorColors
 
 # Initial values
 cur_r = 5.0
 cur_ses_id = 2
 
+graph_colors = SectorColors()
 sector_mode = False  # summary or sector
 employment_data = EmploymentInput()
 r_date_dict = RInput(employment_data.day_count).r_input_data_dict
@@ -63,7 +65,8 @@ pie_fig_instance = PieFig(app,
                           derived_data_dict,
                           derived_data_loader.data_files,
                           employment_data,
-                          r_date_dict)
+                          r_date_dict,
+                          graph_colors)
 cascades_fig_instance = CascadesFig(app,
                                     "r-cascades-graph",
                                     derived_data_dict,

@@ -6,7 +6,7 @@ from fig_utils import FigUtilsMixin
 # cur_r and cur_ses_id are set when we call an generate_initial_figure
 # and updated by callbacks.
 class PieFig(FigUtilsMixin):
-    def __init__(self, app, id, derived_data_dict, data_files,employment_data,r_date_dict):
+    def __init__(self, app, id, derived_data_dict, data_files, employment_data, r_date_dict, sector_colors):
         self.derived_data_dict = derived_data_dict
         self.app = app
         self.data_files = data_files
@@ -16,6 +16,7 @@ class PieFig(FigUtilsMixin):
         self.sector_mode = False
         self.employemnt_data = employment_data
         self.r_date_dict = r_date_dict
+        self.sector_colors = sector_colors
         app.callback(
             dash.dependencies.Output(id, "figure"),
             [dash.dependencies.Input('ses-pulldown', 'value'),
@@ -92,23 +93,23 @@ class PieFig(FigUtilsMixin):
              }
         )
 
-
-    def create_r_trace_sector(self,sector_id):
+    def create_r_trace_sector(self, sector_id):
 
         employment = self.employemnt_data.employment_by_ses_by_sector_by_day[self.cur_ses_id][sector_id]
         r_values = list(self.r_date_dict[self.cur_ses_id].values())
         maxval = max(employment)
-        normalized_employment= [(x / maxval)*1000 for x in employment]
+        normalized_employment = [(x / maxval) * 1000 for x in employment]
 
         data = go.Scatter3d(
             mode='lines',
-            name='r trace',
+            name=sector_id + " trace",
             x=self.derived_data_dict[self.cur_ses_id].day_list,
             y=r_values,
             z=normalized_employment,
 
             line=dict(
-                color="red",
+                color=self.sector_colors.trace_color_mappings[sector_id],
+                # color="blue",
                 width=7
             )
         )
@@ -126,7 +127,7 @@ class PieFig(FigUtilsMixin):
             z=employment,
 
             line=dict(
-                color="red",
+                color="blue",
                 width=7
             )
         )
@@ -164,14 +165,17 @@ class PieFig(FigUtilsMixin):
 
         for cur_sector_id in self.cur_sector_ids:
             unemployed_z = self.derived_data_dict[self.cur_ses_id].sectors_df[cur_sector_id]
+            r_cs = self.sector_colors.surface_color_mappings[cur_sector_id]
 
+            print(f"Colorscale for {cur_sector_id}: {r_cs}")
             retval.append(
                 go.Surface(z=unemployed_z,
                            y=ses_dict.unemployed_surface_df.index,
                            x=ses_dict.unemployed_surface_df.columns,
                            hoverinfo='none',
                            opacity=0.6,
-                           colorscale='Greens'))
+                           colorscale=r_cs
+                           ))
 
             retval.append(
                 self.create_lines_at_r(self.cur_r,
@@ -179,8 +183,6 @@ class PieFig(FigUtilsMixin):
                                        'black',
                                        cur_sector_id))
             retval.append(self.create_r_trace_sector(cur_sector_id))
-
-
 
         return retval
 

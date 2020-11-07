@@ -1,6 +1,6 @@
-Farm	0,255,0	0,100,0
+Farm	0,0,100	0,0,100
 Mining	0,255,0	0,100,0
-Utilities	0,255,0	0,100,0
+Utilities	0,255,100	0,100,0
 Construction	0,255,0	0,100,0
 Manufacturing	0,255,0	0,100,0
 Wholesale	0,255,0	0,100,0
@@ -8,7 +8,7 @@ Retail	0,255,0	0,100,0
 Transportation	0,255,0	0,100,0
 Information	0,255,0	0,100,0
 Financial	0,255,0	0,100,0
-Professional	0,255,0	0,100,0
+Professional	0,255,100	0,100,0
 Education and Health	0,255,0	0,100,0
 Leisure	0,255,0	0,100,0
 Other	0,255,0	0,100,0
