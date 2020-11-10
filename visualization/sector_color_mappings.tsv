@@ -1,15 +1,15 @@
-Farm	0,0,100	0,0,100
-Mining	0,255,0	0,100,0
-Utilities	0,255,100	0,100,0
-Construction	0,255,0	0,100,0
-Manufacturing	0,255,0	0,100,0
-Wholesale	0,255,0	0,100,0
-Retail	0,255,0	0,100,0
-Transportation	0,255,0	0,100,0
-Information	0,255,0	0,100,0
-Financial	0,255,0	0,100,0
-Professional	0,255,100	0,100,0
-Education and Health	0,255,0	0,100,0
-Leisure	0,255,0	0,100,0
-Other	0,255,0	0,100,0
-Government	0,255,0	0,100,0
+Farm	255, 51, 112	255, 204, 219
+Mining	234, 72, 226	250, 209, 248
+Utilities	52, 133, 254	204, 224, 255
+Construction	255, 160, 51	255, 231, 204
+Manufacturing	194, 51, 255	240, 204, 255
+Wholesale	51, 170, 255	204, 234, 255
+Retail	219, 202, 87	246, 242, 213
+Transportation	255, 51, 156	255,115,188
+Information	195, 164, 111	240, 232, 219
+Financial	51, 51, 255	204, 204, 255
+Professional	255, 58, 51	255, 206, 204
+Education and Health	255, 82, 51	255, 212, 204
+Leisure	51, 255, 153	204, 255, 230
+Other	197, 215, 91	240, 245, 214
+Government	150, 255, 51	229, 255, 204
