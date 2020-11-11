@@ -19,6 +19,7 @@ class SectorColors:
             sector_name = row[0]
             start_color = row[1]
             end_color = row[2]
+            trace_color = row[3]
             # [1, "rgb(0, 204, 255)"],
             # [0, "rgb(0, 41, 51)"]
 
@@ -27,5 +28,5 @@ class SectorColors:
 
             self.surface_color_mappings[sector_name] = value
 
-            self.trace_color_mappings[sector_name] = f"rgb({start_color})"
+            self.trace_color_mappings[sector_name] = f"rgb({trace_color})"
 
