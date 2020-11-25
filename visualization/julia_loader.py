@@ -3,7 +3,6 @@ import numpy as np
 import pickle
 import ntpath
 import os
-from julia import Main as j
 
 class JuliaLoader:
 
@@ -61,6 +60,7 @@ class JuliaLoader:
 
     def run_julia(self):
         print("Loading Julia....")
+        from julia import Main as j
 
         I = np.genfromtxt(self.us_exchanges_filename, delimiter=" ")
         age_fracs_orig = np.genfromtxt(self.age_fracs_filename, delimiter=",")

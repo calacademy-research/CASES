@@ -70,7 +70,8 @@ pie_fig_instance = PieFig(app,
 cascades_fig_instance = CascadesFig(app,
                                     "r-cascades-graph",
                                     derived_data_dict,
-                                    derived_data_loader.data_files)
+                                    derived_data_loader.data_files,
+                                    graph_colors)
 pie_fig = pie_fig_instance.generate_initial_figure(cur_r, cur_ses_id, cur_sector_ids)
 cascades_fig = cascades_fig_instance.generate_initial_figure(cur_r, cur_ses_id, cur_sector_ids)
 

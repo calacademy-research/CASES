@@ -4,7 +4,7 @@ from fig_utils import FigUtilsMixin
 
 
 class CascadesFig(FigUtilsMixin):
-    def __init__(self, app, id, derived_data_dict, data_files):
+    def __init__(self, app, id, derived_data_dict, data_files, sector_colors):
         self.derived_data_dict = derived_data_dict
         self.app = app
         self.data_files = data_files
@@ -12,6 +12,7 @@ class CascadesFig(FigUtilsMixin):
         self.cur_r = None
         self.cur_ses_id = None
         self.sector_mode = False
+        self.sector_colors = sector_colors
 
         app.callback(
             dash.dependencies.Output(id, "figure"),
@@ -43,7 +44,6 @@ class CascadesFig(FigUtilsMixin):
         return cascades_fig
 
     def gen_cascades_fig_layout(self):
-        # title = self.data_files[self.cur_ses_id][0]
         cur_ses_dict = self.derived_data_dict[self.cur_ses_id]
         scene = {}
         yaxis = {}
@@ -100,10 +100,11 @@ class CascadesFig(FigUtilsMixin):
 
         return layout
 
-    def gen_sector_cascades(self, ses_dict):
+    def gen_sector_cascades(self):
         retval = []
 
         for cur_sector_id in self.cur_sector_ids:
+
             y = self.derived_data_dict[self.cur_ses_id].sectors_dict[cur_sector_id][self.cur_r]
             retval.append(go.Scatter(
                 mode='lines',
@@ -111,7 +112,7 @@ class CascadesFig(FigUtilsMixin):
                 x=self.derived_data_dict[self.cur_ses_id].day_list,
                 y=y,
                 line=dict(
-                    color='black',
+                    color=self.sector_colors.trace_color_mappings[cur_sector_id],
                     width=1
                 )))
         return retval
@@ -140,7 +141,7 @@ class CascadesFig(FigUtilsMixin):
                 )))
 
         else:
-            cascades = self.gen_sector_cascades(ses_dict)
+            cascades = self.gen_sector_cascades()
             if cascades is not None:
                 retval.extend(cascades)
         return retval
