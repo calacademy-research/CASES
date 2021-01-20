@@ -1,14 +1,14 @@
 # Employment file path, age_fracs_path
 ../employment_by_sector_Feb2020	../age_fracs
-# SES ID, display name, employment filename, age_fracs filename
-0	Anaheim, SantaAna, Irvine MD	Anaheim_SantaAna_Irvine_employment_by_sector_Feb2020.csv	AnaheimSantaAnaIrvine_age_fracs.csv
-1	Fresno MSA	Fresno_employment_by_sector_Feb2020.csv	Fresno_age_fracs.csv
-2	LA, Long Beach, Glendale MD	LA_employment_by_sector_Feb2020.csv	LA_age_fracs.csv
-3	NYC	NYC_employment_by_sector_Feb2020.csv	NYC_age_fracs.csv
-4	Oakland, Hayward, Berkeley MD	Oak_Hayward_Berk_employment_by_sector_Feb2020.csv	OaklandHaywardBerkeley_age_fracs.csv
-5	Oxnard, ThousandOaks, Ventura MSA	Oxnard_ThousandOaks_Ventura_employment_by_sector_Feb2020.csv	OxnardThousandOaksVentura_age_fracs.csv
-6	Riverside, San Bernardino, Ontario MSA	Riverside_SanBern_Ontario_employment_by_sector_Feb2020.csv	RiversideSanBernardinoOntario_age_fracs.csv
-7	San Diego, Carlsbad MSA	SD_Carlsbad_employment_by_sector_Feb2020.csv	SanDiegoCarlsbad_age_fracs.csv
-8	San Francisco, South SF, Redwood City MD	SF_RedwoodCity_SSF_employment_by_sector_Feb2020.csv	SanFranciscoRedwoodCitySouthSF_age_fracs.csv
-9	San Jose, Sunnyvale, Santa Clara MSA	SanJose_Sunnyvale_SantaClara_employment_by_sector_Feb2020.csv	SanJoseSunnyvaleSantaClara_age_fracs.csv
-10	Stockton, Lodi MSA	Stockton_Lodi_employment_by_sector_Feb2020.csv	Stockton_age_fracs.csv
+# SES ID, display name, employment filename, age_fracs filename, employment percentage
+0	Anaheim, SantaAna, Irvine MD	Anaheim_SantaAna_Irvine_employment_by_sector_Feb2020.csv	AnaheimSantaAnaIrvine_age_fracs.csv	0.527
+1	Fresno MSA	Fresno_employment_by_sector_Feb2020.csv	Fresno_age_fracs.csv	0.401
+2	LA, Long Beach, Glendale MD	LA_employment_by_sector_Feb2020.csv	LA_age_fracs.csv	0.462
+3	NYC	NYC_employment_by_sector_Feb2020.csv	NYC_age_fracs.csv	-1
+4	Oakland, Hayward, Berkeley MD	Oak_Hayward_Berk_employment_by_sector_Feb2020.csv	OaklandHaywardBerkeley_age_fracs.csv	0.418
+5	Oxnard, ThousandOaks, Ventura MSA	Oxnard_ThousandOaks_Ventura_employment_by_sector_Feb2020.csv	OxnardThousandOaksVentura_age_fracs.csv	0.399
+6	Riverside, San Bernardino, Ontario MSA	Riverside_SanBern_Ontario_employment_by_sector_Feb2020.csv	RiversideSanBernardinoOntario_age_fracs.csv	0.336
+7	San Diego, Carlsbad MSA	SD_Carlsbad_employment_by_sector_Feb2020.csv	SanDiegoCarlsbad_age_fracs.csv	0.456
+8	San Francisco, South SF, Redwood City MD	SF_RedwoodCity_SSF_employment_by_sector_Feb2020.csv	SanFranciscoRedwoodCitySouthSF_age_fracs.csv	0.724
+9	San Jose, Sunnyvale, Santa Clara MSA	SanJose_Sunnyvale_SantaClara_employment_by_sector_Feb2020.csv	SanJoseSunnyvaleSantaClara_age_fracs.csv	0.578
+10	Stockton, Lodi MSA	Stockton_Lodi_employment_by_sector_Feb2020.csv	Stockton_age_fracs.csv	0.322

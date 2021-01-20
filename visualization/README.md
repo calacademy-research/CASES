@@ -5,9 +5,21 @@ Test on windows
 we're using '/' in paths in r_input_data.tsv. Check this works on windows.
 We've got spaces in paths for r_input_data.tsv; test & verify.
 
+dockerized version?
+
+visual key/hover/explanation of WTF is going on
 
 
 Document input files.
+---------------------
+derived_data_inputs.tsv 
+This is the master file listing. The first line lists the directories containing
+the the employment file path and the age fracs path. 
+Subsequent lines contain:
+# SES ID, display name, employment filename, age_fracs filename
+ "Employment filename" will look in 
+
+
 
 r_input_data.tsv:
 Contains per-day R values for each SES. 
@@ -68,9 +80,8 @@ Next, install julia from (here)[https://julialang.org/downloads/]
 Next, install pyJulia from (here)[https://pyjulia.readthedocs.io/en/latest/installation.html]
 (don't forget to run the "julia.install()" step)
 
-Add julia to your path. On the mac, that's going to look like this:
+Add julia to your path. On the mac, that's going to look like this (add this line to your .bashrc):
 ```
-handball:~ joe$ grep -i julia ~/.bash_profile
 export PATH="/Applications/Julia-1.5.app/Contents/Resources/julia/bin:$PATH"
 ```
 

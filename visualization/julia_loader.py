@@ -10,6 +10,7 @@ class JuliaLoader:
                  us_exchanges,
                  age_fracs,
                  employment,
+                 employment_percentage,
                  run_julia=True,
                  load_all_data=False):
         # the first dataframe contains metadata not currently in use.
@@ -19,6 +20,7 @@ class JuliaLoader:
         self.age_fracs_filename = age_fracs
         self.employment_filename = employment
         self.cases_complete = None
+        self.employment_percentage=employment_percentage
         self.results = []
 
         self.binary_dump_filename_surfaces = \
@@ -86,7 +88,7 @@ class JuliaLoader:
 
         print("Starting Julia run...")
         j.include("CASES.jl")
-        returned_result = j.main(I, age_fracs, julia_formatted_employed)
+        returned_result = j.main(I, age_fracs, julia_formatted_employed,self.employment_percentage)
         print("Julia run complete.")
 
         self.cases_surfaces = returned_result[1]

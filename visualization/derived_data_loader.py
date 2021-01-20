@@ -22,6 +22,7 @@ class DerivedDataLoader:
             try:
                 age_fracs_filename = self.data_files[id][2]
                 employment_filename = self.data_files[id][1]
+                employemnt_percentage = self.data_files[id][3]
 
                 derived = self.fetch_derived_data(employment_filename)
                 if derived is not False:
@@ -33,11 +34,13 @@ class DerivedDataLoader:
                         self.jl = JuliaLoader("US_exchanges_2018c.csv",
                                                      age_fracs_filename,
                                                      employment_filename,
+                                                     employemnt_percentage,
                                                      False,True)
                     except FileNotFoundError:
                         self.jl = JuliaLoader("US_exchanges_2018c.csv",
                                                      age_fracs_filename,
                                                      employment_filename,
+                                                     employemnt_percentage,
                                                      True,
                                                      True)
                     derived_data_dict[id] = self.generate_derived_data(employment_filename)
@@ -91,5 +94,9 @@ class DerivedDataLoader:
             else:
                 employment_filename = employment_directory + "/" + row[2]
                 age_fracs_filename = age_fracs_directory + "/" + row[3]
-                data_files[int(row[0])] = [row[1],employment_filename,age_fracs_filename]
+                employment_percentage = float(row[4])
+                data_files[int(row[0])] = [row[1],
+                                           employment_filename,
+                                           age_fracs_filename,
+                                           employment_percentage]
         return data_files

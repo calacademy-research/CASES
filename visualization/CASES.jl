@@ -122,13 +122,12 @@ function cases6_ages!(du,u,p,t)
 end
 
 
-function main(I,age_fracs,employed)
+function main(I,age_fracs,employed,employed_percent)
     println("Starting Julia calculation...")
     # the input-output matrix
     # reading a delimited file
 
     # **********************************************************
-    # HARD CODED UNIQUE FILE
     # input employment data
     N = sum(employed[:,:Feb])
     # **********************************************************
@@ -205,10 +204,7 @@ function main(I,age_fracs,employed)
 
     global io1a = Array{one_d_array,1}()
     global io2a = Array{one_d_array,1}()
-    #global io1a = Array{Float64}(undef,rows,81)
-    #global io2a = Array{Float64}(undef,77162,4)
-    io1 = open("LA_CASES6_output_08_25.dat", "w");
-    #io2 = open("LA_CASES6_surfaces_08_25.dat","w");
+    io1 = open("raw_output.dat", "w");
     # **********************************************************
 
     # write column headers
@@ -221,7 +217,7 @@ function main(I,age_fracs,employed)
         R = 0.89 + (i*.01)
         beta = 0.07*R
 
-        p = [beta,0.07,0.453];
+        p = [beta,0.07,employed_percent];
         n = [0.00004,0.000047,0.000101,0.000186];
         d = [0.002,0.0027,0.0295,0.088];
 
@@ -246,8 +242,6 @@ function main(I,age_fracs,employed)
             for k = 1:size(total_E1,1)
                 print(io1,total_E1[k,j],",")
                 push!(cur_array_1,total_E1[k,j])
-
-                # io1a[i,k+2]=j
             end
             print(io1,"\n")
             push!(io1a,cur_array_1)
@@ -263,29 +257,18 @@ function main(I,age_fracs,employed)
                 # employment
                 total_E = total_E + total_E1[k,j]
             end
-            #print(io2,R," ",j," ",total_E," ")
-            #io2a[j,1]=R
-            #io2a[j,2]=j
-            #io2a[j,3]=total_E
             cur_array_2=[R,j,total_E]
-
             # removed
             age1 = age_sizes[1] - (total_E1[78,j]*age_sizes[1]*(d[1]+n[1]))
             age2 = age_sizes[2] - (total_E1[78,j]*age_sizes[2]*(d[2]+n[2]))
             age3 = age_sizes[3] - (total_E1[78,j]*age_sizes[3]*(d[3]+n[3]))
             age4 = age_sizes[4] - (total_E1[78,j]*age_sizes[4]*(d[4]+n[4]))
             disease_only = age1 + age2 + age3 + age4
-            #print(io2,disease_only,"\n")
-            #io2a[j,4]=disease_only
             push!(cur_array_2,disease_only)
-            #println("Pushed: ",R," ",j," ",total_E," ",disease_only)
-            #println(cur_array_2)
             push!(io2a,cur_array_2)
 
         end
 
-        #println(io2a,"\n")
-        #println("Cur outer loop: ",i)
 
     end
 
