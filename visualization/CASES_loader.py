@@ -4,6 +4,10 @@ import pickle
 import sys
 # it would be nice to load this only when needed; it's slow. but it makes python unstable
 # in certain circumstances (pycharm debugging mode for one)
+import julia
+julia.install()
+from julia.api import Julia
+jl = Julia(compiled_modules=False)
 from julia import Main as j
 
 

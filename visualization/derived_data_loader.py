@@ -58,6 +58,7 @@ class DerivedDataLoader:
 
         print(f"Generating derived data for {employment_filename}",end=None,flush=True)
         derived_data = DerivedData(self.jl,employment_filename,self.sector_names)
+        print(f"Derived data generated.. saving binary to {binary_dump_filename}")
         outfile = open(binary_dump_filename,'wb')
         pickle.dump(derived_data, outfile)
         outfile.close()

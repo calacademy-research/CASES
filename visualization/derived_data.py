@@ -46,8 +46,13 @@ class DerivedData:
 
     # Normalize to 1000
     def normalize_dict(self,dict):
-        val1 = dict[next(iter(dict))][0]
-        val2 = dict[next(reversed(dict))][-1]
+        r_val_keys = list(dict.keys())
+        r_val_keys.sort()
+        val1 = dict[r_val_keys[0]][0]
+        val2 = dict[r_val_keys[-1]][-1]
+        # No python 3.8 for you.
+        # val1a = dict[next(iter(dict))][0]
+        # val2a = dict[next(reversed(dict))][-1]
         maxval = float(max(val1,val2))
         retval = {}
         for key in dict.keys():

@@ -62,6 +62,9 @@ class JuliaLoader:
 
     def run_julia(self):
         print("Loading Julia....")
+        # from julia import Main as j
+        from julia.api import Julia
+        jl = Julia(compiled_modules=False)
         from julia import Main as j
 
         I = np.genfromtxt(self.us_exchanges_filename, delimiter=" ")

@@ -6,6 +6,7 @@ we're using '/' in paths in r_input_data.tsv. Check this works on windows.
 We've got spaces in paths for r_input_data.tsv; test & verify.
 
 dockerized version?
+Docker note: increase the ram to more than the default 2gb
 
 visual key/hover/explanation of WTF is going on
 
