@@ -4,7 +4,7 @@
 0	Anaheim, SantaAna, Irvine MD	Anaheim_SantaAna_Irvine_employment_by_sector_Feb2020.csv	AnaheimSantaAnaIrvine_age_fracs.csv	0.527
 1	Fresno MSA	Fresno_employment_by_sector_Feb2020.csv	Fresno_age_fracs.csv	0.401
 2	LA, Long Beach, Glendale MD	LA_employment_by_sector_Feb2020.csv	LA_age_fracs.csv	0.462
-3	NYC	NYC_employment_by_sector_Feb2020.csv	NYC_age_fracs.csv	-1
+# 3	NYC	NYC_employment_by_sector_Feb2020.csv	NYC_age_fracs.csv	-1
 4	Oakland, Hayward, Berkeley MD	Oak_Hayward_Berk_employment_by_sector_Feb2020.csv	OaklandHaywardBerkeley_age_fracs.csv	0.418
 5	Oxnard, ThousandOaks, Ventura MSA	Oxnard_ThousandOaks_Ventura_employment_by_sector_Feb2020.csv	OxnardThousandOaksVentura_age_fracs.csv	0.399
 6	Riverside, San Bernardino, Ontario MSA	Riverside_SanBern_Ontario_employment_by_sector_Feb2020.csv	RiversideSanBernardinoOntario_age_fracs.csv	0.336

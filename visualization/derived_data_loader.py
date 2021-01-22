@@ -50,6 +50,7 @@ class DerivedDataLoader:
 
         for id in failed_loads:
             del self.data_files[id]
+
         return derived_data_dict
 
 

@@ -1,5 +1,9 @@
-#! /usr/bin/python
+#!/usr/bin/python
 
-from app import app as application
-import sys
-sys.path.append("/var/www/apache-flask")
+
+print("Wsgi hit...")
+from app.CASES import server as application
+
+
+# app = __init__.flask
+

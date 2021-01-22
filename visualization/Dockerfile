@@ -19,7 +19,9 @@ RUN  apt-get update && apt-get install -y apache2 \
  && apt purge -y python2.7-minimal
 
 
-
+RUN apt-get update && apt-get install -y libapache2-mod-wsgi-py3
+# apache2-threaded-dev
+# libapache2-mod-wsgi
 # Copy over the apache configuration file and enable the site
 COPY ./apache-flask.conf /etc/apache2/sites-available/apache-flask.conf
 RUN a2ensite apache-flask
@@ -39,17 +41,22 @@ RUN a2ensite apache-flask.conf
 RUN ln -sf /proc/self/fd/1 /var/log/apache2/access.log && \
     ln -sf /proc/self/fd/1 /var/log/apache2/error.log
 
-ENV PORT 80
-EXPOSE 80
-COPY ./requirements.txt /var/www/apache-flask
 
-WORKDIR /var/www/apache-flask
+COPY ./requirements.txt /var/www/apache-flask
+COPY ./docker_start.sh /var/www/apache-flask
+
 RUN pip3 install -r /var/www/apache-flask/requirements.txt
+
 RUN python3 -c "import julia; julia.install()"
 RUN julia -e 'import Pkg;Pkg.add("DataFrames")'
 RUN julia -e 'import Pkg;Pkg.add("DifferentialEquations")'
 RUN julia -e 'import Pkg;Pkg.add("CSV")'
 RUN julia -e 'import Pkg;Pkg.add("DelimitedFiles")'
 
+ENV PORT 80
+EXPOSE 80
+ENV PYTHONPATH "${PYTHONPATH}:/var/www/apache-flask/app"
+WORKDIR /var/www/apache-flask
+# ENTRYPOINT
+ENTRYPOINT /var/www/apache-flask/docker_start.sh
 
-CMD  /usr/sbin/apache2ctl -D FOREGROUND
