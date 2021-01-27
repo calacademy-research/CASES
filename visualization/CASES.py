@@ -15,7 +15,9 @@ import io
 from sector_colors import SectorColors
 
 import os
+
 app = None
+
 
 def data_setup():
     global derived_data_dict
@@ -44,7 +46,8 @@ def data_setup():
     derived_data_loader = DerivedDataLoader(employment_data.sector_names)
     derived_data_dict = derived_data_loader.derived_data_dict
     # cur_sector_ids = list(derived_data_dict[cur_ses_id].sectors_dict.keys())
-    cur_sector_ids = ["Farm","Professional"]
+    cur_sector_ids = ["Farm", "Professional"]
+
 
 def generate_ses_pulldown_data(metadata_dict):
     # Format:
@@ -110,13 +113,11 @@ def app_setup():
     def update_input_from_slider(new_r):
         return new_r
 
-
     @app.callback(
         dash.dependencies.Output('r-slider', 'value'),
         [dash.dependencies.Input('r-input', 'value')])
     def update_sider_from_input(new_r):
         return new_r
-
 
     @app.server.route('/download_csv')
     def download_csv():
@@ -138,7 +139,6 @@ def app_setup():
         output.headers["Content-Disposition"] = f"attachment; filename={filename}"
         output.headers["Content-type"] = "text/csv"
         return output
-
 
     # the style arguments for the sidebar. We use position:fixed and a fixed width
     SIDEBAR_STYLE = {
@@ -165,7 +165,6 @@ def app_setup():
     green_button_style = {'background-color': 'green',
                           }
 
-
     @app.callback(
         dash.dependencies.Output('enable-summary', 'style'),
         [dash.dependencies.Input('enable-sectors', 'n_clicks'),
@@ -182,7 +181,6 @@ def app_setup():
         else:
             return white_button_style
 
-
     @app.callback(
         dash.dependencies.Output('enable-sectors', 'style'),
         [dash.dependencies.Input('enable-sectors', 'n_clicks'),
@@ -198,7 +196,6 @@ def app_setup():
             return green_button_style
         else:
             return white_button_style
-
 
     @app.callback(
         dash.dependencies.Output('sector-pulldown', 'disabled'),
@@ -217,71 +214,72 @@ def app_setup():
         cascades_fig_instance.sector_mode = retval
         return not retval
 
+    def sidebar_div():
+        return (html.Div(id='sidebar',
+                         style=SIDEBAR_STYLE,
+                         children=[
+                             html.P("Change SES"),
+                             dcc.Dropdown(
+                                 id='ses-pulldown',
+                                 options=generate_ses_pulldown_data(derived_data_loader.data_files),
+                                 value=cur_ses_id
+                             ),
+
+                             html.Div(id='spacer1', style={'height': "3rem"}),
+                             html.P("R value"),
+                             html.Div(id='rpickers',
+                                      className="row",
+                                      style={"padding": "0rem 0rem"},
+                                      children=[
+                                          html.Div(style={'width': "20rem", },
+                                                   children=[
+                                                       dcc.Slider(
+                                                           id='r-slider',
+                                                           min=derived_data_dict[cur_ses_id].r_min,
+                                                           max=derived_data_dict[cur_ses_id].r_max,
+                                                           step=0.01,
+                                                           value=cur_r
+                                                       )]),
+                                          dcc.Input(
+                                              id="r-input",
+                                              type="number",
+                                              min=derived_data_dict[cur_ses_id].r_min,
+                                              max=derived_data_dict[cur_ses_id].r_max,
+                                              step=0.01,
+                                              value=cur_r,
+                                              style={'width': '4rem', 'height': "2rem", "marginLeft": "0rem"},
+                                          ),
+                                      ]),
+                             html.Div([
+                                 html.Label("Enable sector display"),
+
+                                 html.Button("Summary", id="enable-summary", n_clicks=0, style=green_button_style),
+                                 html.Button("Sectors", id="enable-sectors", n_clicks=0),
+
+                             ]),
+
+                             html.P("Change sector"),
+                             dcc.Dropdown(
+                                 id='sector-pulldown',
+                                 options=generate_sector_pulldown_data(derived_data_dict[cur_ses_id]),
+                                 value=cur_sector_ids,
+                                 multi=True,
+                                 disabled=True
+                                 # options=derived_data_dict[cur_ses_id].sectors.keys(),
+                                 # value=cur_sector_id
+                             ),
+
+                             html.Div([
+                                 # dcc.Link(html.Button('back'), href="/testurl")
+                                 html.A(html.Button('Download csv at current R'), href='download_csv')
+
+                             ])
+                         ])
+                )
 
     app.layout = html.Div(children=[
         html.Div(children='CASES'),
-        html.Div(id='sidebar',
-                 style=SIDEBAR_STYLE,
-                 children=[
-                     html.P("Change SES"),
-                     dcc.Dropdown(
-                         id='ses-pulldown',
-                         options=generate_ses_pulldown_data(derived_data_loader.data_files),
-                         value=cur_ses_id
-                     ),
-
-                     html.Div(id='spacer1', style={'height': "3rem"}),
-                     html.P("R value"),
-                     html.Div(id='rpickers',
-                              className="row",
-                              style={"padding": "0rem 0rem"},
-                              children=[
-                                  html.Div(style={'width': "20rem", },
-                                           children=[
-                                               dcc.Slider(
-                                                   id='r-slider',
-                                                   min=derived_data_dict[cur_ses_id].r_min,
-                                                   max=derived_data_dict[cur_ses_id].r_max,
-                                                   step=0.01,
-                                                   value=cur_r
-                                               )]),
-                                  dcc.Input(
-                                      id="r-input",
-                                      type="number",
-                                      min=derived_data_dict[cur_ses_id].r_min,
-                                      max=derived_data_dict[cur_ses_id].r_max,
-                                      step=0.01,
-                                      value=cur_r,
-                                      style={'width': '4rem', 'height': "2rem", "marginLeft": "0rem"},
-                                  ),
-                              ]),
-                     html.Div([
-                         html.Label("Enable sector display"),
-
-                         html.Button("Summary", id="enable-summary", n_clicks=0, style=green_button_style),
-                         html.Button("Sectors", id="enable-sectors", n_clicks=0),
-
-                     ]),
-
-                     html.P("Change sector"),
-                     dcc.Dropdown(
-                         id='sector-pulldown',
-                         options=generate_sector_pulldown_data(derived_data_dict[cur_ses_id]),
-                         value=cur_sector_ids,
-                         multi=True,
-                         disabled=True
-                         # options=derived_data_dict[cur_ses_id].sectors.keys(),
-                         # value=cur_sector_id
-                     ),
-
-                     html.Div([
-                         # dcc.Link(html.Button('back'), href="/testurl")
-                         html.A(html.Button('Download csv at current R'), href='download_csv')
-
-                     ])
-                 ],
-
-                 ),
+        sidebar_div(),
 
         html.Div(id="page-content",
                  className="row",
@@ -315,21 +313,26 @@ def app_setup():
 
     ])
 
+
 def setup():
     if app is None:
         data_setup()
         app_setup()
 
+
 staticmethod
+
+
 def test_static():
     print("Joe static hit")
 
+
 if __name__ == '__main__':
-    print ("Running internal server")
+    print("Running internal server")
     setup()
     app.run_server(debug=True)
 else:
-    print (f"Running external server: {__name__}")
+    print(f"Running external server: {__name__}")
     setup()
 
-print ("exiting.")
+print("exiting.")
