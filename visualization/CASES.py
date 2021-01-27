@@ -277,11 +277,8 @@ def app_setup():
                          ])
                 )
 
-    app.layout = html.Div(children=[
-        html.Div(children='CASES'),
-        sidebar_div(),
-
-        html.Div(id="page-content",
+    def page_content_div():
+        return (       html.Div(id="page-content",
                  className="row",
                  style=CONTENT_STYLE,
                  children=[
@@ -309,8 +306,12 @@ def app_setup():
                                            )
 
                               ])
-                 ]),
+                 ]))
 
+    app.layout = html.Div(children=[
+        html.Div(children='CASES'),
+        sidebar_div(),
+        page_content_div(),
     ])
 
 
