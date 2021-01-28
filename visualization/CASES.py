@@ -321,18 +321,19 @@ def app_setup():
         page_content_div(),
     ])
 
-    # app.layout = html.Div(
-    #         [
-    #             dcc.Input(id="loading-input-2", value='Input triggers nested spinner'),
-    #             dcc.Loading(
-    #                 id="loading-2",
-    #                 children=[html.Div([html.Div(id="loading-output-2")])],
-    #                 type="circle",
-    #             )
-    #         ]
-    #     ),
+    app.layout = html.Div(children=
+            [
+                dcc.Input(id="loading-input-2", value='Input triggers nested spinner'),
+                dcc.Loading(
+                    id="loading-2",
+                    children=[html.Div([html.Div(id="loading-output-2")]),
+                              main_div],
+                    type="circle",
+                )
+            ]
+        )
 
-    app.layout = main_div
+    # app.layout = main_div
 
 
 def setup():
@@ -342,8 +343,6 @@ def setup():
 
 
 staticmethod
-
-
 def test_static():
     print("Joe static hit")
 
