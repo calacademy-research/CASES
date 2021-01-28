@@ -123,6 +123,7 @@ class PieFig(FigUtilsMixin):
         r_values = list(self.r_date_dict[self.cur_ses_id].values())
         data = go.Scatter3d(
             mode='lines',
+            name="Observed",
             hovertemplate="<br>Actuals:<br>"+
                             "Day: %{x}<br>" +
                             "Unemployed: %{z}<br>" +
