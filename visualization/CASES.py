@@ -121,10 +121,8 @@ def app_setup():
     def update_sider_from_input(new_r):
         return new_r
 
-    @app.callback(Output("loading-output-2", "children"), [Input("loading-input-2", "value")])
-    def input_triggers_nested(value):
-        time.sleep(1)
-        return value
+
+
 
     @app.server.route('/download_csv')
     def download_csv():
@@ -315,17 +313,25 @@ def app_setup():
                               ])
                  ]))
 
+
+    @app.callback(Output("loading-output-2", "children"), [Input("loading-input-2", "value")])
+    def input_triggers_nested(value):
+        time.sleep(1)
+        return value
+
     main_div = html.Div(children=[
         html.Div(children='CASES'),
         sidebar_div(),
         page_content_div(),
     ])
 
+
     app.layout = html.Div(children=
             [
                 dcc.Input(id="loading-input-2", value='Input triggers nested spinner'),
                 dcc.Loading(
                     id="loading-2",
+                    fullscreen=True,
                     children=[html.Div([html.Div(id="loading-output-2")]),
                               main_div],
                     type="circle",
