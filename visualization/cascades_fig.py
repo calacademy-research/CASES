@@ -122,7 +122,7 @@ class CascadesFig(FigUtilsMixin):
         if not self.sector_mode:
             retval.append(go.Scatter(
                 mode='lines',
-                name="removed",
+                name="COVID-19 sick or dead",
                 x=self.derived_data_dict[self.cur_ses_id].day_list,
                 y=list(ses_dict.cases_removed[self.cur_r]),
                 line=dict(

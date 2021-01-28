@@ -55,7 +55,7 @@ class PieFig(FigUtilsMixin):
             pop_min = cur_ses_dict.pop_min
             pop_max = cur_ses_dict.pop_max
             scene = dict(
-                yaxis_title='R',
+                yaxis_title='R0',
                 zaxis_title='No. Employed',
                 xaxis_title='Days',
                 zaxis=dict(
@@ -65,7 +65,7 @@ class PieFig(FigUtilsMixin):
             )
         else:
             scene = dict(
-                yaxis_title='R',
+                yaxis_title='R0',
                 zaxis_title='No. Employed, normalized',
                 xaxis_title='Days',
                 zaxis=dict(
@@ -104,6 +104,7 @@ class PieFig(FigUtilsMixin):
         data = go.Scatter3d(
             mode='lines',
             name=sector_id + " trace",
+
             x=self.derived_data_dict[self.cur_ses_id].day_list,
             y=r_values,
             z=normalized_employment,
@@ -122,7 +123,10 @@ class PieFig(FigUtilsMixin):
         r_values = list(self.r_date_dict[self.cur_ses_id].values())
         data = go.Scatter3d(
             mode='lines',
-            name='r trace',
+            hovertemplate="<br>Actuals:<br>"+
+                            "Day: %{x}<br>" +
+                            "Unemployed: %{z}<br>" +
+                            "R0: %{y}",
             x=self.derived_data_dict[self.cur_ses_id].day_list,
             y=r_values,
             z=employment,
@@ -219,7 +223,7 @@ class PieFig(FigUtilsMixin):
                                      ))
 
             retval.append(
-                self.create_lines_at_r(self.cur_r, ses_dict.cases_removed, 'black', "Removed from workpool"))
+                self.create_lines_at_r(self.cur_r, ses_dict.cases_removed, 'black', "COVID-19 sick or dead"))
             retval.append(self.create_lines_at_r(self.cur_r, ses_dict.cases_unemployed, 'green', "Unemployed"))
             retval.append(self.create_r_trace_summary())
         else:

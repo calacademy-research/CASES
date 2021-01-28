@@ -231,7 +231,7 @@ def app_setup():
                              ),
 
                              html.Div(id='spacer1', style={'height': "3rem"}),
-                             html.P("R value"),
+                             html.P("R0"),
                              html.Div(id='rpickers',
                                       className="row",
                                       style={"padding": "0rem 0rem"},
@@ -276,7 +276,7 @@ def app_setup():
 
                              html.Div([
                                  # dcc.Link(html.Button('back'), href="/testurl")
-                                 html.A(html.Button('Download csv at current R'), href='download_csv')
+                                 html.A(html.Button('Download csv at current R0'), href='download_csv')
 
                              ])
                          ])

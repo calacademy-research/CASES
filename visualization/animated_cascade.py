@@ -35,7 +35,7 @@ fig_dict = {
 
 # fill in most of layout
 fig_dict["layout"]["xaxis"] = {"range": [day_list[0], day_list[-1]], "title": "Day"}
-fig_dict["layout"]["yaxis"] = {"title": "Employment per R value", "type": "linear", "range": [min_value, max_value]}
+fig_dict["layout"]["yaxis"] = {"title": "Employment per R0 value", "type": "linear", "range": [min_value, max_value]}
 fig_dict["layout"]["hovermode"] = "closest"
 fig_dict["layout"]["updatemenus"] = [
     {
