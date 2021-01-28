@@ -13,7 +13,9 @@ from flask import Flask
 import csv
 import io
 from sector_colors import SectorColors
+import time
 
+from dash.dependencies import Input, Output
 import os
 
 app = None
@@ -118,6 +120,11 @@ def app_setup():
         [dash.dependencies.Input('r-input', 'value')])
     def update_sider_from_input(new_r):
         return new_r
+
+    @app.callback(Output("loading-output-2", "children"), [Input("loading-input-2", "value")])
+    def input_triggers_nested(value):
+        time.sleep(1)
+        return value
 
     @app.server.route('/download_csv')
     def download_csv():
@@ -278,7 +285,7 @@ def app_setup():
                 )
 
     def page_content_div():
-        return (       html.Div(id="page-content",
+        return (html.Div(id="page-content",
                  className="row",
                  style=CONTENT_STYLE,
                  children=[
@@ -308,11 +315,24 @@ def app_setup():
                               ])
                  ]))
 
-    app.layout = html.Div(children=[
+    main_div = html.Div(children=[
         html.Div(children='CASES'),
         sidebar_div(),
         page_content_div(),
     ])
+
+    # app.layout = html.Div(
+    #         [
+    #             dcc.Input(id="loading-input-2", value='Input triggers nested spinner'),
+    #             dcc.Loading(
+    #                 id="loading-2",
+    #                 children=[html.Div([html.Div(id="loading-output-2")])],
+    #                 type="circle",
+    #             )
+    #         ]
+    #     ),
+
+    app.layout = main_div
 
 
 def setup():
