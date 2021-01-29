@@ -1,5 +1,4 @@
 import dash
-from array import array
 class FigUtilsMixin:
 
     def update_ses_and_r(self,new_ses_id, new_sector_ids,r_slider, r_input):

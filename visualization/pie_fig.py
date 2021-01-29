@@ -85,10 +85,11 @@ class PieFig(FigUtilsMixin):
              # 'legend_title': f"Legend Title{cur_r}",
              'legend': dict(
                  yanchor="top",
-                 y=0.99,
+                 y=1.06,
                  xanchor="left",
                  x=0.01
              ),
+             'legend_orientation':'h',
              'width': 800,
              'height': 800
              }
@@ -100,7 +101,6 @@ class PieFig(FigUtilsMixin):
         r_values = list(self.r_date_dict[self.cur_ses_id].values())
         maxval = max(employment)
         normalized_employment = [(x / maxval) * 1000 for x in employment]
-
         data = go.Scatter3d(
             mode='lines',
             name=sector_id + " actual R0",
@@ -181,14 +181,17 @@ class PieFig(FigUtilsMixin):
                            ))
 
             hovertemplate = "Day: %{x}<br>" + "Unemployed: %{z}<br>" + "R0: %{y}<extra>"+cur_sector_id+"</extra>"
+            #miserable hack forces two column legend display
+            legend_label = (cur_sector_id + " model R0").ljust(45)
 
             retval.append(
                 self.create_lines_at_r(self.cur_r,
                                        self.derived_data_dict[self.cur_ses_id].sectors_dict[cur_sector_id],
                                        'black',
-                                       cur_sector_id + " model R0",
+                                       legend_label,
                                        hovertemplate))
             retval.append(self.create_r_trace_sector(cur_sector_id,hovertemplate))
+
 
         return retval
 

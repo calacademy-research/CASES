@@ -47,7 +47,12 @@ class CascadesFig(FigUtilsMixin):
         cur_ses_dict = self.derived_data_dict[self.cur_ses_id]
         scene = {}
         yaxis = {}
-        legend = {}
+        legend = dict(
+            yanchor="top",
+            y=-0.25,
+            xanchor="left",
+            x=0
+        )
         if not self.sector_mode:
             scene = dict(
                 yaxis_title='No. Employed',
@@ -60,12 +65,7 @@ class CascadesFig(FigUtilsMixin):
             yaxis = dict(
                 range=[cur_ses_dict.pop_min, cur_ses_dict.pop_max],
             )
-            legend = dict(
-                yanchor="bottom",
-                y=1.02,
-                xanchor="left",
-                x=0
-            )
+
             width = 400
         else:
             scene = dict(
@@ -77,12 +77,7 @@ class CascadesFig(FigUtilsMixin):
             yaxis = dict(
                 autorange=True,
             )
-            legend = dict(
-                yanchor="bottom",
-                y=0,
-                xanchor="right",
-                x=1.8
-            )
+
             width = 520
 
         layout = go.Layout(
