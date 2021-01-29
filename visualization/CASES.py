@@ -317,7 +317,7 @@ def app_setup():
         return value
 
     TOPLEVEL_STYLE = {
-        "width": "140rem"
+        "width": "160rem"
 
     }
 
