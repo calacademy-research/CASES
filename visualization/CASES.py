@@ -74,7 +74,8 @@ def generate_sector_pulldown_data(derived_data_for_ses):
 
 
 def create_app():
-    external_stylesheets = [dbc.themes.BOOTSTRAP]
+    # 'https://codepen.io/chriddyp/pen/bWLwgP.css'
+    external_stylesheets = [dbc.themes.BOOTSTRAP, 'https://codepen.io/chriddyp/pen/bWLwgP.css']
     # external_stylesheets = ['http://codepen.io/chriddyp/pen/bWLwgP.css']
     global server
     server = Flask(__name__)
@@ -121,9 +122,6 @@ def app_setup():
     def update_sider_from_input(new_r):
         return new_r
 
-
-
-
     @app.server.route('/download_csv')
     def download_csv():
         cur_ses_name = derived_data_loader.data_files[pie_fig_instance.cur_ses_id][0]
@@ -144,25 +142,6 @@ def app_setup():
         output.headers["Content-Disposition"] = f"attachment; filename={filename}"
         output.headers["Content-type"] = "text/csv"
         return output
-
-    # the style arguments for the sidebar. We use position:fixed and a fixed width
-    SIDEBAR_STYLE = {
-        "position": "fixed",
-        "top": 0,
-        "left": 0,
-        "bottom": 0,
-        "width": "25rem",
-        "backgroundColor": "#9c9c9c",
-        "padding": "2rem 1rem"
-    }
-
-    # the styles for the main content position it to the right of the sidebar and
-    # add some padding.
-    CONTENT_STYLE = {
-        "marginLeft": "25rem",
-        "marginRight": "2rem",
-        "padding": "2rem 1rem",
-    }
 
     white_button_style = {'background-color': 'white',
                           }
@@ -220,6 +199,16 @@ def app_setup():
         return not retval
 
     def sidebar_div():
+        # the style arguments for the sidebar. We use position:fixed and a fixed width
+        SIDEBAR_STYLE = {
+            "position": "fixed",
+            "top": 0,
+            "left": 0,
+            "bottom": 0,
+            # "width": "30rem",
+            "backgroundColor": "#9c9c9c",
+            "padding": "2rem 1rem"
+        }
         return (html.Div(id='sidebar',
                          style=SIDEBAR_STYLE,
                          children=[
@@ -251,8 +240,9 @@ def app_setup():
                                               min=derived_data_dict[cur_ses_id].r_min,
                                               max=derived_data_dict[cur_ses_id].r_max,
                                               step=0.01,
+                                              debounce=True,
                                               value=cur_r,
-                                              style={'width': '4rem', 'height': "2rem", "marginLeft": "0rem"},
+                                              style={'width': '8rem', 'height': "2rem", "marginLeft": "0rem"},
                                           ),
                                       ]),
                              html.Div([
@@ -269,7 +259,8 @@ def app_setup():
                                  options=generate_sector_pulldown_data(derived_data_dict[cur_ses_id]),
                                  value=cur_sector_ids,
                                  multi=True,
-                                 disabled=True
+                                 disabled=True,
+                                 style={'width': '30rem'},
                                  # options=derived_data_dict[cur_ses_id].sectors.keys(),
                                  # value=cur_sector_id
                              ),
@@ -283,61 +274,79 @@ def app_setup():
                 )
 
     def page_content_div():
+        # the styles for the main content position it to the right of the sidebar and
+        # add some padding.
+        CONTENT_STYLE = {
+            # "marginLeft": "2rem",
+            # "marginRight": "2rem",
+            # "padding": "2rem 1rem"
+        }
         return (html.Div(id="page-content",
-                 className="row",
-                 style=CONTENT_STYLE,
-                 children=[
-                     html.Div(style={},
-                              children=[
-                                  dcc.Graph(
-                                      id='pie-graph',
-                                      figure=pie_fig,
-                                  )]),
-                     html.Div(id="second-col",
+                         className="row",
+                         style=CONTENT_STYLE,
+                         children=[
 
-                              children=[
-                                  html.Div(id="top_in_col",
-                                           style={},
-                                           children=[
-                                               dcc.Graph(
-                                                   id='r-cascades-graph',
-                                                   figure=cascades_fig,
-                                               )
-                                           ]),
-                                  html.Div(id="bottom_in_col",
-                                           style={
-                                           },
+                             html.Div(style={},
+                                      id="first-col",
+                                      className="eight columns",
+                                      children=[
+                                          dcc.Graph(
+                                              id='pie-graph',
+                                              figure=pie_fig,
+                                          )]),
+                             html.Div(id="second-col",
+                                      className="four columns",
 
-                                           )
+                                      children=[
+                                          html.Div(id="top_in_col",
+                                                   style={},
+                                                   children=[
+                                                       dcc.Graph(
+                                                           id='r-cascades-graph',
+                                                           figure=cascades_fig,
+                                                       )
+                                                   ]),
+                                          html.Div(id="bottom_in_col",
+                                                   style={
+                                                   },
 
-                              ])
-                 ]))
+                                                   )
 
+                                      ])
+                         ])
+                )
 
     @app.callback(Output("loading-output-2", "children"), [Input("loading-input-2", "value")])
     def input_triggers_nested(value):
         time.sleep(1)
         return value
 
-    main_div = html.Div(children=[
-        html.Div(children='CASES'),
-        sidebar_div(),
-        page_content_div(),
-    ])
+    TOPLEVEL_STYLE = {
+        "width": "140rem",
+    }
 
+    main_div = html.Div(style=TOPLEVEL_STYLE,
+                        className="row",
+                        children=[
+
+                            html.Div( className="three columns", children=[sidebar_div()]),
+                            html.Div( className="nine columns", children=[page_content_div()])
+
+                        ])
 
     app.layout = html.Div(children=
-            [
-                dcc.Input(id="loading-input-2", value='Input triggers nested spinner'),
-                dcc.Loading(
-                    id="loading-2",
-                    fullscreen=True,
-                    children=[html.Div([html.Div(id="loading-output-2")]),
-                              main_div],
-                    type="circle",
-                )
-            ]
+    [
+        dcc.Input(id="loading-input-2",  style={"visibility": "hidden"},value='Input triggers nested spinner'),
+        dcc.Loading(
+            id="loading-2",
+            fullscreen=True,
+
+            children=[html.Div([html.Div(id="loading-output-2")]),
+                      main_div],
+            type="circle",
         )
+    ]
+    )
 
     # app.layout = main_div
 
@@ -349,6 +358,8 @@ def setup():
 
 
 staticmethod
+
+
 def test_static():
     print("Joe static hit")
 

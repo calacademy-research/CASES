@@ -94,7 +94,7 @@ class PieFig(FigUtilsMixin):
              }
         )
 
-    def create_r_trace_sector(self, sector_id):
+    def create_r_trace_sector(self, sector_id, hovertemplate):
 
         employment = self.employemnt_data.employment_by_ses_by_sector_by_day[self.cur_ses_id][sector_id]
         r_values = list(self.r_date_dict[self.cur_ses_id].values())
@@ -103,12 +103,11 @@ class PieFig(FigUtilsMixin):
 
         data = go.Scatter3d(
             mode='lines',
-            name=sector_id + " trace",
-
+            name=sector_id + " R0 trace",
             x=self.derived_data_dict[self.cur_ses_id].day_list,
             y=r_values,
             z=normalized_employment,
-
+            hovertemplate=hovertemplate,
             line=dict(
                 color=self.sector_colors.trace_color_mappings[sector_id],
                 # color="blue",
@@ -124,10 +123,9 @@ class PieFig(FigUtilsMixin):
         data = go.Scatter3d(
             mode='lines',
             name="Observed",
-            hovertemplate="<br>Actuals:<br>"+
-                            "Day: %{x}<br>" +
+            hovertemplate="Day: %{x}<br>" +
                             "Unemployed: %{z}<br>" +
-                            "R0: %{y}",
+                            "R0: %{y}<extra></extra>",
             x=self.derived_data_dict[self.cur_ses_id].day_list,
             y=r_values,
             z=employment,
@@ -139,7 +137,7 @@ class PieFig(FigUtilsMixin):
         )
         return data
 
-    def create_lines_at_r(self, r_val, cases_dict, color, name):
+    def create_lines_at_r(self, r_val, cases_dict, color, name, hovertemplate):
         z = [r_val] * len(self.derived_data_dict[self.cur_ses_id].day_list)  # constant for this R
         if self.sector_mode:
             z_val = list(cases_dict[r_val])
@@ -154,7 +152,7 @@ class PieFig(FigUtilsMixin):
             x=self.derived_data_dict[self.cur_ses_id].day_list,
             y=z,
             z=z_val,
-
+            hovertemplate=hovertemplate,
             line=dict(
                 color=color,
                 width=7
@@ -182,12 +180,15 @@ class PieFig(FigUtilsMixin):
                            colorscale=r_cs
                            ))
 
+            hovertemplate = "Day: %{x}<br>" + "Unemployed: %{z}<br>" + "R0: %{y}<extra>"+cur_sector_id+"</extra>"
+
             retval.append(
                 self.create_lines_at_r(self.cur_r,
                                        self.derived_data_dict[self.cur_ses_id].sectors_dict[cur_sector_id],
                                        'black',
-                                       cur_sector_id))
-            retval.append(self.create_r_trace_sector(cur_sector_id))
+                                       cur_sector_id,
+                                       hovertemplate))
+            retval.append(self.create_r_trace_sector(cur_sector_id,hovertemplate))
 
         return retval
 
@@ -223,9 +224,11 @@ class PieFig(FigUtilsMixin):
                                          thickness=10, )
                                      ))
 
+            hovertemplate = "Day: %{x}<br>" + "Casualties: %{z}<br>" + "R0: %{y}<extra></extra>"
             retval.append(
-                self.create_lines_at_r(self.cur_r, ses_dict.cases_removed, 'black', "COVID-19 sick or dead"))
-            retval.append(self.create_lines_at_r(self.cur_r, ses_dict.cases_unemployed, 'green', "Unemployed"))
+                self.create_lines_at_r(self.cur_r, ses_dict.cases_removed, 'black', "COVID-19 sick or dead",hovertemplate))
+            hovertemplate = "Day: %{x}<br>" + "Unemployed: %{z}<br>" + "R0: %{y}<extra></extra>"
+            retval.append(self.create_lines_at_r(self.cur_r, ses_dict.cases_unemployed, 'green', "Unemployed",hovertemplate))
             retval.append(self.create_r_trace_summary())
         else:
             surfaces = self.gen_sector_display(ses_dict)
