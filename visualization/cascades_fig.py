@@ -53,24 +53,18 @@ class CascadesFig(FigUtilsMixin):
             xanchor="left",
             x=0
         )
+        width = 400
         if not self.sector_mode:
             scene = dict(
-                yaxis_title='No. Employed',
-                xaxis_title='Days',
                 aspectmode='manual',
                 xaxis=dict(
                     autorange=False,
                 ))
-
             yaxis = dict(
                 range=[cur_ses_dict.pop_min, cur_ses_dict.pop_max],
             )
-
-            width = 400
         else:
             scene = dict(
-                yaxis_title='No. Employed',
-                xaxis_title='Days',
                 yaxis=dict(
                     autorange=True,
                 ))
@@ -78,18 +72,19 @@ class CascadesFig(FigUtilsMixin):
                 autorange=True,
             )
 
-            width = 520
 
         layout = go.Layout(
             {
                 'yaxis': yaxis,
                 'scene': scene,
-
+                'yaxis_title': 'No. Employed',
+                'xaxis_title': 'Days',
                 'uirevision': 'true',
                 # 'legend_title': f"Legend Title{cur_r}",
                 'legend': legend,
                 'width': width,
-                'height': 400
+                'height': 400,
+                # "left": "20rem"
             }
         )
 

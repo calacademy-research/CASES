@@ -296,7 +296,6 @@ def app_setup():
                                       className="four columns",
                                       children=[
                                           html.Div(id="top_in_col",
-                                                   style={},
                                                    children=[
                                                        dcc.Graph(
                                                            id='r-cascades-graph',
@@ -308,7 +307,6 @@ def app_setup():
                                                    },
 
                                                    )
-
                                       ])
                          ])
                 )

@@ -70,16 +70,14 @@ class PieFig(FigUtilsMixin):
                 xaxis_title='Days',
                 zaxis=dict(
                     autorange=True,
-                    showticklabels= False,
+                    showticklabels=False,
                     # range=[750,1000],
                 )
             )
 
         return (
             {'title': f"{title}",
-
              'scene': scene,
-
              # autosize=True,
              'uirevision': 'true',
              # 'legend_title': f"Legend Title{cur_r}",
@@ -90,7 +88,6 @@ class PieFig(FigUtilsMixin):
                  x=0.01
              ),
              'legend_orientation':'h',
-             'width': 800,
              'height': 800
              }
         )
@@ -166,23 +163,24 @@ class PieFig(FigUtilsMixin):
 
     def gen_sector_display(self, ses_dict):
         retval = []
-
+        first=True
         for cur_sector_id in self.cur_sector_ids:
             unemployed_z = self.derived_data_dict[self.cur_ses_id].sectors_df[cur_sector_id]
             r_cs = self.sector_colors.surface_color_mappings[cur_sector_id]
-
             retval.append(
                 go.Surface(z=unemployed_z,
                            y=ses_dict.unemployed_surface_df.index,
                            x=ses_dict.unemployed_surface_df.columns,
                            hoverinfo='none',
                            opacity=0.6,
-                           colorscale=r_cs
-                           ))
+                           colorscale=r_cs,
+                           showscale=False,
+                    )
+            )
 
             hovertemplate = "Day: %{x}<br>" + "Unemployed: %{z}<br>" + "R0: %{y}<extra>"+cur_sector_id+"</extra>"
             #miserable hack forces two column legend display
-            legend_label = (cur_sector_id + " model R0").ljust(45)
+            legend_label = (cur_sector_id + " model R0").ljust(40)
 
             retval.append(
                 self.create_lines_at_r(self.cur_r,
@@ -206,12 +204,7 @@ class PieFig(FigUtilsMixin):
                                      hoverinfo='none',
                                      opacity=0.6,
                                      colorscale='Greens',
-                                     colorbar=dict(
-                                         title="Total<br>employed",
-                                         thickness=10,
-                                         tickmode="auto",
-                                         # nticks=5,
-                                         x=1.20, )
+                                     showscale=False
                                      ))
             retval.append(go.Surface(z=ses_dict.removed_surface_df.values,
                                      y=ses_dict.removed_surface_df.index,
@@ -219,13 +212,8 @@ class PieFig(FigUtilsMixin):
                                      hoverinfo='none',
                                      opacity=0.6,
                                      colorscale='Greys',
-                                     colorbar=dict(
-                                         title="Total<br>removed",
-                                         x=1.02,
-                                         tickmode="auto",
-                                         # nticks=5,
-                                         thickness=10, )
-                                     ))
+                                     showscale=False
+                       ))
 
             hovertemplate = "Day: %{x}<br>" + "Casualties: %{z}<br>" + "R0: %{y}<extra></extra>"
             retval.append(
