@@ -285,9 +285,7 @@ def app_setup():
                          className="row",
                          style=CONTENT_STYLE,
                          children=[
-
-                             html.Div(style={},
-                                      id="first-col",
+                             html.Div(id="first-col",
                                       className="eight columns",
                                       children=[
                                           dcc.Graph(
@@ -296,7 +294,6 @@ def app_setup():
                                           )]),
                              html.Div(id="second-col",
                                       className="four columns",
-
                                       children=[
                                           html.Div(id="top_in_col",
                                                    style={},
@@ -322,30 +319,35 @@ def app_setup():
         return value
 
     TOPLEVEL_STYLE = {
-        "width": "140rem",
+        "width": "140rem"
+
     }
 
     main_div = html.Div(style=TOPLEVEL_STYLE,
                         className="row",
                         children=[
-
-                            html.Div( className="three columns", children=[sidebar_div()]),
-                            html.Div( className="nine columns", children=[page_content_div()])
-
+                            html.Div(className="three columns", children=[sidebar_div()]),
+                            html.Div(className="nine columns",
+                                     style={'overflow': 'auto',
+                                            'overflow': 'visible'},
+                                     children=[page_content_div()])
                         ])
 
-    app.layout = html.Div(children=
-    [
-        dcc.Input(id="loading-input-2",  style={"visibility": "hidden"},value='Input triggers nested spinner'),
-        dcc.Loading(
-            id="loading-2",
-            fullscreen=True,
+    app.layout = html.Div(
+        children=
+        [
+            dcc.Input(id="loading-input-2",
+                      style={"visibility": "hidden"},
+                      value='Input triggers nested spinner'),
+            dcc.Loading(
+                id="loading-2",
+                fullscreen=True,
 
-            children=[html.Div([html.Div(id="loading-output-2")]),
-                      main_div],
-            type="circle",
-        )
-    ]
+                children=[html.Div([html.Div(id="loading-output-2")]),
+                          main_div],
+                type="circle",
+            )
+        ]
     )
 
     # app.layout = main_div

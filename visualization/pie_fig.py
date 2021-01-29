@@ -103,7 +103,7 @@ class PieFig(FigUtilsMixin):
 
         data = go.Scatter3d(
             mode='lines',
-            name=sector_id + " R0 trace",
+            name=sector_id + " actual R0",
             x=self.derived_data_dict[self.cur_ses_id].day_list,
             y=r_values,
             z=normalized_employment,
@@ -186,7 +186,7 @@ class PieFig(FigUtilsMixin):
                 self.create_lines_at_r(self.cur_r,
                                        self.derived_data_dict[self.cur_ses_id].sectors_dict[cur_sector_id],
                                        'black',
-                                       cur_sector_id,
+                                       cur_sector_id + " model R0",
                                        hovertemplate))
             retval.append(self.create_r_trace_sector(cur_sector_id,hovertemplate))
 
