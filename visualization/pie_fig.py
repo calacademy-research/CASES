@@ -66,11 +66,11 @@ class PieFig(FigUtilsMixin):
         else:
             scene = dict(
                 yaxis_title='R0',
-                zaxis_title='No. Employed, normalized',
+                zaxis_title='No. Employed, normalized, %',
                 xaxis_title='Days',
                 zaxis=dict(
                     autorange=True,
-                    showticklabels=False,
+                    # showticklabels=False,
                     # range=[750,1000],
                 )
             )
@@ -97,10 +97,10 @@ class PieFig(FigUtilsMixin):
         employment = self.employemnt_data.employment_by_ses_by_sector_by_day[self.cur_ses_id][sector_id]
         r_values = list(self.r_date_dict[self.cur_ses_id].values())
         maxval = max(employment)
-        normalized_employment = [(x / maxval) * 1000 for x in employment]
+        normalized_employment = [(x / maxval) * 100 for x in employment]
         data = go.Scatter3d(
             mode='lines',
-            name=sector_id + " actual R0",
+            name=sector_id + " actual",
             x=self.derived_data_dict[self.cur_ses_id].day_list,
             y=r_values,
             z=normalized_employment,
@@ -178,9 +178,9 @@ class PieFig(FigUtilsMixin):
                     )
             )
 
-            hovertemplate = "Day: %{x}<br>" + "Unemployed: %{z}<br>" + "R0: %{y}<extra>"+cur_sector_id+"</extra>"
+            hovertemplate = "Day: %{x}<br>" + "Employed: %{z:.2f}%<br>" + "R0: %{y}<extra>"+cur_sector_id+"</extra>"
             #miserable hack forces two column legend display
-            legend_label = (cur_sector_id + " model R0").ljust(40)
+            legend_label = (cur_sector_id + " model").ljust(40)
 
             retval.append(
                 self.create_lines_at_r(self.cur_r,

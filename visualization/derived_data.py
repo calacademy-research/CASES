@@ -36,7 +36,6 @@ class DerivedData:
                           "Gov_1", "Gov_2", "Gov_3", "Gov_4"]
         for value in sector_names.values():
             self.complete_array.append(value)
-
         self.complete_array.extend(["Susceptible", "Infected", "Removed"])
         self.sectors_df = {}
         self.sector_max = {}
@@ -57,7 +56,7 @@ class DerivedData:
         retval = {}
         for key in dict.keys():
             source_array = dict[key]
-            target = [(x / maxval) * 1000 for x in source_array]
+            target = [(x / maxval) * 100 for x in source_array]
             retval[key] = target
         return retval
 

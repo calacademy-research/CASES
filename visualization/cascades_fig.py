@@ -47,6 +47,7 @@ class CascadesFig(FigUtilsMixin):
         cur_ses_dict = self.derived_data_dict[self.cur_ses_id]
         scene = {}
         yaxis = {}
+        yaxis_label = None
         legend = dict(
             yanchor="top",
             y=-0.25,
@@ -63,21 +64,22 @@ class CascadesFig(FigUtilsMixin):
             yaxis = dict(
                 range=[cur_ses_dict.pop_min, cur_ses_dict.pop_max],
             )
+            yaxis_label = "No. Employed"
         else:
-            scene = dict(
-                yaxis=dict(
-                    autorange=True,
-                ))
             yaxis = dict(
                 autorange=True,
+                # showticklabels=False
+                # tickangle=
+
             )
+            yaxis_label="No. Employed, normalized, %"
 
 
         layout = go.Layout(
             {
                 'yaxis': yaxis,
                 'scene': scene,
-                'yaxis_title': 'No. Employed',
+                'yaxis_title': yaxis_label,
                 'xaxis_title': 'Days',
                 'uirevision': 'true',
                 # 'legend_title': f"Legend Title{cur_r}",
@@ -94,13 +96,14 @@ class CascadesFig(FigUtilsMixin):
         retval = []
 
         for cur_sector_id in self.cur_sector_ids:
-
+            #             hovertemplate = "Day: %{x}<br>" + "Unemployed: %{z}<br>" + "R0: %{y}<extra>"+cur_sector_id+"</extra>"
             y = self.derived_data_dict[self.cur_ses_id].sectors_dict[cur_sector_id][self.cur_r]
             retval.append(go.Scatter(
                 mode='lines',
                 name=cur_sector_id,
                 x=self.derived_data_dict[self.cur_ses_id].day_list,
                 y=y,
+                hovertemplate="Day: %{x}<br>" + "Employed: %{y:.2f}%<extra>"+cur_sector_id+"</extra>",
                 line=dict(
                     color=self.sector_colors.trace_color_mappings[cur_sector_id],
                     width=1
