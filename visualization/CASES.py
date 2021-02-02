@@ -8,13 +8,13 @@ from cascades_fig import CascadesFig
 import dash_core_components as dcc
 import dash_html_components as html
 import dash_bootstrap_components as dbc
-from flask import make_response
+from flask import Response
+import base64
 from flask import Flask
 import csv
 import io
 from sector_colors import SectorColors
 import time
-
 from dash.dependencies import Input, Output
 import os
 
@@ -128,6 +128,11 @@ def app_setup():
         cur_r = pie_fig_instance.cur_r
         cur_data_dict = derived_data_dict[pie_fig_instance.cur_ses_id]
         filename = f"{cur_ses_name}_{cur_r}.csv"
+        filename = filename.replace(", ", "-")
+        filename = filename.replace(",", "-")
+        filename = filename.replace(" ", "_")
+
+        # filename = f"temp.csv" # use md5 so no collision
         data = [["day", "removed", "unemployed"]]
         for cur_day in range(0, cur_data_dict.day_count):
             removed = cur_data_dict.cases_removed[cur_r][cur_day]
@@ -135,13 +140,18 @@ def app_setup():
 
             data.append([cur_day + 1, removed, unemployed])
 
-        si = io.StringIO()
-        cw = csv.writer(si)
-        cw.writerows(data)
-        output = make_response(si.getvalue())
-        output.headers["Content-Disposition"] = f"attachment; filename={filename}"
-        output.headers["Content-type"] = "text/csv"
-        return output
+        output = io.StringIO()
+        writer = csv.writer(output)
+        writer.writerows(data)
+        csv_string = output.getvalue()
+
+        return Response(
+            csv_string,
+            mimetype="text/csv",
+            headers={
+                "Content-disposition": "attachment; filename=" + filename
+            }
+        )
 
     white_button_style = {'background-color': 'white',
                           }
@@ -205,10 +215,12 @@ def app_setup():
             "top": 0,
             "left": 0,
             "bottom": 0,
-            # "width": "30rem",
-            "backgroundColor": "#9c9c9c",
+            "backgroundColor": "#E8E8E8",
             "padding": "2rem 1rem"
         }
+
+        logo_image = base64.b64encode(open("cas-logo.png", 'rb').read()).decode('ascii')
+        github_logo = base64.b64encode(open("GitHub_Logo.png", 'rb').read()).decode('ascii')
         return (html.Div(id='sidebar',
                          style=SIDEBAR_STYLE,
                          children=[
@@ -261,15 +273,34 @@ def app_setup():
                                  multi=True,
                                  disabled=True,
                                  style={'width': '30rem'},
-                                 # options=derived_data_dict[cur_ses_id].sectors.keys(),
-                                 # value=cur_sector_id
+
                              ),
 
                              html.Div([
-                                 # dcc.Link(html.Button('back'), href="/testurl")
                                  html.A(html.Button('Download csv at current R0'), href='download_csv')
 
-                             ])
+                             ]),
+
+                             html.Div(id='logos',
+                                      style={"position": "fixed",
+                                             "bottom": "0"},
+                                      children=[
+                                          html.A(href='https://github.com/calacademy-research/CASES',
+                                                 children=[
+                                                     html.Img(style={"width": "10rem",
+                                                                     "margin-left": "10rem",
+                                                                     "margin-right": "auto"},
+                                                              src='data:image/png;base64,{}'.format(github_logo))
+                                                 ]),
+                                          html.P(""),
+                                          html.A(href='https://www.calacademy.org',
+                                                 children=[
+                                                     html.Img(style={"width": "30rem"},
+                                                              src='data:image/png;base64,{}'.format(logo_image))
+                                                 ])
+                                      ]
+                                      )
+
                          ])
                 )
 
@@ -281,6 +312,7 @@ def app_setup():
             # "marginRight": "2rem",
             # "padding": "2rem 1rem"
         }
+
         return (html.Div(id="page-content",
                          className="row",
                          style=CONTENT_STYLE,
@@ -348,20 +380,11 @@ def app_setup():
         ]
     )
 
-    # app.layout = main_div
-
 
 def setup():
     if app is None:
         data_setup()
         app_setup()
-
-
-staticmethod
-
-
-def test_static():
-    print("Joe static hit")
 
 
 if __name__ == '__main__':

@@ -10,6 +10,9 @@ Docker note: increase the ram to more than the default 2gb
 
 visual key/hover/explanation of WTF is going on
 
+Note that docker runs as user www-data, so set permissions accordingly on visualiztion dir for deployment
+
+
 
 Document input files.
 ---------------------
