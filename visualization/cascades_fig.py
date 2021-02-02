@@ -115,7 +115,8 @@ class CascadesFig(FigUtilsMixin):
         if not self.sector_mode:
             retval.append(go.Scatter(
                 mode='lines',
-                name="COVID-19 sick or dead",
+                hovertemplate="Day: %{x}<br>" + "Casualties: %{y:,.0f}<extra></extra>",
+
                 x=self.derived_data_dict[self.cur_ses_id].day_list,
                 y=list(ses_dict.cases_removed[self.cur_r]),
                 line=dict(
@@ -124,7 +125,7 @@ class CascadesFig(FigUtilsMixin):
                 )))
             retval.append(go.Scatter(
                 mode='lines',
-                name="Unemployed",
+                hovertemplate="Day: %{x}<br>" + "Employed: %{y:,.0f}<extra></extra>",
                 x=self.derived_data_dict[self.cur_ses_id].day_list,
                 y=list(ses_dict.cases_unemployed[self.cur_r]),
 
