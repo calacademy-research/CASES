@@ -136,13 +136,8 @@ class PieFig(FigUtilsMixin):
 
     def create_lines_at_r(self, r_val, cases_dict, color, name, hovertemplate):
         z = [r_val] * len(self.derived_data_dict[self.cur_ses_id].day_list)  # constant for this R
-        if self.sector_mode:
-            z_val = list(cases_dict[r_val])
-        else:
-            # Fix this, needs multiplexing. Joe.
-            z_val = list(cases_dict[r_val])
+        z_val = list(cases_dict[r_val])
 
-            # z_val = self.derived_data_dict[self.cur_ses_id].sectors_dict[cur_sector_id][r_val]
         data = go.Scatter3d(
             mode='lines',
             name=name,
