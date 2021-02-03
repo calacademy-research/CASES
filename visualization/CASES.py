@@ -81,6 +81,7 @@ def create_app():
     server = Flask(__name__)
 
     app = dash.Dash(__name__,
+                    title='CASES',
                     prevent_initial_callbacks=True,
                     external_stylesheets=external_stylesheets,
                     server=server)
