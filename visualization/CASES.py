@@ -218,8 +218,8 @@ def app_setup():
             "backgroundColor": "#E8E8E8",
             "padding": "2rem 1rem"
         }
-
-        logo_image = base64.b64encode(open("cas-logo.png", 'rb').read()).decode('ascii')
+        denison_logo_image = base64.b64encode(open("denison-logo.png", 'rb').read()).decode('ascii')
+        cas_logo_image = base64.b64encode(open("cas-logo.png", 'rb').read()).decode('ascii')
         github_logo = base64.b64encode(open("GitHub_Logo.png", 'rb').read()).decode('ascii')
         return (html.Div(id='sidebar',
                          style=SIDEBAR_STYLE,
@@ -296,7 +296,14 @@ def app_setup():
                                           html.A(href='https://www.calacademy.org',
                                                  children=[
                                                      html.Img(style={"width": "30rem"},
-                                                              src='data:image/png;base64,{}'.format(logo_image))
+                                                              src='data:image/png;base64,{}'.format(cas_logo_image))
+                                                 ]),
+                                          html.P(""),
+                                          html.A(href='https://denison.edu/',
+                                                 children=[
+                                                     html.Img(style={"width": "30rem",
+                                                                     "margin-bottom": "3rem"},
+                                                              src='data:image/png;base64,{}'.format(denison_logo_image))
                                                  ])
                                       ]
                                       )
