@@ -15,10 +15,15 @@ class FigUtilsMixin:
             self.cur_ses_id = new_ses_id
         if isinstance(new_sector_ids, list):
             self.cur_sector_ids = new_sector_ids
+        print(f"Hitting update ses_and_r with {[p['prop_id'] for p in dash.callback_context.triggered][0]}")
         changed_id = [p['prop_id'] for p in dash.callback_context.triggered][0]
         if 'enable-summary' in changed_id:
+            print(f"Changing to SUMMARY mode 2")
+
             self.sector_mode = False
         if 'enable-sectors' in changed_id:
+            print(f"Changing to SECTOR mode 3")
+
             self.sector_mode = True
 
 

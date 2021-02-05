@@ -192,22 +192,22 @@ def app_setup():
         else:
             return white_button_style
 
-    @app.callback(
-        dash.dependencies.Output('sector-pulldown', 'disabled'),
-        [dash.dependencies.Input('enable-sectors', 'n_clicks'),
-         dash.dependencies.Input('enable-summary', 'n_clicks')])
-    def update_output(n_clicks, n_clicks_2):
-        retval = None
-        changed_id = [p['prop_id'] for p in dash.callback_context.triggered][0]
-        if 'enable-summary' in changed_id:
-            retval = False
-        if 'enable-sectors' in changed_id:
-            retval = True
-
-        sector_mode = retval
-        pie_fig_instance.sector_mode = retval
-        cascades_fig_instance.sector_mode = retval
-        return not retval
+    # @app.callback(
+    #     dash.dependencies.Output('sector-pulldown', 'disabled'),
+    #     [dash.dependencies.Input('enable-sectors', 'n_clicks'),
+    #      dash.dependencies.Input('enable-summary', 'n_clicks')])
+    # def update_output(n_clicks, n_clicks_2):
+    #     retval = None
+    #     changed_id = [p['prop_id'] for p in dash.callback_context.triggered][0]
+    #     if 'enable-summary' in changed_id:
+    #         retval = False
+    #     if 'enable-sectors' in changed_id:
+    #         retval = True
+    #
+    #     pie_fig_instance.sector_mode = retval
+    #     cascades_fig_instance.sector_mode = retval
+    #     print(f"Changing to sector mode 1: {retval}")
+    #     return not retval
 
     def sidebar_div():
         # the style arguments for the sidebar. We use position:fixed and a fixed width
@@ -398,7 +398,7 @@ def setup():
 if __name__ == '__main__':
     print("Running internal server")
     setup()
-    app.run_server(debug=True)
+    app.run_server(debug=False)
 else:
     print(f"Running external server: {__name__}")
     setup()
