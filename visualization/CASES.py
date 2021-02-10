@@ -187,11 +187,28 @@ def app_setup():
             retval = False
         if 'enable-sectors' in changed_id:
             retval = True
+        pie_fig_instance.sector_mode = retval
+        cascades_fig_instance.sector_mode = retval
         if retval is True:
             return green_button_style
         else:
             return white_button_style
 
+    @app.callback(
+        dash.dependencies.Output('sector-pulldown', 'disabled'),
+        [dash.dependencies.Input('enable-sectors', 'n_clicks'),
+         dash.dependencies.Input('enable-summary', 'n_clicks')])
+    def update_output(n_clicks, n_clicks_2):
+        retval = None
+        changed_id = [p['prop_id'] for p in dash.callback_context.triggered][0]
+        if 'enable-summary' in changed_id:
+            retval = False
+        if 'enable-sectors' in changed_id:
+            retval = True
+
+
+        print(f"Changing to sector mode 1: {retval}")
+        return not retval
 
     def sidebar_div():
         # the style arguments for the sidebar. We use position:fixed and a fixed width
