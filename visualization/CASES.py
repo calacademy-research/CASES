@@ -187,8 +187,8 @@ def app_setup():
             retval = False
         if 'enable-sectors' in changed_id:
             retval = True
-        pie_fig_instance.sector_mode = retval
-        cascades_fig_instance.sector_mode = retval
+        # pie_fig_instance.sector_mode = retval
+        # cascades_fig_instance.sector_mode = retval
         if retval is True:
             return green_button_style
         else:
@@ -205,9 +205,6 @@ def app_setup():
             retval = False
         if 'enable-sectors' in changed_id:
             retval = True
-
-
-        print(f"Changing to sector mode 1: {retval}")
         return not retval
 
     def sidebar_div():
