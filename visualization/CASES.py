@@ -161,35 +161,47 @@ def app_setup():
                           }
 
     @app.callback(
-        dash.dependencies.Output('enable-summary', 'style'),
+        [dash.dependencies.Output('enable-summary', 'style'),
+         dash.dependencies.Output('sectors-enabled', 'children')],
+
         [dash.dependencies.Input('enable-sectors', 'n_clicks'),
          dash.dependencies.Input('enable-summary', 'n_clicks')])
     def update_output(n_clicks, n_clicks_2):
-        retval = None
+        enable_sectors = None
         changed_id = [p['prop_id'] for p in dash.callback_context.triggered][0]
         if 'enable-summary' in changed_id:
-            retval = False
+            enable_sectors = False
         if 'enable-sectors' in changed_id:
-            retval = True
-        if retval is False:
-            return green_button_style
+            enable_sectors = True
+        assert enable_sectors is not None, "No value set for sector mode"
+
+        pie_fig_instance.sector_mode = enable_sectors
+        cascades_fig_instance.sector_mode = enable_sectors
+        pie_fig_instance.refresh_pie_fig()
+        cascades_fig_instance.refresh_cascades_fig()
+
+        print(f"Hit enable-summary: {enable_sectors}")
+
+        if enable_sectors is False:
+            return green_button_style,enable_sectors
         else:
-            return white_button_style
+            return white_button_style,enable_sectors
 
     @app.callback(
         dash.dependencies.Output('enable-sectors', 'style'),
         [dash.dependencies.Input('enable-sectors', 'n_clicks'),
          dash.dependencies.Input('enable-summary', 'n_clicks')])
     def update_output(n_clicks, n_clicks_2):
-        retval = None
+        enable_sectors = None
         changed_id = [p['prop_id'] for p in dash.callback_context.triggered][0]
         if 'enable-summary' in changed_id:
-            retval = False
+            enable_sectors = False
         if 'enable-sectors' in changed_id:
-            retval = True
-        # pie_fig_instance.sector_mode = retval
-        # cascades_fig_instance.sector_mode = retval
-        if retval is True:
+            enable_sectors = True
+        assert enable_sectors is not None, "No value set for sector mode"
+        print(f"Hit enable-sectors: {enable_sectors}")
+
+        if enable_sectors is True:
             return green_button_style
         else:
             return white_button_style
@@ -201,10 +213,12 @@ def app_setup():
     def update_output(n_clicks, n_clicks_2):
         retval = None
         changed_id = [p['prop_id'] for p in dash.callback_context.triggered][0]
+
         if 'enable-summary' in changed_id:
             retval = False
         if 'enable-sectors' in changed_id:
             retval = True
+
         return not retval
 
     def sidebar_div():
@@ -345,7 +359,8 @@ def app_setup():
                                                    },
 
                                                    )
-                                      ])
+                                      ]),
+                             html.Div(id='sectors-enabled', style={'display': 'none'})
                          ])
                 )
 
@@ -396,7 +411,7 @@ def setup():
 if __name__ == '__main__':
     print("Running internal server")
     setup()
-    app.run_server(debug=False)
+    app.run_server(debug=True)
 else:
     print(f"Running external server: {__name__}")
     setup()

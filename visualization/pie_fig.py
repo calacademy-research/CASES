@@ -23,8 +23,10 @@ class PieFig(FigUtilsMixin):
              dash.dependencies.Input('sector-pulldown', 'value'),
              dash.dependencies.Input('r-slider', 'value'),
              dash.dependencies.Input('r-input', 'value'),
+             dash.dependencies.Input('sectors-enabled', 'children'),
              dash.dependencies.Input('enable-sectors', 'n_clicks'),
              dash.dependencies.Input('enable-summary', 'n_clicks')
+
              ])(self.update_pie_fig)
 
     # Initial call
@@ -41,8 +43,8 @@ class PieFig(FigUtilsMixin):
         return pie_fig
 
     # callback
-    def update_pie_fig(self, new_ses_id, cur_sector_ids, r_slider, r_input, n_clicks_sectors, n_clicks_summary):
-        self.update_ses_and_r(new_ses_id, cur_sector_ids, r_slider, r_input)
+    def update_pie_fig(self, new_ses_id, cur_sector_ids, r_slider, r_input,update_sectors,clicks1,clicks2):
+        self.update_ses_and_r(new_ses_id, cur_sector_ids, r_slider, r_input,update_sectors)
         return self.refresh_pie_fig()
 
     def gen_pie_fig_layout_data(self):

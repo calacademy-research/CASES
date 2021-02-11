@@ -1,9 +1,11 @@
 import dash
 class FigUtilsMixin:
 
-    def update_ses_and_r(self,new_ses_id, new_sector_ids,r_slider, r_input):
+    def update_ses_and_r(self,new_ses_id, new_sector_ids,r_slider, r_input,sectors_enabled):
         self.cur_r
         self.cur_ses_id
+        print(f"Hit update ses-and-r: {sectors_enabled}")
+
         ctx = dash.callback_context
         triggered_item = ctx.triggered[0]['prop_id']
         # 'r-slider.value' 'r-input.value'
@@ -15,10 +17,8 @@ class FigUtilsMixin:
             self.cur_ses_id = new_ses_id
         if isinstance(new_sector_ids, list):
             self.cur_sector_ids = new_sector_ids
-        changed_id = [p['prop_id'] for p in dash.callback_context.triggered][0]
-        if 'enable-summary' in changed_id:
-            self.sector_mode = False
-        if 'enable-sectors' in changed_id:
-            self.sector_mode = True
+
+        self.sector_mode = sectors_enabled
+
 
 
