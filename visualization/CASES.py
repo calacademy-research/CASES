@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 '''
 CASES - Economic Cascades and the Costs of a Business-as-Usual Approach to COVID-19
 Copyright (C) 2021 California Academy of Sciences
@@ -16,7 +17,6 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 '''
 
-#!/usr/bin/env python3
 import dash
 from derived_data_loader import DerivedDataLoader
 from employment_input import EmploymentInput
