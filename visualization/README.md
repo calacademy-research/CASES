@@ -1,11 +1,5 @@
 TODO:
-Make it so this outputs .csv or .tsv for the model(s).
-  Verify against roopnarine raw model runs
-Test on windows
-we're using '/' in paths in r_input_data.tsv. Check this works on windows.
-We've got spaces in paths for r_input_data.tsv; test & verify.
 
-dockerized version?
 Docker note: increase the ram to more than the default 2gb
 
 visual key/hover/explanation of WTF is going on
@@ -14,7 +8,7 @@ Note that docker runs as user www-data, so set permissions accordingly on visual
 
 
 
-Document input files.
+input files.
 ---------------------
 derived_data_inputs.tsv 
 This is the master file listing. The first line lists the directories containing
@@ -58,15 +52,6 @@ python3 -m pip install -r requirements.txt
 
 surf to: http://127.0.0.1:8050/
 per the output
-
------------
-gnuplot was run thusly:
-gnuplot> set xlabel "Day"
-gnuplot> set ylabel "R0"
-gnuplot> set title "Los Angeles-Glendale, 08/25"
-gnuplot> splot "LA_CASES6_surfaces_08_25b.dat" using 2:1:3 with lines lw 2.5 palette,"LA_CASES6_surfaces_08_25b.dat" using 2:1:4 with lines lw .25 lc rgb "grey"
-gnuplot> set title "Stockton-Lodi, 08/26"
-gnuplot> splot "Stockton-Lodi_CASES6_surfaces_08_26b.dat" using 2:1:3 with lines lw 2.5 palette,"Stockton-Lodi_CASES6_surfaces_08_26b.dat" using 2:1:4 with lines lw .25 lc rgb "grey"
 
 ----------------
 Pyjulia 

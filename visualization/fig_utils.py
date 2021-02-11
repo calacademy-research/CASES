@@ -2,10 +2,6 @@ import dash
 class FigUtilsMixin:
 
     def update_ses_and_r(self,new_ses_id, new_sector_ids,r_slider, r_input,sectors_enabled):
-        self.cur_r
-        self.cur_ses_id
-        print(f"Hit update ses-and-r: {sectors_enabled}")
-
         ctx = dash.callback_context
         triggered_item = ctx.triggered[0]['prop_id']
         # 'r-slider.value' 'r-input.value'

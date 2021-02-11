@@ -180,7 +180,6 @@ def app_setup():
         pie_fig_instance.refresh_pie_fig()
         cascades_fig_instance.refresh_cascades_fig()
 
-        print(f"Hit enable-summary: {enable_sectors}")
 
         if enable_sectors is False:
             return green_button_style,enable_sectors
@@ -199,7 +198,6 @@ def app_setup():
         if 'enable-sectors' in changed_id:
             enable_sectors = True
         assert enable_sectors is not None, "No value set for sector mode"
-        print(f"Hit enable-sectors: {enable_sectors}")
 
         if enable_sectors is True:
             return green_button_style
