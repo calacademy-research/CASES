@@ -41,9 +41,7 @@ class JuliaLoader:
         self.us_exchanges_filename = us_exchanges
         self.age_fracs_filename = age_fracs
         self.employment_filename = employment
-        # US_EXCHANGES = US_exchanges_2018c
-        # AGE_FRACS = "LA_age_fracs.csv"
-        # LA_EMPLOYMENT = "LA_employment_by_sector_02_2020.csv"
+
         self.results = []
         if run_julia:
             self.run_julia()
@@ -55,12 +53,7 @@ class JuliaLoader:
             cases_2 = pickle.load(open(self.employment_filename+"_cases_2.bin", "rb"))
             self.results.append(cases_1)
             self.results.append(cases_2)
-
-        cases_1 = self.get_results()[0]
         self.generate_derived_data()
-
-
-
 
     def get_results(self):
         return self.results
@@ -68,10 +61,6 @@ class JuliaLoader:
     def run_julia(self):
         print("Loading Julia....")
 
-
-        # US_EXCHANGES = "US_exchanges_2018c.csv"
-        # AGE_FRACS = "LA_age_fracs.csv"
-        # LA_EMPLOYMENT = "LA_employment_by_sector_02_2020.csv"
         I = np.genfromtxt(self.us_exchanges_filename, delimiter=" ")
         age_fracs_with_name = np.genfromtxt(self.age_fracs_filename, delimiter=",")
         age_fracs = np.delete(age_fracs_with_name,0,1)
@@ -105,20 +94,3 @@ class JuliaLoader:
                     else:
                         out.write(" ")
 
-
-
-
-
-
-    # Returns a tuple of 2d dataframes. Each row is a distinct R value
-    # Each column is the day. (currently 0.90 -> 6.0 in 0.1 increments for R
-    # and 1-151 inclusive for day.
-    #            1             2    ...           150           151
-    # 0.90  4636800.0  4.636800e+06  ...  4.636797e+06  4.636797e+06
-    # 0.91  4636800.0  4.636800e+06  ...  4.636796e+06  4.636796e+06
-    # 0.92  4636800.0  4.636800e+06  ...  4.636796e+06  4.636796e+06
-    def get_surfaces(self):
-        cases_1 = self.get_results()[0]
-
-
-        return unemployed, incapacitated
