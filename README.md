@@ -1,4 +1,4 @@
-This is the CASES data visualzaiton project. Original manuscript 
+This is the CASES data visualization project. Original manuscript 
 [here](https://www.preprints.org/manuscript/202101.0200/v1).
 
 # Overview
@@ -12,7 +12,7 @@ and employment_input_data.tsv.
 Initial run will take quite some time (> 1hr). Once these data are generated, launching
 will take only a few seconds. 
 
-Production runs should be done in the Docker environemnt.
+Production runs should be done in the Docker environment.
 
 ## Inputs
 
@@ -119,7 +119,7 @@ per the output
 Docker will require more than the default 2gb that's assigned on Macs 
 (Linux docker runs out of the box.)
 
-Note that docker runs as user www-data, so set permissions accordingly on visualiztion dir for deployment
+Note that docker runs as user www-data, so set permissions accordingly on visualization dir for deployment
 
 
 
