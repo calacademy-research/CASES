@@ -241,7 +241,7 @@ def app_setup():
             "top": 0,
             "left": 0,
             "bottom": 0,
-            "backgroundColor": "#F0F0F0",
+            "backgroundColor": "#F5F5F5",
             "padding": "2rem 1rem"
         }
         denison_logo_image = base64.b64encode(open("denison-logo.png", 'rb').read()).decode('ascii')
