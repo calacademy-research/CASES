@@ -65,7 +65,6 @@ def data_setup():
 
     derived_data_loader = DerivedDataLoader(employment_data.sector_names)
     derived_data_dict = derived_data_loader.derived_data_dict
-    # cur_sector_ids = list(derived_data_dict[cur_ses_id].sectors_dict.keys())
     cur_sector_ids = ["Farm", "Professional"]
 
 
@@ -92,9 +91,7 @@ def generate_sector_pulldown_data(derived_data_for_ses):
 
 
 def create_app():
-    # 'https://codepen.io/chriddyp/pen/bWLwgP.css'
     external_stylesheets = [dbc.themes.BOOTSTRAP, 'https://codepen.io/chriddyp/pen/bWLwgP.css']
-    # external_stylesheets = ['http://codepen.io/chriddyp/pen/bWLwgP.css']
     global server
     server = Flask(__name__)
 
@@ -244,7 +241,7 @@ def app_setup():
             "top": 0,
             "left": 0,
             "bottom": 0,
-            "backgroundColor": "#E8E8E8",
+            "backgroundColor": "#F0F0F0",
             "padding": "2rem 1rem"
         }
         denison_logo_image = base64.b64encode(open("denison-logo.png", 'rb').read()).decode('ascii')

@@ -19,7 +19,6 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 import pandas as pd
 import numpy as np
 import pickle
-import sys
 # it would be nice to load this only when needed; it's slow. but it makes python unstable
 # in certain circumstances (pycharm debugging mode for one)
 import julia
