@@ -59,7 +59,7 @@ root@de13780a0da3:/var/www/apache-flask# cd app
 root@de13780a0da3:/var/www/apache-flask/app# python3 ./CASES.py
 ```
  
-This will take about 45 minutes to run and will generate the intermediate .bin files.
+This will take some time to run and will generate the intermediate .bin files.
 
 At this point, it's safe to exit the prompt. The systems should be running on
 localhost port 80. If not, "delete.sh" "build.sh" and, finally, "run.sh".
