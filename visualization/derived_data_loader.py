@@ -1,8 +1,28 @@
+'''
+CASES - Economic Cascades and the Costs of a Business-as-Usual Approach to COVID-19
+Copyright (C) 2021 California Academy of Sciences
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
+'''
+
 from derived_data import DerivedData
 from os import path
 import pickle
 from julia_loader import JuliaLoader
 import csv
+import sys
+import sys
 
 # Something of a misnomer, as we read the julia model
 # data inputs here.
@@ -69,11 +89,17 @@ class DerivedDataLoader:
 
     def fetch_derived_data(self,employment_filename):
         binary_dump_filename = JuliaLoader.get_filename_only(employment_filename) + "_derived.bin"
+        pickle_load = None
         if not path.exists(binary_dump_filename):
             return False
         else:
-            return pickle.load(open(binary_dump_filename, "rb"))
-
+            try:
+                pickle_load = pickle.load(open(binary_dump_filename, "rb"))
+            except ModuleNotFoundError:
+                print("\n\nCurrent .bin files aren't compatible with the versions of the python libraries")
+                print("loaded in the app. Remove the .bin files and re-run. This will take about 40 minutes.\n")
+                sys.exit(1)
+        return pickle_load
 
 
 

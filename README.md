@@ -30,12 +30,46 @@ Production runs should be done in the Docker environemnt.
 |sector_color_mappings.tsv|Color values assigned to each sector. Taste the rainbow!|
 |sector_names.tsv|Maps sector name as expressed in data to the display sector name|
 
+
+
+
+
+## Running in docker - scripts
+build.sh will create the environment.
+
+Delete.sh does what it says on the tin - removes the Docker environment
+
+run.sh runs the production environment.
+
+exec.sh will attach to a running docker so you can run in a shell.
+
+docker_start.sh is used internally during dockerized running.
+
 ## Initial run
 
-Currently, the initial run is not working in docker, though that is theoretically possible
-and will be avaiable in future versions if there is demand. 
+Build the system with "build.sh". These are standard docker commands, and
+can be run manually on windows systems.
+
+Run with "run.sh". This will start the system but won't kick off intermediate file
+generation until the web url is hit (url wil be http://127.0.0.1:80 ). However, 
+for better progress reports, it's easier to run "exec.sh". 
+```
+# ./exec.sh
+root@de13780a0da3:/var/www/apache-flask# cd app
+root@de13780a0da3:/var/www/apache-flask/app# python3 ./CASES.py
+```
+ 
+This will take about 45 minutes to run and will generate the intermediate .bin files.
+
+At this point, it's safe to exit the prompt. The systems should be running on
+localhost port 80. If not, "delete.sh" "build.sh" and, finally, "run.sh".
+
+All done!
 
 ----------------
+# Manual setup - NOT REQUIRED
+This is for development only; the entire system can and should be run in docker.
+
 ### Set up Pyjulia 
 Getting pyJulia setup requires a bit of work, and it will require upkeep if your
 python3 environment changes signifigantly. 
@@ -77,14 +111,6 @@ Create a python environment:
 Navigate to: http://127.0.0.1:8050/
 per the output
 
-## Running in docker
-build.sh will create the environment.
-
-Delete.sh does what it says on the tin - removes the Docker environment
-
-run.sh runs the production environment.
-
-exec.sh will attach to a running docker so you can run in a shell.
 
 
 # Notes and bugs

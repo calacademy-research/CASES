@@ -1,3 +1,21 @@
+# CASES - Economic Cascades and the Costs of a Business-as-Usual Approach to COVID-19
+# Copyright (C) 2021 California Academy of Sciences
+
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+
+
 # load libraries
 using DifferentialEquations, CSV, DelimitedFiles,DataFrames
 
@@ -240,7 +258,7 @@ function main(I,age_fracs,employed,employed_percent)
 
             # print(io1,R,",",j,",")
             for k = 1:size(total_E1,1)
-                print(io1,total_E1[k,j],",")
+                # print(io1,total_E1[k,j],",")
                 push!(cur_array_1,total_E1[k,j])
             end
             # print(io1,"\n")
