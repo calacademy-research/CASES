@@ -19,6 +19,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 from derived_data import DerivedData
 from os import path
 import csv
+import sys
 
 class EmploymentInput:
 
@@ -70,22 +71,25 @@ class EmploymentInput:
         out the values. There's a better way to do this. Probably numpy.
         :return:
         """
-        for id in self.employment_data_files.keys():
-            if id not in self.employment_by_ses_by_sector_by_day.keys():
-                self.employment_by_ses_by_sector_by_day[id] = {}
-            cur_data_dict = self.employment_input_data_dict[id]
-            for cur_sector in self.sector_names.values():
-                if cur_sector not in self.employment_by_ses_by_sector_by_day[id]:
-                    self.employment_by_ses_by_sector_by_day[id][cur_sector] = []
-                for cur_month in self.months.keys():
-                    if cur_month in cur_data_dict[cur_sector]:
+        try:
+            for id in self.employment_data_files.keys():
+                if id not in self.employment_by_ses_by_sector_by_day.keys():
+                    self.employment_by_ses_by_sector_by_day[id] = {}
+                cur_data_dict = self.employment_input_data_dict[id]
+                for cur_sector in self.sector_names.values():
+                    if cur_sector not in self.employment_by_ses_by_sector_by_day[id]:
+                        self.employment_by_ses_by_sector_by_day[id][cur_sector] = []
+                    for cur_month in self.months.keys():
+                        if cur_month in cur_data_dict[cur_sector]:
 
-                        employment = cur_data_dict[cur_sector][cur_month]
-                        # print(f"in SES {self.employment_data_files[id]}, sector employment in {cur_sector} in {cur_month}: {employment}")
-                        for i in range (0,self.months[cur_month]):
-                            if len(self.employment_by_ses_by_sector_by_day[id][cur_sector]) < self.day_count:
-                                self.employment_by_ses_by_sector_by_day[id][cur_sector].append(employment)
-
+                            employment = cur_data_dict[cur_sector][cur_month]
+                            # print(f"in SES {self.employment_data_files[id]}, sector employment in {cur_sector} in {cur_month}: {employment}")
+                            for i in range (0,self.months[cur_month]):
+                                if len(self.employment_by_ses_by_sector_by_day[id][cur_sector]) < self.day_count:
+                                    self.employment_by_ses_by_sector_by_day[id][cur_sector].append(employment)
+        except KeyError as e:
+            print(f"Bad key. Probably a missing sector. Aborting: {e}")
+            sys.exit(1)
 
 
 
@@ -107,7 +111,11 @@ class EmploymentInput:
                 continue
 
             else:
-                sector_name = self.sector_names[row[0]]
+                try:
+                    sector_name = self.sector_names[row[0]]
+                except KeyError as e:
+                    print(f"invalid key:{row[0]}")
+                    sys.exit(1)
                 for index,month_val in enumerate(row):
                     if index > 0:
                         month = months[index -1]

@@ -85,11 +85,15 @@ class RInput:
 
         return results
 
+    def _decomment(self,csvfile):
+        for row in csvfile:
+            raw = row.split('#')[0].strip()
+            if raw: yield raw
 
 
     def read_input_data(self, filename):
         tsv_file = open(filename)
-        read_tsv = csv.reader(tsv_file, delimiter="\t")
+        read_tsv = csv.reader(self._decomment(tsv_file), delimiter="\t")
 
         data_files={}
         r_directory = None

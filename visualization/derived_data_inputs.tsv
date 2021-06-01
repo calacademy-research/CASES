@@ -1,4 +1,4 @@
-# Employment file path, age_fracs_path
+# Employment file path, age_fracs_path, employment percentage in feb 2020
 ../employment_by_sector_Feb2020	../age_fracs
 # SES ID, display name, employment filename, age_fracs filename, employment percentage
 0	Anaheim, SantaAna, Irvine MD	Anaheim_SantaAna_Irvine_employment_by_sector_Feb2020.csv	AnaheimSantaAnaIrvine_age_fracs.csv	0.527
@@ -12,3 +12,5 @@
 8	San Francisco, South SF, Redwood City MD	SF_RedwoodCity_SSF_employment_by_sector_Feb2020.csv	SanFranciscoRedwoodCitySouthSF_age_fracs.csv	0.724
 9	San Jose, Sunnyvale, Santa Clara MSA	SanJose_Sunnyvale_SantaClara_employment_by_sector_Feb2020.csv	SanJoseSunnyvaleSantaClara_age_fracs.csv	0.578
 10	Stockton, Lodi MSA	Stockton_Lodi_employment_by_sector_Feb2020.csv	Stockton_age_fracs.csv	0.322
+11	California	CA_employment_by_sector_Feb2020.csv	CAstate_age_fracs.csv	 0.448
+12	US	US_employment_by_sector_Feb2020.csv	US_age_fracs.csv	0.460

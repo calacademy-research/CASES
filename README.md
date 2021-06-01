@@ -19,7 +19,7 @@ Production runs should be done in the Docker environment.
 
 | Input file      | Description |
 | ----------- | ----------- |
-| derived_data_inputs.tsv      | Master file.  <p> The first line lists the directories containing <br> the employment file path and the age fracs path. |
+| derived_data_inputs.tsv      | Master file.  <p> The first line lists the directories containing <br> the employment file path, the age fracs path, and the employment percentage in feb 2020 |
 | ../employment_by_sector_Feb2020   | Starting point data. Path referencing derived_data_inputs.tsv.        |
 |../age_fracs|Per SES age per sector age breakdown percentages.|
 |r_input_data.tsv|Specifies the R actuals by SES index number.|
@@ -121,6 +121,19 @@ Docker will require more than the default 2gb that's assigned on Macs
 
 Note that docker runs as user www-data, so set permissions accordingly on visualization dir for deployment
 
+# Notes 6/1/2021 added US and ca:
+
+
+ create mode 100644 employment_by_sector_by_month/CA_11.tsv
+ create mode 100644 employment_by_sector_by_month/US_12.tsv
+
+
+ create mode 100644 age_fracs/US_age_fracs.csv
+ create mode 100644 employment_by_sector_Feb2020/CA_employment_by_sector_Feb2020.csv
+ create mode 100644 employment_by_sector_Feb2020/US_employment_by_sector_Feb2020.csv
+
+ create mode 100644 r/CAstate/R_CA.csv
+ create mode 100644 r/R_US.csv
 
 
 
