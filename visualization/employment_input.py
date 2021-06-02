@@ -58,9 +58,12 @@ class EmploymentInput:
             self.employment_by_ses_by_day[id] = []
             for day in range(0,self.day_count):
                 total = 0
-
-                for cur_sector in self.sector_names.values():
-                    total += self.employment_by_ses_by_sector_by_day[id][cur_sector][day]
+                try:
+                    for cur_sector in self.sector_names.values():
+                        total += self.employment_by_ses_by_sector_by_day[id][cur_sector][day]
+                except IndexError as e:
+                    print(f"Out of range, fatal. id:{id} sector: {cur_sector} day: {day}")
+                    sys.exit(1)
                 self.employment_by_ses_by_day[id].append(total)
 
     def create_daily_sector_data(self):
@@ -77,16 +80,19 @@ class EmploymentInput:
                     self.employment_by_ses_by_sector_by_day[id] = {}
                 cur_data_dict = self.employment_input_data_dict[id]
                 for cur_sector in self.sector_names.values():
+                    print(f"============================================= Sector {cur_sector}")
                     if cur_sector not in self.employment_by_ses_by_sector_by_day[id]:
                         self.employment_by_ses_by_sector_by_day[id][cur_sector] = []
                     for cur_month in self.months.keys():
                         if cur_month in cur_data_dict[cur_sector]:
-
                             employment = cur_data_dict[cur_sector][cur_month]
                             # print(f"in SES {self.employment_data_files[id]}, sector employment in {cur_sector} in {cur_month}: {employment}")
                             for i in range (0,self.months[cur_month]):
                                 if len(self.employment_by_ses_by_sector_by_day[id][cur_sector]) < self.day_count:
+                                    print(f"in SES {self.employment_data_files[id]}, sector employment in {cur_sector} in {cur_month}: {employment}. Month:{cur_month} day of month: {i} Day: {len(self.employment_by_ses_by_sector_by_day[id][cur_sector])} day count: {self.day_count}")
                                     self.employment_by_ses_by_sector_by_day[id][cur_sector].append(employment)
+                        else:
+                            print(f"Month {cur_month} not in cur_data_dict in sector {cur_sector} for id {id}")
         except KeyError as e:
             print(f"Bad key. Probably a missing sector. Aborting: {e}")
             sys.exit(1)
@@ -97,12 +103,9 @@ class EmploymentInput:
         results = {}
         tsv_file = open(employment_filename)
         read_tsv = csv.reader(tsv_file, delimiter="\t")
-
-
-        months=None
+        print(f"Reading {tsv_file}:")
+        months = None
         for row in read_tsv:
-
-
             if months is None and row[0].startswith("#"):
                 months=[]
                 for index,month in enumerate(row):
@@ -119,7 +122,7 @@ class EmploymentInput:
                 for index,month_val in enumerate(row):
                     if index > 0:
                         month = months[index -1]
-                        if not month_val.isnumeric():
+                        if month_val is None or not month_val.isnumeric():
                             print(f"Bad row in {employment_filename}: {row}")
                         results[sector_name][month] = int(month_val)
                     else:
@@ -130,10 +133,7 @@ class EmploymentInput:
             for month in months:
                 sector_total += results[cur_sector][month]
             results[cur_sector]['total'] = sector_total
-
-
         return results
-
 
     def read_input_data(self,filename):
         tsv_file = open(filename)
