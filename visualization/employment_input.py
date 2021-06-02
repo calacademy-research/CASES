@@ -80,7 +80,7 @@ class EmploymentInput:
                     self.employment_by_ses_by_sector_by_day[id] = {}
                 cur_data_dict = self.employment_input_data_dict[id]
                 for cur_sector in self.sector_names.values():
-                    print(f"============================================= Sector {cur_sector}")
+                    # print(f"============================================= Sector {cur_sector}")
                     if cur_sector not in self.employment_by_ses_by_sector_by_day[id]:
                         self.employment_by_ses_by_sector_by_day[id][cur_sector] = []
                     for cur_month in self.months.keys():
