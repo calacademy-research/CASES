@@ -33,7 +33,7 @@ class JuliaLoader:
                  load_all_data=False):
         # the first dataframe contains metadata not currently in use.
         # default to do not load.
-        print(f"Processing {us_exchanges}, employment:{employment}, age_fracs:{age_fracs}")
+        print(f"Processing {us_exchanges}, employment:{employment}, age_fracs:{age_fracs}, employment_percentage: {employment_percentage}")
         self.us_exchanges_filename = us_exchanges
         self.age_fracs_filename = age_fracs
         self.employment_filename = employment
@@ -80,7 +80,6 @@ class JuliaLoader:
 
     def run_julia(self):
         print("Loading Julia....")
-        # from julia import Main as j
         from julia.api import Julia
         jl = Julia(compiled_modules=False)
         from julia import Main as j
@@ -92,6 +91,7 @@ class JuliaLoader:
 
         employed = pd.read_csv(self.employment_filename,
                                dtype={"Sector": str, "Feb": np.int64})
+        print(f"Employed dataframe from {self.employment_filename}:\n {employed}")
 
         # if np.isnan(I).any() or np.isnan(age_fracs).any() or np.isnan(employed).any():
         if np.isnan(I).any():
@@ -107,7 +107,7 @@ class JuliaLoader:
         if employed.isnull().values.any():
             raise ValueError(f"NAN found in employment data {self.employment_filename}; skipping")
 
-        print("Starting Julia run...")
+        print(f"Starting Julia run for SES {self.employment_filename}...")
         j.include("CASES.jl")
         returned_result = j.main(I, age_fracs, julia_formatted_employed,self.employment_percentage)
         print("Julia run complete.")

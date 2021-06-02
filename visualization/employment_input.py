@@ -89,10 +89,11 @@ class EmploymentInput:
                             # print(f"in SES {self.employment_data_files[id]}, sector employment in {cur_sector} in {cur_month}: {employment}")
                             for i in range (0,self.months[cur_month]):
                                 if len(self.employment_by_ses_by_sector_by_day[id][cur_sector]) < self.day_count:
-                                    print(f"in SES {self.employment_data_files[id]}, sector employment in {cur_sector} in {cur_month}: {employment}. Month:{cur_month} day of month: {i} Day: {len(self.employment_by_ses_by_sector_by_day[id][cur_sector])} day count: {self.day_count}")
+                                    # print(f"in SES {self.employment_data_files[id]}, sector employment in {cur_sector} in {cur_month}: {employment}. Month:{cur_month} day of month: {i} Day: {len(self.employment_by_ses_by_sector_by_day[id][cur_sector])} day count: {self.day_count}")
                                     self.employment_by_ses_by_sector_by_day[id][cur_sector].append(employment)
                         else:
-                            print(f"Month {cur_month} not in cur_data_dict in sector {cur_sector} for id {id}")
+                            if id >= 11:
+                                print(f"Month {cur_month} not in cur_data_dict in sector {cur_sector} for id {id}")
         except KeyError as e:
             print(f"Bad key. Probably a missing sector. Aborting: {e}")
             sys.exit(1)

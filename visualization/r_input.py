@@ -17,6 +17,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 '''
 
 import csv
+import sys
 from dateutil.parser import parse as date_parser
 
 class RInput:
@@ -38,9 +39,14 @@ class RInput:
                 print(f"Cannot load r input data for ID {id}: {e}")
                 failed_loads.append(id)
 
-        for id in failed_loads:
-            if id in self.sector_names.keys():
-                del self.r_input_data_dict[id]
+        try:
+            for id in failed_loads:
+                if id in self.sector_names.keys():
+                    del self.r_input_data_dict[id]
+                    del self.r_input_data_dict[id]
+        except AttributeError as e:
+            print(f" bad ID in sector names?")
+            sys.exit(1)
 
     def is_date(self,date_string, fuzzy=False):
         """
@@ -72,9 +78,14 @@ class RInput:
             if not self.is_date(date_string):
                 if 'Ensemble' in row:
                     r_col = row.index('Ensemble')
+                elif 'RtIndicator' in row:
+                    r_col = row.index('RtIndicator')
+                elif 'R' in row:
+                    r_col = row.index('R')
+
                 continue
             if r_col is None:
-                raise ValueError(f"No Ensemble column found in {r_filename}")
+                raise ValueError(f"No Ensemble or RtIndicator or R column found in {r_filename}")
 
             r = float(row[r_col])
             # print(f" {r_filename} Got {date_string}:{r}")
@@ -85,15 +96,12 @@ class RInput:
 
         return results
 
-    def _decomment(self,csvfile):
-        for row in csvfile:
-            raw = row.split('#')[0].strip()
-            if raw: yield raw
+
 
 
     def read_input_data(self, filename):
         tsv_file = open(filename)
-        read_tsv = csv.reader(self._decomment(tsv_file), delimiter="\t")
+        read_tsv = csv.reader(tsv_file, delimiter="\t")
 
         data_files={}
         r_directory = None

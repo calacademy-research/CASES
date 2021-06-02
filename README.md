@@ -15,7 +15,9 @@ will take only a few seconds.
 Production runs should be done in the Docker environment.
 
 ## Inputs
-
+WARNING: Commented out headers matter - the month info is important in employment_by_sector_by_month
+Apologies - these input formats are FRAGILE. Case sensitive, column name sensitive, the works. Handle with 
+care. 
 
 | Input file      | Description |
 | ----------- | ----------- |
