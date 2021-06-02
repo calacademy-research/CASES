@@ -46,7 +46,7 @@ COPY ./requirements.txt /var/www/apache-flask
 COPY ./docker_start.sh /var/www/apache-flask
 
 RUN pip3 install -r /var/www/apache-flask/requirements.txt
-
+RUN pip3 install --upgrade pandas
 RUN python3 -c "import julia; julia.install()"
 RUN julia -e 'import Pkg;Pkg.add("DataFrames")'
 RUN julia -e 'import Pkg;Pkg.add("DifferentialEquations")'
