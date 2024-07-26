@@ -121,22 +121,24 @@ def app_setup():
     pie_fig = pie_fig_instance.generate_initial_figure(cur_r, cur_ses_id, cur_sector_ids)
     cascades_fig = cascades_fig_instance.generate_initial_figure(cur_r, cur_ses_id, cur_sector_ids)
 
-    #  Causes a circular dependancy. Works fine. Suppressing errors (turning debug off)
-    # makes this work.
-    # solution here: https://community.plotly.com/t/synchronize-components-bidirectionally/14158/11
-    # does not work; it sees the deeper cycle and ignores. (note; the code in this example
-    # does not run - requires "groups" from dash_extensions using new syntax.
-    @app.callback(
-        dash.dependencies.Output('r-input', 'value'),
-        [dash.dependencies.Input('r-slider', 'value')])
-    def update_input_from_slider(new_r):
-        return new_r
 
     @app.callback(
-        dash.dependencies.Output('r-slider', 'value'),
-        [dash.dependencies.Input('r-input', 'value')])
-    def update_sider_from_input(new_r):
-        return new_r
+        [dash.dependencies.Output('r-input', 'value'),
+         dash.dependencies.Output('r-slider', 'value')],
+        [dash.dependencies.Input('r-slider', 'value'),
+         dash.dependencies.Input('r-input', 'value')])
+    def sync_slider_and_input(r_slider_value, r_input_value):
+        ctx = dash.callback_context
+
+        # Identify which input triggered the callback
+        triggered_input = ctx.triggered[0]['prop_id'].split('.')[0]
+
+        if triggered_input == 'r-slider':
+            return r_slider_value, r_slider_value
+        elif triggered_input == 'r-input':
+            return r_input_value, r_input_value
+        else:
+            raise dash.exceptions.PreventUpdate
 
     @app.server.route('/download_csv')
     def download_csv():
@@ -169,10 +171,10 @@ def app_setup():
             }
         )
 
-    white_button_style = {'background-color': 'white',
+    white_button_style = {'backgroundColor': 'white',
                           }
 
-    green_button_style = {'background-color': 'green',
+    green_button_style = {'backgroundColor': 'green',
                           }
 
     @app.callback(
@@ -314,8 +316,8 @@ def app_setup():
                                           html.A(href='https://github.com/calacademy-research/CASES',
                                                  children=[
                                                      html.Img(style={"width": "10rem",
-                                                                     "margin-left": "10rem",
-                                                                     "margin-right": "auto"},
+                                                                     "marginLeft": "10rem",
+                                                                     "marginRight": "auto"},
                                                               src='data:image/png;base64,{}'.format(github_logo))
                                                  ]),
                                           html.P(""),
@@ -328,7 +330,7 @@ def app_setup():
                                           html.A(href='https://denison.edu/',
                                                  children=[
                                                      html.Img(style={"width": "30rem",
-                                                                     "margin-bottom": "3rem"},
+                                                                     "marginBottom": "3rem"},
                                                               src='data:image/png;base64,{}'.format(denison_logo_image))
                                                  ])
                                       ]
@@ -431,7 +433,7 @@ print(copyright_string)
 if __name__ == '__main__':
     print("Running internal server")
     setup()
-    app.run_server(debug=True)
+    app.run_server(debug=True,host='127.0.0.1')
 else:
     print(f"Running external server: {__name__}")
     setup()
