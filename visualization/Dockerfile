@@ -17,7 +17,7 @@ RUN apt-get update && apt-get install -y  \
 RUN python3 -m venv /opt/venv
 ENV PATH="/opt/venv/bin:$PATH"
 RUN pip install --no-cache-dir --upgrade pip
-RUN pip install julia
+RUN pip install julia dash dash_core_components dash_html_components
 RUN python3 -c "import julia; julia.install()"
 
 
