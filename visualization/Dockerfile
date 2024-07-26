@@ -1,37 +1,34 @@
 FROM julia:latest
 
-RUN  apt-get update && apt-get install -y apache2 \
-    libapache2-mod-wsgi \
+RUN apt-get update && apt-get install -y  \
+    apache2 \
+    libapache2-mod-wsgi-py3 \
     build-essential \
     python3 \
-    python3-dev \
     python3-pip \
-    python3-distutils \
-    python3-numpy \
-    python3-pandas \
-    vim \
- && apt-get clean \
- && apt-get autoremove \
+    python3-venv \
+    vim \ 
+    nano \
  && cd /usr/local/bin \
  && ln -s /usr/bin/python3 python \
- && pip3 --no-cache-dir install --upgrade pip \
- && rm -rf /var/lib/apt/lists/* \
- && apt purge -y python2.7-minimal
+ && rm -rf /var/lib/apt/lists/* 
+
+# Create a virtual environment and install pip packages
+RUN python3 -m venv /opt/venv
+ENV PATH="/opt/venv/bin:$PATH"
+RUN pip install --no-cache-dir --upgrade pip
+RUN pip install julia
+RUN python3 -c "import julia; julia.install()"
 
 
-RUN apt-get update && apt-get install -y libapache2-mod-wsgi-py3
-# apache2-threaded-dev
-# libapache2-mod-wsgi
-# Copy over the apache configuration file and enable the site
+
+
 COPY ./apache-flask.conf /etc/apache2/sites-available/apache-flask.conf
 RUN a2ensite apache-flask
 RUN a2enmod headers
 
 # Copy over the wsgi file
 COPY ./apache-flask.wsgi /var/www/apache-flask/apache-flask.wsgi
-
-#COPY *.py /var/www/apache-flask/
-#COPY *.bin /var/www/apache-flask/
 
 
 RUN a2dissite 000-default.conf
@@ -44,8 +41,9 @@ RUN ln -sf /proc/self/fd/1 /var/log/apache2/access.log && \
 
 COPY ./requirements.txt /var/www/apache-flask
 COPY ./docker_start.sh /var/www/apache-flask
-
 RUN pip3 install -r /var/www/apache-flask/requirements.txt
+
+
 RUN pip3 install --upgrade pandas
 RUN python3 -c "import julia; julia.install()"
 RUN julia -e 'import Pkg;Pkg.add("DataFrames")'
