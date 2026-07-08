@@ -1,1 +1,5 @@
 *.bin
+visualization/env/
+visualization/__pycache__/
+visualization/*.tar.gz
+visualization/start.timestamp
